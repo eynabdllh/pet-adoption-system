@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adopter Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="text-center mb-4">
+            <!-- Logo -->
+            <img src="{% static 'images/logo.png' %}" alt="Logo" style="width: 200px;">
+        </div>
+        <a href="{% url 'adopter_pet_list' %}" class="{% if request.resolver_match.url_name == 'adopter_pet_list' %} active {% endif %}">
+            <img src="{% static 'images/adoption.png' %}" alt="Adopt" style="width: 20px; margin-right: 10px;">
+            Adopt a Pet
+        </a>
+        <a href="#">
+            <img src="{% static 'images/home.png' %}" alt="My Adoption" style="width: 20px; margin-right: 10px;">
+            My Adoption
+        </a>
+        <a href="#">
+            <img src="{% static 'images/pickup.png' %}" alt="Pick Up List" style="width: 20px; margin-right: 10px;">
+            Pick Up List
+        </a>
+         <!-- Logout Button -->
+         <div class="logout">
+            <button class="btn-logout">
+                <img src="{% static 'images/logout.png' %}" alt="Logout Icon" style="width: 20px; margin-right: 10px;">
+                Log out
+            </button>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <p class="toptitle">{% block page_title %}{% endblock %}</p>
+        <div class="notification-container">
+            <div class="notification">
+                <img src="{% static 'images/notification.png' %}" alt="Notification Icon">
+            </div>
+            <div class="profile">
+                <img src="{% static 'images/profile.png' %}" alt="Profile Image">
+                <div class="profile-info-container">
+                    <div class="profile-info"> 
+                        <p class="name">John Doe</p>
+                        <p class="adopter-type">Adopter</p> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
