@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        /* Main container for layout */
+        .container-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 324px;
+            background-color: #FAF8F6;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #ddd;
+            position: fixed;
+        }
+
+        .sidebar a {
+            font-size: 20px;
+            color: #4A4A4A;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: block;
+            margin: 5px 15px 15px;
+            border-right: 1px solid #ddd;
+        }
+
+        .sidebar a:hover {
+            background-color: #E6E5E2;
+            color: #333;
+            border-radius: 10px;
+        }
+
+        .sidebar a.active {
+            background-color: #E6E5E2;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25),
+                inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 324px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Top bar styles */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #fff; 
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); 
+            height: 90px; 
+        }
+
+        .top-bar .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .top-bar .page-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-left: 20px;
+            color: #4A4A4A; 
+        }
+
+        .top-bar .right-items {
+            display: flex;
+            align-items: center;
+        }
+
+        .top-bar .notification-icon {
+            margin-right: 20px;
+            font-size: 20px;
+            padding: 5px;
+            color: #FF4A4A; 
+        }
+
+        .top-bar .profile {
+            display: flex;
+            align-items: center;
+            text-decoration: none; 
+            color: inherit; 
+            cursor: pointer;
+        }
+
+        .top-bar .profile img {
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .top-bar .profile-info {
+            display: flex;
+            flex-direction: column;
+            margin-right: 50px; 
+        }
+
+        .top-bar .profile-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #11181C; 
+        }
+
+        .top-bar .profile-role {
+            font-size: 14px; 
+            color: #A1A1AA; 
+        }
+
+        .top-bar .profile:hover {
+            text-decoration: none; 
+            background-color: #f0f0f0; 
+            border-radius: 5px;
+        }
+
+        /* Logout styling */
+        .btn-logout {
+            color: #FF6F61;
+            border: none;
+            background: none;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout {
+            margin-top: auto;
+            margin-bottom: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .logo-img {
+            width: 220px;
+            margin-bottom: 15px;
+        }
+
+        .icon-img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body>
+    {% load static %}
+    <div class="container-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="text-center mb-4">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
+            </div>
+            <a href="{% url 'admin_pet_list' %}" class="{% if request.resolver_match.url_name == 'admin_pet_list' %} active {% endif %}">
+                <img src="{% static 'images/adoption.png' %}" alt="Pets" class="icon-img">
+                Pet Management
+            </a>
+            <a href="{% url 'admin_adopter_list' %}" class="{% if request.resolver_match.url_name == 'admin_adopter_list' %} active {% endif %}">
+                <img src="{% static 'images/adopters.png' %}" alt="Adopters" class="icon-img">
+                Adopter Management
+            </a>
+            <a href="#">
+                <img src="{% static 'images/reports.png' %}" alt="Reports" class="icon-img">
+                Reports
+            </a>
+            <div class="logout">
+                <button class="btn-logout">
+                    <img src="{% static 'images/logout.png' %}" alt="Logout Icon" class="icon-img">
+                    Log out
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="logo">
+                    <div class="page-title">{% block page_title %}{% endblock %}</div>
+                </div>
+                <div class="right-items">
+                    <div class="notification-icon">
+                        <img src="{% static 'images/notification.png' %}" alt="Notification Icon">
+                    </div>
+                    <a href="{% url 'admin_profile_view' %}" class="profile">
+                        <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture">
+                        <div class="profile-info">
+                            <div class="profile-name">{{ user.get_full_name|default:"Admin" }}</div>
+                            <div class="profile-role">Admin</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Dynamic Content -->
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
