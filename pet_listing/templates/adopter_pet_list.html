@@ -1,0 +1,134 @@
+    {% extends 'base_adopter.html' %}
+    {% load static %}
+
+    {% block page_title %}
+    Adopt a Pet
+    {% endblock %}
+
+    {% block content %}
+    <style>
+        .contents {
+            margin-left: 240px; 
+            padding: 20px; 
+            margin-top: 30px;
+        }
+
+        .pet-results {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;    
+        }
+
+        .pet-results p {
+            font-size: 28px;
+            color: #4A4A4A;
+        }
+        .search-bar {
+            width: 400px;  
+        }
+
+        .search-bar .input-group-text {
+            background-color: transparent;
+            border-right: none;
+            cursor: pointer;
+        }
+
+        .search-bar .input-group-text i {
+            color: #FF6F61; 
+        }
+
+        .pet-card {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-img-top {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .card-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .card-age {
+            font-size: 20px;
+            color: #A1A1AA;
+        }
+
+        .card-text {
+            color: #4A4A4A;
+        }
+
+        .btnDetails {
+            background-color: #FF6F61;
+            width: 200px;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            display: inline-block;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .btnDetails:hover {
+            background-color: #fa7e73;
+        }
+    </style>
+
+        <!-- Pet Results Section -->
+        <div class="pet-results d-flex justify-content-between">
+            <p>{{ pets.count }} Pet Results</p>
+
+            <!-- Search Bar -->
+            <form class="form-inline search-bar">
+                <div class="input-group w-100">
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input class="form-control" type="search" placeholder="Search a pet" aria-label="Search">
+                </div>
+            </form>
+        </div>
+
+        <!-- pet_listing.html -->
+        <div class="row mt-4">
+            {% for pet in pets %}
+            <div class="col-md-4 pet-card">
+                <div class="card">
+                    <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="card-img-top pet-image">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="card-title mb-0">{{ pet.name }}</h5>
+                            <p class="card-age mb-0">{{ pet.age }} years</p>
+                        </div>
+                        <p class="card-text">{{ pet.pet_type }} | {{ pet.breed }}</p>
+                        <div class="containBtn">
+                            <a href="{% url 'view_pet' pet.id %}" class="btn btnDetails">View Full Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% endblock %}
