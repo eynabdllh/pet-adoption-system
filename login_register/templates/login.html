@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Log in</title>
+        <title>{{title_text}}</title>
         {%load static%}
         <link rel="stylesheet" href="{%static 'login.css'%}?{% now 'U'%}">
     </head>
@@ -16,23 +16,24 @@
             </div>
 
             <div id="loginBox">
-                <h2 class="center">Login</h2>
+                <h2 class="center">{{title_text}}</h2>
 
                 <p class="center">- OR -</p>
 
                 <form method="post">
                     {%csrf_token%}
 
-                    <label for="Email">Email Address</label> <br>
-                    <input type="text"> <br>
-                    <label for="Password">Password</label> <br>
-                    <input type="password"> <br>
-                    <div class="center">
-                        <input type="submit" value="Log In">
-                    </div>
-                    
+                    {{  form.as_p   }}
 
-                    <p class="center">Don't have an account? <a href="">Sign up</a></p>
+                    {% if validation != None %}
+                        <span style="color: red">{{  validation }}</span>
+                    {% endif %}
+
+                    <div class="center">
+                        <input type="submit" value='{{submit_text}}'>
+                    </div>
+
+                    <p class="center">{{redirect_message}} <a href="{% url redirect_link %}">{{redirect_title}}</a></p>
                 </form>
             </div>
 
