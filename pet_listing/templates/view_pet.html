@@ -1,0 +1,158 @@
+{% extends 'base_adopter.html' %}
+{% load static %}
+
+{% block page_title %}
+Adopt a Pet
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Card Styling */
+    .pet-card {
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Back Button */
+    .btn-back {
+        background-color: #FF6F61;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        width: 130px;
+    }
+
+    .btn-back:hover {
+        background-color: #e65c51;
+    }
+
+    /* Adopt Button */
+    .btn-adopt {
+        background-color: #1EBE91;
+        border: none;
+        color: #fff;
+        padding: 10px 10px;
+        font-size: 16px;
+        border-radius: 10px;
+        margin-right: 50px;
+        width: 180px;
+    }
+
+    .btn-adopt:hover {
+        background-color: #16a379;
+    }
+
+    /* Main Image Styling */
+    .main-image {
+        height: 340px;
+        width: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    /* Image Collage */
+    .image-collage {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .collage-image {
+        height: 165px;
+        width: calc(50% - 5px);
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    /* Pet Information */
+    .pet-name {
+        font-size: 40px;
+        font-weight: 600;
+        margin: 10px;
+        color: #4A4A4A;
+    }
+
+    .pet-info li {
+        font-size: 16px;
+        margin: 10px;
+    }
+
+    .list-logo {
+        width: 15px; 
+        margin-right: 10px;
+    }
+
+    /* Description */
+    .description-title {
+        font-size: 18px;
+        margin-top: 20px;
+    }
+
+    .pet-description {
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .container-fluid {
+        padding: 5px;
+    }
+
+</style>
+
+<div class="container-fluid mt-0">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{% url 'adopter_pet_list' %}" class="btn btn-back">Back</a>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card pet-card shadow-lg p-4">
+        <div class="row mb-4">
+            <!-- Main Image -->
+            <div class="col-md-6">
+                <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="main-image">
+            </div>
+            <!-- Collage of Images -->
+            <div class="col-md-6">
+                <div class="image-collage">
+                    {% for image in pet.images.all %}
+                    <img src="{{ image.image.url }}" alt="{{ pet.name }}" class="img-fluid rounded collage-image">
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Pet Name and Adopt Button -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h3 class="pet-name">{{ pet.name }}</h3>
+            </div>
+            <div class="col-md-4 text-md-right text-center">
+                <button class="btn btn-adopt">Adopt Pet</button>
+            </div>
+        </div>
+
+        <!-- Pet Information and Description -->
+        <div class="row">
+            <div class="col-md-6">
+                <ul class="list-unstyled pet-info">
+                    <li><img src="{% static 'images/gender.png' %}" alt="Adopt" class="list-logo"><strong>Gender:</strong> {{ pet.gender }}</li>
+                    <li><img src="{% static 'images/heart.png' %}" alt="Adopt" class="list-logo"><strong>Breed:</strong> {{ pet.breed }}</li>
+                    <li><img src="{% static 'images/age.png' %}" alt="Adopt" class="list-logo"><strong>Age:</strong> {{ pet.age }} years</li>
+                    <li><img src="{% static 'images/Type.png' %}" alt="Adopt" class="list-logo"><strong>Type:</strong> {{ pet.pet_type }}</li>
+                    <li><img src="{% static 'images/pesosymbol.png' %}" alt="Adopt" class="list-logo"><strong>Adoption Fee:</strong> P{{ pet.adoption_fee }}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h5 class="description-title"><i class="fas fa-align-left"></i> Description</h5>
+                <p class="pet-description">{{ pet.description }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
