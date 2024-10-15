@@ -98,24 +98,26 @@
         <!-- Pet Results Section -->
         <div class="pet-results d-flex justify-content-between">
             <p>{{ pets.count }} Pet Results</p>
-
             <!-- Search Bar -->
-            <form class="form-inline search-bar">
+            <form method="GET" action="{% url 'adopter_pet_list' %}" class="form-inline search-bar">
                 <div class="input-group w-100">
                     <div class="input-group-append">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                     </div>
-                    <input class="form-control" type="search" placeholder="Search a pet" aria-label="Search">
+                    <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
                 </div>
             </form>
         </div>
 
-        <!-- pet_listing.html -->
         <div class="row mt-4">
             {% for pet in pets %}
             <div class="col-md-4 pet-card">
                 <div class="card">
-                    <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="card-img-top pet-image">
+                    {% if pet.main_image %}
+                        <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="card-img-top pet-image">
+                    {% else %}
+                        <img src="{% static 'images/default_image.jpg' %}" alt="No Image Available" class="card-img-top pet-image">
+                    {% endif %}
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h5 class="card-title mb-0">{{ pet.name }}</h5>
@@ -130,5 +132,4 @@
             </div>
             {% endfor %}
         </div>
-
     {% endblock %}

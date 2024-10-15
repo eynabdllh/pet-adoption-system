@@ -98,6 +98,11 @@
             color: #FF4A4A; 
         }
 
+        .notification {
+            width: 25px;
+            height: 29px;
+        }
+        
         .top-bar .profile {
             display: flex;
             align-items: center;
@@ -224,7 +229,7 @@
                 </div>
                 <div class="right-items">
                     <div class="notification-icon">
-                        <img src="{% static 'images/notification.png' %}" alt="Notification Icon">
+                        <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
                     </div>
                     <a href="{% url 'adopter_profile_view' %}" class="profile">
                         <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture">

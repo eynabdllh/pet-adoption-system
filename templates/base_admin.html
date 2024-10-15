@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>adopt-a-pet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
     <style>
-        /* Main container for layout */
         .container-wrapper {
             display: flex;
             height: 100vh;
@@ -22,7 +20,6 @@
             display: flex;
             flex-direction: column;
             border-right: 1px solid #ddd;
-            position: fixed;
         }
 
         .sidebar a {
@@ -54,15 +51,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            margin-left: 324px;
         }
 
         .content {
             flex: 1;
             padding: 40px;
-            overflow-y: auto;
+            overflow-y: auto; 
         }
-
         /* Top bar styles */
         .top-bar {
             display: flex;
@@ -71,7 +66,7 @@
             padding: 10px 20px;
             background-color: #fff; 
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); 
-            height: 90px; 
+            height: 80px; 
         }
 
         .top-bar .logo {
@@ -79,10 +74,15 @@
             align-items: center;
         }
 
+        .top-bar .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
         .top-bar .page-title {
             font-size: 32px;
             font-weight: bold;
-            margin-left: 20px;
+            margin-left: 20px;;
             color: #4A4A4A; 
         }
 
@@ -96,6 +96,11 @@
             font-size: 20px;
             padding: 5px;
             color: #FF4A4A; 
+        }
+
+        .notification {
+            width: 25px;
+            height: 29px;
         }
 
         .top-bar .profile {
@@ -154,6 +159,27 @@
             justify-content: center;
         }
 
+        /* Pet card and listing styles */
+        .pet-card {
+            margin-bottom: 20px;
+        }
+
+        .pet-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .btnDetails {
+            color: white;
+            background-color: #FF6F61;
+        }
+
+        .containBtn {
+            display: flex;
+            justify-content: center; 
+        }
+
         .logo-img {
             width: 220px;
             margin-bottom: 15px;
@@ -174,17 +200,21 @@
             <div class="text-center mb-4">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
             </div>
-            <a href="{% url 'admin_pet_list' %}" class="{% if request.resolver_match.url_name == 'admin_pet_list' %} active {% endif %}">
-                <img src="{% static 'images/adoption.png' %}" alt="Pets" class="icon-img">
+            <a href="#">
+                <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="icon-img">
+                Dashboard
+            </a>
+            <a href="{% url 'admin_pet_list' %}" class="{% if request.resolver_match.url_name == 'admin_pet_list' or request.resolver_match.url_name == 'admin_view_pet' %} active {% endif %}">
+                <img src="{% static 'images/adoption.png' %}" alt="Pet Management" class="icon-img">
                 Pet Management
             </a>
-            <a href="{% url 'admin_adopter_list' %}" class="{% if request.resolver_match.url_name == 'admin_adopter_list' %} active {% endif %}">
-                <img src="{% static 'images/adopters.png' %}" alt="Adopters" class="icon-img">
-                Adopter Management
+            <a href="#">
+                <img src="{% static 'images/home.png' %}" alt="Adoption Management" class="icon-img">
+                Adoption Management
             </a>
             <a href="#">
-                <img src="{% static 'images/reports.png' %}" alt="Reports" class="icon-img">
-                Reports
+                <img src="{% static 'images/pickup.png' %}" alt="Pick Up Schedule" class="icon-img">
+                Pick Up Schedule
             </a>
             <div class="logout">
                 <button class="btn-logout">
@@ -203,9 +233,9 @@
                 </div>
                 <div class="right-items">
                     <div class="notification-icon">
-                        <img src="{% static 'images/notification.png' %}" alt="Notification Icon">
+                        <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
                     </div>
-                    <a href="{% url 'admin_profile_view' %}" class="profile">
+                    <a href="#" class="profile">
                         <img src="{% if user.profile_image %}{{ user.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture">
                         <div class="profile-info">
                             <div class="profile-name">{{ user.get_full_name|default:"Admin" }}</div>

@@ -1,0 +1,204 @@
+{% extends 'base_admin.html' %}
+{% block page_title %} Pet Management {% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .table-card {
+        border-radius: 0 0 12px 12px;
+        background-color: #ffffff;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        height: 60vh; 
+        overflow-y: auto;
+    }
+
+    .img-pet {
+        width: 50px; 
+        height: 50px; 
+        object-fit: cover; 
+        margin-right: 10px;
+        border-radius: 14px;
+    }
+
+    .navtab {
+        color: #FF6F61 ;
+    }
+
+    ul.nav-tabs .nav-link {
+        color: #616161 !important; 
+    }
+
+    ul.nav-tabs .nav-link.active {
+        color: #ff5733 !important; 
+        font-weight: 700;
+    }   
+
+    .btn-color{
+        background-color: #FF6F61 ;
+        color: #ffffff;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <a href="{% url 'admin_add_pet' %}" class="btn btn-color">
+            <i class="fas fa-plus"></i> Add new pet
+        </a>
+      
+        <div class="d-flex mb-0">
+            <form method="GET" action="{% url 'admin_pet_list' %}" class="mr-2 d-flex">
+                <!-- Search Bar -->
+                <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
+
+                <!-- Filter Dropdown for Pet Type -->
+                <label for="filterPetType" class="sr-only">Filter by</label>
+                <select name="pet_type" id="filterPetType" class="form-control form-control-sm ml-2">
+                    <option value="">Species</option>
+                    <option value="dog" {% if pet_type == 'Dog' %}selected{% endif %}>Dog</option>
+                    <option value="cat" {% if pet_type == 'Cat' %}selected{% endif %}>Cat</option>
+                    <option value="bird" {% if pet_type == 'Bird' %}selected{% endif %}>Bird</option>
+                </select>
+
+                <!-- Filter Dropdown for Gender -->
+                <label for="filterGender" class="sr-only">Filter by</label>
+                <select name="gender" id="filterGender" class="form-control form-control-sm ml-2">
+                    <option value="">Gender</option>
+                    <option value="male" {% if gender == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if gender == 'female' %}selected{% endif %}>Female</option>
+                    <option value="none" {% if gender == 'none' %}selected{% endif %}>None</option>
+                </select>
+
+                <!-- Sort Dropdown -->
+                <label for="sortBy" class="sr-only">Sort by</label>
+                <select name="sort_by" id="sortBy" class="form-control form-control-sm ml-2">
+                    <option value="">Sort by</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                    <option value="id" {% if sort_by == 'id' %}selected{% endif %}>ID</option>
+                    <option value="age" {% if sort_by == 'age' %}selected{% endif %}>Age</option>
+                    <option value="time_in_shelter" {% if sort_by == 'time_in_shelter' %}selected{% endif %}>Time in Shelter</option>
+                </select>
+                <button type="submit" class="btn btn-color btn-sm ml-2">Apply</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs navtab">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#available">Available</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#adopted">Adopted</a>
+        </li>
+    </ul>
+
+    <div class="card table-card shadow-lg p-4">
+    <div class="tab-content mt-3">
+        <!-- Available Pets -->
+        <div id="available" class="tab-pane fade show active">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pet</th>
+                            <th>Species</th>
+                            <th>Breed</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Adoption Fee</th>
+                            <th>Time in Shelter</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pet in pets %}
+                        {% if pet.is_available %}
+                        <tr>
+                            <td>{{ pet.id }}</td>
+                            <td>
+                                {% if pet.main_image %}
+                                    <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
+                                {% else %}
+                                    <img src="{% static 'images/default_image.jpg' %}" alt="No Image Available" class="img-pet">
+                                {% endif %}
+                                {{ pet.name }}
+                            </td>
+                            
+                            <td>{{ pet.pet_type|capfirst }}</td>
+                            <td>{{ pet.breed }}</td>
+                            <td>{{ pet.age }}</td>
+                            <td>{{ pet.gender|capfirst }}</td>
+                            <td>₱{{ pet.adoption_fee }}</td>
+                            <td>{{ pet.time_in_shelter }}</td>
+                            <td><span class="badge badge-success">Available</span></td>
+                            <td>
+                                <a href="{% url 'admin_view_pet' pet.id %}" class="text-secondary"><i class="fas fa-eye"></i></a>
+                                <a href="{% url 'admin_edit_pet' pet.id %}" class="text-secondary"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'admin_delete_pet' pet.id %}" class="text-secondary"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Adopted Pets -->
+        <div id="adopted" class="tab-pane fade">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pet</th>
+                            <th>Species</th>
+                            <th>Breed</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Adoption Fee</th>
+                            <th>Time in Shelter</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pet in pets %}
+                        {% if not pet.is_available %}
+                        <tr>
+                            <td>{{ pet.id }}</td>
+                            <td>
+                                {% if pet.main_image %}
+                                    <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
+                                {% endif %}
+                                {{ pet.name }}
+                            </td>
+                            
+                            <td>{{ pet.pet_type|capfirst }}</td>
+                            <td>{{ pet.breed }}</td>
+                            <td>{{ pet.age }}</td>
+                            <td>{{ pet.gender|capfirst }}</td>
+                            <td>₱{{ pet.adoption_fee }}</td>
+                            <td>{{ pet.time_in_shelter }}</td>
+                            <td><span class="badge badge-secondary">Adopted</span></td>
+                            <td>
+                                <a href="{% url 'admin_view_pet' pet.id %}" class="text-secondary"><i class="fas fa-eye"></i></a>
+                                <a href="{% url 'admin_edit_pet' pet.id %}" class="text-secondary"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'admin_delete_pet' pet.id %}" class="text-secondary"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+{% endblock %}
