@@ -1,0 +1,89 @@
+:root {
+    --pink: #FF6F61;
+    --darkpink: #FFDDD2;
+    --beige: #FFF1EE;
+
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+#logo {
+    width: 12%;
+    height: 5%;
+}
+
+#person {
+    width: 30.2%;
+    height: 55.2%;
+}
+
+#designBox {
+    position: fixed;
+    left: 0;
+    width: 50%;
+    height: 100%;
+
+    max-width: 50%;
+    max-height: 98%;
+}
+
+#loginBox {
+    position: fixed;
+    right: 0;
+    margin-top: 8px;
+
+    width: 50%;
+    height: 100%;
+
+    max-width: 50%;
+    max-height: 98%;
+    background-color: var(--beige);
+    border-radius: 25px 0px 0px 25px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+input[type=email], input[type=password], input[type=text], input[type=number] {
+    margin: 0 auto;
+
+    border: 2px #9F9F9F solid;
+    border-radius: 5px;
+
+    font-size: 0.9em;
+
+    margin-top: 5px;
+    height: 20px;
+    width: 100%;
+    max-width: 98%;
+}
+
+input[type=submit] {
+    background-color: var(--pink);
+    border: none;
+    border-radius: 100px;
+    color: white;
+    padding: 16px 64px;
+    margin-top: 40px;
+}
+
+h1 {
+    color: #3E2828;
+    font-size: 8.5vmin;
+}
+
+a {
+    color: var(--pink);
+    text-decoration: none;
+}
+
+form {
+    margin: 0 auto;
+    width: 500px;
+}
+
+.center {
+    text-align: center;
+}
+
+body {
+    margin: 0;
+    background-color: var(--darkpink);    
+}
