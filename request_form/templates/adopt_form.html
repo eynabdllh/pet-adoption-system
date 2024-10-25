@@ -1,0 +1,167 @@
+{% extends 'base_adopter.html' %}
+{% load static %}
+
+{% block page_title %}
+Adopt a Pet
+{% endblock %}
+
+{% block content %}
+<style>
+    .content {
+        padding: 20px;
+    }
+
+    .pet-card {
+        margin-bottom: 20px;
+    }
+
+    .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+    }
+
+    .d-flex {
+        justify-content: space-between;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+
+    .btn-next {
+        background-color: #FF6F61;
+        color: white;
+        height: 43px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        width: 150px;
+    }
+
+    .titleCard {
+        display: flex;
+    }
+
+    .p-font {
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .btn-clear {
+        background-color: #ffffff;
+        color: black;
+        border: 1px solid #000000;
+        width: 120px;
+        height: 43px;
+    }
+
+    input[type="text"], input[type="email"], input[type="number"], input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        flex: 1;
+        margin-right: 15px;
+    }
+
+    .form-group:last-child {
+        margin-right: 0;
+    }
+
+    label {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .btn-back {
+        background-color: #FF6F61;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        width: 130px;
+    }
+
+    .btn-back:hover {
+        background-color: #e65c51;
+    }
+</style>
+
+<!-- Main Content -->
+<div class="mb-3">
+    <a href="{% url 'view_pet' pet.id %}" class="btn btn-back">Back</a>
+</div>
+
+<div class="card pet-card shadow-lg p-4">
+    <div class="titleCard">
+        <p class="p-font">Adoption Form</p>
+    </div>
+    
+    <!-- Form Start -->
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="adopter_id">Adopter ID:</label>
+                <input type="text" id="adopter_id" name="adopter_id" value="{{ user.id }}" readonly style="background-color: #ffffff; border: 1px solid #ccc; color: #5d5b5b;">
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" value="{{ today }}"  style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #5d5b5b;">
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #5d5b5b;">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="text" id="age" name="age" value="{{ user.age }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+            </div>
+            <div class="form-group">
+                <label for="contact_number">Contact Number:</label>
+                <input type="text" id="contact_number" name="contact_number" value="{{ user.contact_no }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" value="{{ user.address }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" value="{{ user.email }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #5d5b5b;">
+            </div>
+        </div>
+        
+        <div class="d-flex">
+            <button type="reset" class="btn btn-clear">Clear All</button> 
+            <button type="submit" class="btn btn-next">Next</button>
+        </div>
+    </form>
+    <!-- Form End -->
+</div>
+
+{% endblock %}
