@@ -1,0 +1,301 @@
+{% extends 'base_adopter.html' %}
+{% load static %}
+
+{% block page_title %}
+Adopt a Pet
+{% endblock %}
+
+{% block content %}
+<style>
+    .content {
+        padding: 20px;
+    }
+    .containForm {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 2px 8px 10px rgba(0, 0, 0, 0.5);
+        max-width: 1000px;
+        margin: auto;
+        margin-top: 50px;
+        }
+    .pet-card {
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        align-items: center;
+    }
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    .form-group {
+        flex: 1;
+        margin-right: 20px;
+    }
+    .form-group:last-child {
+        margin-right: 0;
+    }
+    label {
+        font-weight: bold;
+        color: #555;
+    }
+    input[type="text"], input[type="email"], input[type="number"], input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .btn-next {
+        background-color: #FF6F61;
+        color: white;
+        height: 43px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        width:150px;
+    }
+        .btn-sched {
+            background-color: #FF6F61;
+            color: white;
+            height: 43px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            width: 200px;
+            border-radius: 10px;
+        }
+        .btn-clear {
+            background-color: #ffffff;
+            color: black;
+            border: 1px solid #000000;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .btnSched{
+            display:flex;
+            justify-content: center;
+        }
+        .d-flex {
+            justify-content: space-between;
+        }
+        .p-font{
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        /* Day Selector Styling */
+        #day {
+            width: 25%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            margin-right: 50px;
+        }
+        #day:hover {
+            border-color: #999;
+        }
+        #day option:checked {
+            background-color: #FF6F61;
+            color: white;
+        }
+
+        /* Month Selector Styling */
+        #month {
+            width: 25%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            margin-right: 50px;
+        }
+        #month:hover {
+            border-color: #999;
+        }
+        #month option:checked {
+            background-color: #FF6F61;
+            color: white;
+        }
+
+        /* Year Selector Styling */
+        #year {
+            width: 25%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            
+        }
+        #year:hover {
+            border-color: #999;
+        }
+        #year option:checked {
+            background-color: #FF6F61;
+            color: white;
+        }
+
+        /* Time Styling */
+        /* Center align the legend and style the fieldset */
+        .pickup-time-fieldset {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            max-width: 1200px;
+            margin: auto;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pickup-time-fieldset legend {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FF6F61;
+            text-align: center;
+            padding: 0 10px;
+            width: auto;
+            margin: 0 auto;
+        }
+
+        /* Style for morning and afternoon time slots */
+        .time-slot {
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .time-slot-title {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .time-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .time-options input[type="radio"] {
+            display: none;
+        }
+
+        /* Style labels as buttons */
+        .time-options label {
+            background-color: #f1f1f1;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .time-options input[type="radio"]:checked + label,
+        .time-options label:hover {
+            background-color: #FF6F61;
+            color: white;
+            border-color: #FF6F61;
+        }
+        .btn-back {
+        background-color: #FF6F61;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        width: 130px;
+    }
+
+    </style>
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="mb-3">
+        <a href="{% url 'adopt_form' pet.id %}" class="btn btn-back">Back</a>
+    </div>
+    <div class="card pet-card shadow-lg p-4">
+        <p class="p-font">Pick-Up Schedule</p>
+        <form action="{% url 'schedule' pet.id %}" method="post">
+            {% csrf_token %}
+            
+            <!-- Month Selector -->
+            <label for="month">Month:</label>
+            <select id="month" name="month">
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+            
+            <!-- Day Selector -->
+            <label for="day">Day:</label>
+            <select id="day" name="day">
+              {% for day in days %}
+                <option value="{{ day }}">{{ day }}</option>
+              {% endfor %}
+            </select>
+
+             <!-- Year Selector -->
+            <label for="year">Year:</label>
+            <select id="year" name="year">
+                {% for year in years %}
+            <option value="{{ year }}">{{ year }}</option>
+                {% endfor %}
+            </select>
+          
+            <!-- Time Selector with AM and PM -->
+            <fieldset class="pickup-time-fieldset">
+    <legend>Pick-up Time</legend>
+
+    <!-- Morning Slot -->
+    <div class="time-slot">
+        <p class="time-slot-title">Morning</p>
+        <div class="time-options">
+            {% for time in morning_hours %}
+                <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                <label for="time_{{ time }}">{{ time }}</label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Afternoon Slot -->
+    <div class="time-slot">
+        <p class="time-slot-title">Afternoon</p>
+        <div class="time-options">
+            {% for time in afternoon_hours %}
+                <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                <label for="time_{{ time }}">{{ time }}</label>
+            {% endfor %}
+        </div>
+    </div>
+</fieldset>
+        <div class="btnSched">
+            <button type="submit" class="btn btn-sched">Schedule Pickup</button>
+        </div>
+            
+        </form>
+    </div>
+
+{% endblock %}
