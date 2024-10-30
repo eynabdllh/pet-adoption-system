@@ -1,0 +1,88 @@
+{% extends 'base_adopter.html' %}
+{% load static %}
+
+{% block page_title %}
+Pick Up List
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Main container for the pick-up list */
+    .pickup-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Individual pet card */
+    .pickup-card {
+        display: flex;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        align-items: center;
+    }
+
+    /* Pet image styling */
+    .pet-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-right: 20px;
+    }
+
+    /* Details styling */
+    .pickup-details h2 {
+        margin: 0;
+        color: #333;
+    }
+
+    .pickup-details p {
+        color: #777;
+        margin: 4px 0;
+    }
+
+    .pickup-details strong {
+        color: #FF6F61; /* Highlight color */
+    }
+
+    .date-time {
+        display: flex;
+        justify-content: flex-start; 
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .date-time p:first-child {
+    margin-right: 80px; /* Adjust this value for desired spacing */
+}
+</style>
+
+<div class="pickup-list">
+    {% for pickup in pickups %}
+        <div class="pickup-card">
+            <!-- Pet image -->
+            <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
+            
+            <!-- Pickup details -->
+            <div class="pickup-details">
+                <h2>{{ pickup.pet.name }}</h2>
+                <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
+
+                <!-- Date and Time Details -->
+                <div class="date-time">
+                    <p><strong>Scheduled Pick-Up Date:</strong> {{ pickup.month }} {{ pickup.day }}, {{ pickup.year }}</p>
+                    <p><strong>Time:</strong> {{ pickup.time }}</p>
+                </div>
+
+                <!-- Additional message -->
+                <p>If you have any questions or need support, feel free to contact us. <strong>{{ pickup.pet.name }}</strong> is excited to meet you and thank you for giving them a loving home!</p>
+            </div>
+        </div>
+    {% empty %}
+        <p>No scheduled pick-ups at this time.</p>
+    {% endfor %}
+</div>
+{% endblock %}
