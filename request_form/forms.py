@@ -25,4 +25,10 @@ class AdoptionForm(forms.ModelForm):
 
         if not self.instance.pk:  # This means the form is for a new instance
             self.fields['date'].initial = timezone.now().date()
-        self.fields['date'].widget.attrs['value'] = timezone.now().date().strftime('%Y-%m-%d')  # Format it correctly for the HTML5 date input
+        self.fields['date'].widget.attrs['value'] = timezone.now().date().strftime('%Y-%m-%d') 
+
+def clean_age(self):
+        age = self.cleaned_data.get('age')
+        if not isinstance(age, int):
+            raise forms.ValidationError("Please enter a valid number for age.")
+        return age
