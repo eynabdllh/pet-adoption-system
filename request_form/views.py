@@ -19,7 +19,6 @@ def adopt_form(request, pet_id):
     if request.method == 'POST':
         form = AdoptionForm(request.POST)
         if form.is_valid():
-            # Temporarily save the data in the session
             request.session['adoption_data'] = {
                 'adopter_id': user_id,
                 'pet_id': pet_id,
@@ -70,7 +69,7 @@ def confirmation(request):
             }
         )
 
-        if not created:  # If the adoption already exists, update its details
+        if not created:  # update record
             adoption.first_name = adoption_data['first_name']
             adoption.last_name = adoption_data['last_name']
             adoption.age = adoption_data['age']
