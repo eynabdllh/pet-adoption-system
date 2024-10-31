@@ -88,7 +88,6 @@ Adopt a Pet
             color: #555;
         }
 
-        /* Day Selector Styling */
         #day {
             width: 25%;
             padding: 8px;
@@ -108,7 +107,6 @@ Adopt a Pet
             color: white;
         }
 
-        /* Month Selector Styling */
         #month {
             width: 25%;
             padding: 8px;
@@ -128,7 +126,6 @@ Adopt a Pet
             color: white;
         }
 
-        /* Year Selector Styling */
         #year {
             width: 25%;
             padding: 8px;
@@ -148,8 +145,6 @@ Adopt a Pet
             color: white;
         }
 
-        /* Time Styling */
-        /* Center align the legend and style the fieldset */
         .pickup-time-fieldset {
             border: 2px solid #ccc;
             border-radius: 8px;
@@ -171,7 +166,6 @@ Adopt a Pet
             margin: 0 auto;
         }
 
-        /* Style for morning and afternoon time slots */
         .time-slot {
             margin-top: 20px;
             margin-bottom: 15px;
@@ -194,7 +188,6 @@ Adopt a Pet
             display: none;
         }
 
-        /* Style labels as buttons */
         .time-options label {
             background-color: #f1f1f1;
             padding: 8px 12px;
@@ -223,7 +216,6 @@ Adopt a Pet
     </style>
 </head>
 <body>
-    <!-- Main Content -->
     <div class="mb-3">
         <a href="{% url 'adopt_form' pet.id %}" class="btn btn-back">Back</a>
     </div>
@@ -232,7 +224,6 @@ Adopt a Pet
         <form action="{% url 'schedule' pet.id %}" method="post">
             {% csrf_token %}
             
-            <!-- Month Selector -->
             <label for="month">Month:</label>
             <select id="month" name="month">
               <option value="January">January</option>
@@ -249,7 +240,6 @@ Adopt a Pet
               <option value="December">December</option>
             </select>
             
-            <!-- Day Selector -->
             <label for="day">Day:</label>
             <select id="day" name="day">
               {% for day in days %}
@@ -257,7 +247,6 @@ Adopt a Pet
               {% endfor %}
             </select>
 
-             <!-- Year Selector -->
             <label for="year">Year:</label>
             <select id="year" name="year">
                 {% for year in years %}
@@ -265,37 +254,32 @@ Adopt a Pet
                 {% endfor %}
             </select>
           
-            <!-- Time Selector with AM and PM -->
             <fieldset class="pickup-time-fieldset">
-    <legend>Pick-up Time</legend>
+                <legend>Pick-up Time</legend>
 
-    <!-- Morning Slot -->
-    <div class="time-slot">
-        <p class="time-slot-title">Morning</p>
-        <div class="time-options">
-            {% for time in morning_hours %}
-                <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
-                <label for="time_{{ time }}">{{ time }}</label>
-            {% endfor %}
-        </div>
-    </div>
+                <div class="time-slot">
+                    <p class="time-slot-title">Morning</p>
+                    <div class="time-options">
+                        {% for time in morning_hours %}
+                        <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                        <label for="time_{{ time }}">{{ time }}</label>
+                    {% endfor %}
+                    </div>
+                </div>
 
-    <!-- Afternoon Slot -->
-    <div class="time-slot">
-        <p class="time-slot-title">Afternoon</p>
-        <div class="time-options">
-            {% for time in afternoon_hours %}
-                <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
-                <label for="time_{{ time }}">{{ time }}</label>
-            {% endfor %}
-        </div>
-    </div>
-</fieldset>
+                <div class="time-slot">
+                    <p class="time-slot-title">Afternoon</p>
+                    <div class="time-options">
+                        {% for time in afternoon_hours %}
+                            <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                            <label for="time_{{ time }}">{{ time }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </fieldset>
         <div class="btnSched">
             <button type="submit" class="btn btn-sched">Schedule Pickup</button>
-        </div>
-            
+        </div>     
         </form>
     </div>
-
 {% endblock %}
