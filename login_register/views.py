@@ -18,6 +18,8 @@ def Login(request):
             if user and check_password(password, user.password):
                 request.session['user_id'] = user.id
                 request.session['user_type'] = 'Admin' if user.isAdmin else 'Adopter'
+                request.session['user_first_name'] = user.first_name
+                request.session['user_last_name'] = user.last_name
 
                 next_url = request.GET.get('next', 'admin_pet_list' if user.isAdmin else 'adopter_pet_list')
                 return redirect(next_url)
