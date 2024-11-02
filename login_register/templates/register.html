@@ -1,42 +1,90 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Log in</title>
-        {%load static%}
-        <link rel="stylesheet" href="{%static 'login.css'%}?{% now 'U'%}">
-    </head>
-    <body>
-        <div>
-            <div id="designBox"></div>
-                <img src="{%static '/images/logo.png'%}" id="logo" style="position: fixed; left: 12%; top: 4%">
+<head>
+    <title>{{ title_text }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div>
+        <div id="designBox"></div>
+        <img src="{% static 'images/logo.png' %}" id="logo" style="position: fixed; left: 8%; top: 4%;">
+        <h1 id="slogan" style="position: fixed; left: 12%; top: 15%; max-width: 100%;"><span style="color: #FF6F61;">Happiness</span><br>starts here</h1>
+        <img src="{% static 'images/login-person.png' %}" id="person" style="position: fixed; left: 14%; top: 45%;">
+    </div>
 
-                <h1 id="slogan" style="position:fixed; left:15%; top:15%; max-width: 100%;"><span style="color: #FF6F61;">Happiness</span><br>starts here</h1>
-
-                <img src="{% static '/images/login-person.png' %}" id="person" style="position: fixed; left:14%; top: 45%">
-            </div>
-
-            <div id="loginBox">
-                <h2 class="center">Login</h2>
-
-                <p class="center">- OR -</p>
-
-                <form method="post">
-                    {%csrf_token%}
-
-                    <label for="Email">Email Address</label> <br>
-                    <input type="text"> <br>
-                    <label for="Password">Password</label> <br>
-                    <input type="password"> <br>
-                    <div class="center">
-                        <input type="submit" value="Log In">
-                    </div>
-                    
-
-                    <p class="center">Don't have an account? <a href="">Sign up</a></p>
-                </form>
-            </div>
-
-            
+    <div id="loginBox">
+        <div class="form-header">
+            <img src="{% static 'images/paw.png' %}" class="paw-icon">
+            <h2 class="center">Create Account</h2>
         </div>
-    </body>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="full_name">Full Name:</label>
+            {{ form.full_name }}
+            {% if form.full_name.errors %}
+                <span class="validation-text">{{ form.full_name.errors.0 }}</span>
+            {% endif %}
+
+            <label for="email">Email:</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <span class="validation-text">{{ form.email.errors.0 }}</span>
+            {% endif %}
+
+            <label for="password">Password:</label>
+            <div class="password-container">
+                {{ form.password }}
+                <i class="fas fa-eye toggle-password"></i>
+            </div>
+            {% if form.password.errors %}
+                <span class="validation-text">{{ form.password.errors.0 }}</span>
+            {% endif %}
+
+            <label for="confirm_password">Confirm Password:</label>
+            <div class="password-container">
+                {{ form.confirm_password }}
+                <i class="fas fa-eye toggle-password"></i>
+            </div>
+            {% if form.confirm_password.errors %}
+                <span class="validation-text">{{ form.confirm_password.errors.0 }}</span>
+            {% endif %}
+
+            {% if validation %}
+                <span class="validation-text">{{ validation }}</span>
+            {% endif %}
+
+            <div class="center">
+                <input type="submit" value="Sign up">
+            </div>
+
+            <p class="center">
+                Already have an account? <a href="{% url 'login' %}">Log in</a>
+            </p>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".toggle-password").forEach(function(element) {
+                element.addEventListener("click", function() {
+                    const passwordField = element.previousElementSibling;
+                    if (passwordField.type === "password") {
+                        passwordField.type = "text";
+                        element.classList.remove("fa-eye");
+                        element.classList.add("fa-eye-slash");
+                    } else {
+                        passwordField.type = "password";
+                        element.classList.remove("fa-eye-slash");
+                        element.classList.add("fa-eye");
+                    }
+                });
+            });
+        });
+    </script>
+    
+</body>
 </html>
