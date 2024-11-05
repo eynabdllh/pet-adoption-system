@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from pet_listing.models import Pet
-from .models import Schedule 
+from .models import Schedule  
 from django.contrib.auth.decorators import login_required
 from login_register.models import User  
 from datetime import datetime
@@ -9,21 +9,22 @@ from request_form.models import Adoption
 
 @login_required
 def schedule(request, pet_id):
-    user_id = request.session.get('user_id')  # Fetch user_id from session for consistency
+    user_id = request.session.get('user_id')  
     if not user_id:
         return redirect('login')  
 
     pet = get_object_or_404(Pet, id=pet_id)
-    user = get_object_or_404(User, id=user_id)  
+    user = get_object_or_404(User, id=user_id) 
 
     if request.method == 'POST':
-        print("Received POST data:", request.POST) 
+        print("Received POST data:", request.POST)  
         month = request.POST.get('month')
         day = request.POST.get('day')
         time = request.POST.get('time')
         year = request.POST.get('year')
 
         if month and day and time and year:
+
             latest_adoption_form = Adoption.objects.filter(adopter=user, pet=pet).last()
 
             if latest_adoption_form:
@@ -57,7 +58,8 @@ def schedule(request, pet_id):
     })
 
 def success(request):
-    return render(request, 'success.html')  
+    return render(request, 'success.html')  # Render a success template or redirect as necessary
+
 
 def pickup_list(request):
     user_id = request.session.get('user_id')
