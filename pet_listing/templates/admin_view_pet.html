@@ -7,7 +7,6 @@ Pet Management
 
 {% block content %}
 <style>
-    /* Card Styling */
     .pet-card {
         border-radius: 12px;
         background-color: #ffffff;
@@ -16,7 +15,6 @@ Pet Management
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    /* Back Button */
     .btn-back {
         background-color: #FF6F61;
         border: none;
@@ -31,7 +29,6 @@ Pet Management
         background-color: #e65c51;
     }
 
-    /* Adopt Button */
     .btn-adopt {
         background-color: #1EBE91;
         border: none;
@@ -47,7 +44,6 @@ Pet Management
         background-color: #16a379;
     }
 
-    /* Main Image Styling */
     .main-image {
         height: 340px;
         width: 100%;
@@ -55,7 +51,6 @@ Pet Management
         border-radius: 10px;
     }
 
-    /* Image Collage */
     .image-collage {
         display: flex;
         gap: 10px;
@@ -69,7 +64,6 @@ Pet Management
         border-radius: 10px;
     }
 
-    /* Pet Information */
     .pet-name {
         font-size: 40px;
         font-weight: 600;
@@ -87,7 +81,6 @@ Pet Management
         margin-right: 10px;
     }
 
-    /* Description */
     .description-title {
         font-size: 18px;
         margin-top: 20px;
@@ -107,7 +100,6 @@ Pet Management
 </style>
 
 <div class="container-fluid mt-0">
-    <!-- Back Button -->
     <div class="mb-3">
         <a href="{% url 'admin_pet_list' %}" class="btn btn-back">Back</a>
     </div>
@@ -133,19 +125,16 @@ Pet Management
             <div class="col-md-8">
                 <h3 class="pet-name">{{ pet.name }}</h3>
             </div>
-            <div class="col-md-4 text-md-right text-center">
-                <button class="btn btn-adopt">Adopt Pet</button>
-            </div>
         </div>
 
         <!-- Pet Information and Description -->
         <div class="row">
             <div class="col-md-6">
                 <ul class="list-unstyled pet-info">
-                    <li><img src="{% static 'images/gender.png' %}" alt="Adopt" class="list-logo"><strong>Gender:</strong> {{ pet.gender }}</li>
+                    <li><img src="{% static 'images/gender.png' %}" alt="Adopt" class="list-logo"><strong>Gender:</strong> {{ pet.gender|capfirst }}</li>
                     <li><img src="{% static 'images/heart.png' %}" alt="Adopt" class="list-logo"><strong>Breed:</strong> {{ pet.breed }}</li>
                     <li><img src="{% static 'images/age.png' %}" alt="Adopt" class="list-logo"><strong>Age:</strong> {{ pet.age }} years</li>
-                    <li><img src="{% static 'images/Type.png' %}" alt="Adopt" class="list-logo"><strong>Type:</strong> {{ pet.pet_type }}</li>
+                    <li><img src="{% static 'images/Type.png' %}" alt="Adopt" class="list-logo"><strong>Type:</strong> {{ pet.pet_type|capfirst }}</li>
                     <li><img src="{% static 'images/pesosymbol.png' %}" alt="Adopt" class="list-logo"><strong>Adoption Fee:</strong> P{{ pet.adoption_fee }}</li>
                 </ul>
             </div>
