@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
 from .forms import LoginForm, RegisterForm
 from .models import User
+from profile_management.models import Profile
 
 def Login(request):
     validation_error = None
@@ -46,8 +47,8 @@ def Register(request):
         form = RegisterForm(request.POST)
         
         if form.is_valid():
-            user = form.save() 
-            return redirect('login')  
+            form.save()
+            return redirect('login') 
         else:
             validation_error = "Please correct the errors above."
     else:
@@ -62,6 +63,7 @@ def Register(request):
         'redirect_title': 'Log in',
         'redirect_link': 'login'
     })
+
 
 def logout(request):
     if 'user_id' in request.session:
