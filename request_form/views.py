@@ -3,21 +3,28 @@ from .forms import AdoptionForm
 from pet_listing.models import Pet
 from django.contrib.auth.decorators import login_required
 from login_register.models import User
+from profile_management.models import Profile  
 from django.utils import timezone
-from .models import Adoption 
+from .models import Adoption
 
-@login_required 
+@login_required
 def adopt_form(request, pet_id):
-    user_id = request.session.get('user_id') 
+    user_id = request.session.get('user_id')
     pet = get_object_or_404(Pet, id=pet_id)
-
+ 
     if not user_id:
-        return redirect('login')  
+        return redirect('login')
 
-    user = User.objects.get(id=user_id)  
+    user = User.objects.get(id=user_id)
+
+    # Attempt to retrieve the user's Profile data
+    try:
+        profile = Profile.objects.get(user=user)
+    except Profile.DoesNotExist:
+        profile = None
 
     if request.method == 'POST':
-        form = AdoptionForm(request.POST)
+        form = AdoptionForm(request.POST, user=user, profile=profile)
         if form.is_valid():
             request.session['adoption_data'] = {
                 'adopter_id': user_id,
@@ -25,23 +32,36 @@ def adopt_form(request, pet_id):
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'age': form.cleaned_data['age'],
-                'contact_number': form.cleaned_data['contact_number'],
                 'address': form.cleaned_data['address'],
+                'contact_number': form.cleaned_data['contact_number'],
                 'email': user.email,
-                'date': form.cleaned_data['date'].strftime('%Y-%m-%d'),  
+                'date': form.cleaned_data['date'].strftime('%Y-%m-%d'),
             }
-            return redirect('confirmation')  
-        else:
-            print(form.errors) 
+            return redirect('confirmation')
     else:
-        form = AdoptionForm() 
+        # Pass initial data explicitly
+        initial_data = {
+            'adopter_id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+        }
 
-    today = timezone.localdate()  
+        if profile:
+            initial_data.update({
+                'age': profile.age,
+                'address': profile.address,
+                'contact_number': profile.phone_number,
+            })
+
+        form = AdoptionForm(initial=initial_data, user=user, profile=profile)
+
+    today = timezone.localdate()
     return render(request, 'adopt_form.html', {
         'form': form,
         'pet': pet,
         'today': today.isoformat(),
-        'user': user  
+        'user': user,
     })
 
 def confirmation(request):
@@ -51,12 +71,14 @@ def confirmation(request):
         return redirect('adopt_form')  
 
     pet = get_object_or_404(Pet, id=adoption_data['pet_id'])
-    user = User.objects.get(id=adoption_data['adopter_id'])
+
+    # Get or create the Profile instance based on the adopter_id (user ID)
+    user = get_object_or_404(User, id=adoption_data['adopter_id'])
+    profile = Profile.objects.get(user=user)
 
     if request.method == 'POST': 
-        # Check if there's already an adoption record
         adoption, created = Adoption.objects.get_or_create(
-            adopter=user,
+            adopter=profile,  # Make sure to use the profile instance here
             pet=pet,
             defaults={
                 'first_name': adoption_data['first_name'],
@@ -69,7 +91,7 @@ def confirmation(request):
             }
         )
 
-        if not created:  # update record
+        if not created:  # If adoption record exists, update the record
             adoption.first_name = adoption_data['first_name']
             adoption.last_name = adoption_data['last_name']
             adoption.age = adoption_data['age']
@@ -79,6 +101,7 @@ def confirmation(request):
             adoption.date = adoption_data['date']
             adoption.save()  
 
+        # Clear session data after successful save
         del request.session['adoption_data'] 
         return redirect('schedule', pet_id=pet.id)  
 
