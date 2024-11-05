@@ -24,6 +24,8 @@ urlpatterns = [
     path('', include('login_register.urls')),
     path('pets/', include('pet_listing.urls')),
     path('profile/', include('profile_management.urls')),
+    path('requestform/', include('request_form.urls')),
+    path('scheduleform/', include('schedule_form.urls')),
 ]
 
 if settings.DEBUG:

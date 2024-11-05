@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'login_register',
     'pet_listing',
     'profile_management',
+    'request_form',
+    'schedule_form',
 ]
 
 MIDDLEWARE = [
@@ -129,3 +131,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/'
