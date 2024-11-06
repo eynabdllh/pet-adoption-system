@@ -1,0 +1,190 @@
+{% extends 'base_adopter.html' %}
+{% load static %}
+
+{% block page_title %}
+My Adoption
+{% endblock %}
+
+{% block content %}
+<style>
+        /* Tab Bar Style */
+    .tab-bar {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 20px;
+        position: relative;
+        border-bottom: 2px solid #e0e0e0;
+        justify-content: center ;
+    }
+    .tab-button {
+        position: relative;
+        font-size: 25px;
+        color: #555;
+        cursor: pointer;
+        padding-bottom: 8px;
+    }
+    .tab-button.active {
+        color: #FF6F61;
+        font-weight: bold;
+    }
+    .tab-button.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background-color: #FF6F61;
+        border-radius: 2px;
+    }
+
+    .content-section {
+        display: none;
+    }
+    .content-section.active {
+        display: block;
+    }
+    .container {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .image-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 20px;
+    }
+    .profile-img, .pet-image {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        margin: 10px 0px 0px 40px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .details-container {
+        flex: 1;
+        margin-left: 40px;
+    }
+    h4{
+        margin-left: 50px;
+        color: #4A4A4A;
+        font-size: 30px;
+    }
+    p strong{
+        color:#4A4A4A;
+    }
+    p{
+        color:#757575;
+        font-weight: bold;
+        font-size: 18px;
+    }
+    .heart{
+        width: 80px; 
+        height: 80px;
+        z-index: 10;
+        margin-top: -30px;
+        margin-bottom: -40px;
+        margin-left: 40px;
+    }
+</style>
+
+<div class="card pet-card shadow-lg p-4">
+    <h4>View Details</h4>
+    <div class="container">
+        <!-- Static Image Container -->
+        <div class="image-container">
+            <img src="{{ profile.profile_image.url }}" alt="Adopter Profile Image" class="profile-img">
+            <img src="{% static 'images/view_heart.png' %}" alt="Heart Icon" class="heart">
+            <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="pet-image">
+            
+        </div>
+
+        <!-- Details Container with Tabs -->
+        <div class="details-container">
+            <!-- Tabs for switching between Pet info and Adopter info -->
+             <div class="tab-bar">
+                <span class="tab-button active" onclick="showSection('pet-info', this)">Pet Info</span>
+                <span class="tab-button" onclick="showSection('adopter-info', this)">Adopter Info</span>
+            </div>
+
+            <!-- Pet info Section -->
+            <div id="pet-info" class="content-section active">
+                <div class="pet-details">
+                    <p>
+                        <img src="{% static 'images/gender_2.png' %}" alt="Gender Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Gender:</strong> &nbsp; &nbsp; &nbsp;{{ pet.gender }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/heart_2.png' %}" alt="Heart Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Breed:</strong> &nbsp; &nbsp; &nbsp;{{ pet.breed }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/age _2.png' %}" alt="Age Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Age:</strong> &nbsp; &nbsp; &nbsp;{{ pet.age }} years old
+                    </p>
+                    <p>
+                        <img src="{% static 'images/paw_2.png' %}" alt="Paw Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Type:</strong> &nbsp; &nbsp; &nbsp;{{ pet.pet_type }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/Peso_Symbol.png' %}" alt="Peso Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Adoption Fee:</strong> &nbsp; &nbsp; &nbsp;{{ pet.adoption_fee }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/payment.png' %}" alt="Payment Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Payment Mode:</strong> &nbsp; &nbsp; &nbsp;Onsite Payment
+                    </p>
+                </div>
+            </div>
+
+            <!-- Adopter info Section {{ pet.payment_mode }}-->
+            <div id="adopter-info" class="content-section">
+                <p>
+                    <img src="{% static 'images/name.png' %}" alt="Name Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                    <strong>Name:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.first_name }} {{ profile.user.last_name }}
+                </p>
+                <p>
+                    <img src="{% static 'images/age _2.png' %}" alt="Age Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                    <strong>Age:</strong> &nbsp; &nbsp; &nbsp;{{ profile.age }}
+                </p>
+                <p>
+                    <img src="{% static 'images/phone.png' %}" alt="Phone Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                    <strong>Contact No.:</strong> &nbsp; &nbsp; &nbsp;{{ profile.phone_number }}
+                </p>
+                <p>
+                    <img src="{% static 'images/address.png' %}" alt="Address Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                    <strong>Address:</strong> &nbsp; &nbsp; &nbsp;{{ profile.address }}
+                </p>
+                <p>
+                    <img src="{% static 'images/email.png' %}" alt="Email Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                    <strong>Email:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.email }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to handle tab switching
+    function showSection(sectionId) {
+        // Remove active class from all tab buttons
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Show the selected section
+        document.getElementById(sectionId).classList.add('active');
+        
+        // Add active class to the clicked tab button
+        event.target.classList.add('active');
+    }
+</script>
+{% endblock %}
