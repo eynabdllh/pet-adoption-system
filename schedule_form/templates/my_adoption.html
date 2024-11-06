@@ -8,10 +8,9 @@ My Adoption
 {% block content %}
 <style>
     .tab-button.active {
-        background-color: #FF6F61; 
+        background-color: #FF6F61;
         color: white;
-        outline: none; 
-        box-shadow: none; 
+        outline: none;
     }
     .tab-button {
         border-radius: 5px;
@@ -49,31 +48,21 @@ My Adoption
         font-size: 30px;
     }
     .pickup-details p, .adopted-details p {
-        color: #FF6F61; 
+        color: #FF6F61;
         margin: 4px 0;
     }
-    .date-time {
-        display: flex;
-        justify-content: flex-start; 
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    .date-time p:first-child {
-        margin-right: 80px; 
-    }
-    .no_adoptions{
+    .no_adoptions {
         font-size: 40px;
-        color:#333;
+        color: #333;
         font-style: italic;
         font-weight: bolder;
-        align-self: center;
-        display: flex;
-        justify-content: center;
+        text-align: center;
     }
     .button-container {
         display: flex;
-        gap: 10px;
-        margin-top: 10px;
+        flex-direction: column; 
+        align-items: flex-end; 
+        gap: 10px; 
     }
     .btn {
         padding: 8px 16px;
@@ -84,10 +73,23 @@ My Adoption
         display: inline-block;
     }
     .btn-view-details {
-        background-color: #20c997; /* Green color */
+        background-color: #20c997;
+        width: 150px;
     }
     .btn-cancel-request {
-        background-color: #ffc107; /* Yellow color */
+        background-color: #ffc107;
+        width: 150px;
+    }
+    .pickup-details-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        width: 100%; 
+    }
+    .pickup-details {
+        flex: 1;
+        margin-right: auto; 
     }
 </style>
 
@@ -96,16 +98,13 @@ My Adoption
     <button class="tab-button ms-3" onclick="showTab('requested')">Requested</button>
 </div>
 
-<!-- Adopted Tab Content -->
 <div id="adopted" class="tab-content adopted-list">
     {% for pet in adopted_pets %}
         <div class="adopted-card">
             <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="pet-image">
-            
             <div class="adopted-details">
                 <h2>{{ pet.name }}</h2>
                 <p>{{ pet.pet_type }} | {{ pet.breed }}</p>
-
                 <p>{{ pet.description }}</p>
             </div>
         </div>
@@ -113,36 +112,32 @@ My Adoption
         <p class="no_adoptions">You currently have no adoptions.</p>
     {% endfor %}
 </div>
-
-<!-- Requested Tab Content (Pickups) -->
 <div id="requested" class="tab-content pickup-list" style="display: none;">
     {% for pickup in pickups %}
         <div class="pickup-card">
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
-            
-            <div class="pickup-details">
-                <h2>{{ pickup.pet.name }}</h2>
-                <p class="pickup-details">{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
-                <p style="color: #333;">{{ pickup.pet.description }}</p>
-                
-                <!-- Button Container -->
+            <div class="pickup-details-container">
+                <div class="pickup-details">
+                    <h2>{{ pickup.pet.name }}</h2>
+                    <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
+                    <p style="color: #333;">{{ pickup.pet.description }}</p>
+                </div>
                 <div class="button-container">
                     <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
+                    <a href="#" class="btn btn-cancel-request">Cancel Request</a>
                 </div>
             </div>
         </div>
     {% empty %}
-        <p>No scheduled pick-ups at this time.</p>
+        <p class="no_adoptions">No scheduled pick-ups at this time.</p>
     {% endfor %}
 </div>
-
 <script>
     function showTab(tabName) {
         document.getElementById('adopted').style.display = tabName === 'adopted' ? 'block' : 'none';
         document.getElementById('requested').style.display = tabName === 'requested' ? 'block' : 'none';
 
-        let buttons = document.querySelectorAll('.tab-button');
-        buttons.forEach(button => button.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
         document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
     }
 </script>
