@@ -7,7 +7,6 @@ My Adoption
 
 {% block content %}
 <style>
-        /* Tab Bar Style */
     .tab-bar {
         display: flex;
         gap: 40px;
@@ -37,13 +36,8 @@ My Adoption
         background-color: #FF6F61;
         border-radius: 2px;
     }
-
-    .content-section {
-        display: none;
-    }
-    .content-section.active {
-        display: block;
-    }
+    .content-section { display: none; }
+    .content-section.active { display: block; }
     .container {
         display: flex;
         gap: 20px;
@@ -73,9 +67,7 @@ My Adoption
         color: #4A4A4A;
         font-size: 30px;
     }
-    p strong{
-        color:#4A4A4A;
-    }
+    p strong{ color:#4A4A4A; }
     p{
         color:#757575;
         font-weight: bold;
@@ -89,7 +81,20 @@ My Adoption
         margin-bottom: -40px;
         margin-left: 40px;
     }
+    .btn-back {
+        background-color: #FF6F61;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        width: 130px;
+    }
+    .btn-back:hover { background-color: #e65c51; }
 </style>
+<div class="mb-3">
+    <a href="{% url 'my_adoption' %}" class="btn btn-back">Back</a>
+</div>
 
 <div class="card pet-card shadow-lg p-4">
     <h4>View Details</h4>
@@ -102,15 +107,12 @@ My Adoption
             
         </div>
 
-        <!-- Details Container with Tabs -->
         <div class="details-container">
-            <!-- Tabs for switching between Pet info and Adopter info -->
              <div class="tab-bar">
                 <span class="tab-button active" onclick="showSection('pet-info', this)">Pet Info</span>
                 <span class="tab-button" onclick="showSection('adopter-info', this)">Adopter Info</span>
             </div>
 
-            <!-- Pet info Section -->
             <div id="pet-info" class="content-section active">
                 <div class="pet-details">
                     <p>
@@ -140,7 +142,7 @@ My Adoption
                 </div>
             </div>
 
-            <!-- Adopter info Section {{ pet.payment_mode }}-->
+            <!-- {{ pet.payment_mode }}-->
             <div id="adopter-info" class="content-section">
                 <p>
                     <img src="{% static 'images/name.png' %}" alt="Name Icon" style="width: 25px; height: 25px; margin-right: 30px;">
@@ -168,22 +170,14 @@ My Adoption
 </div>
 
 <script>
-    // Function to handle tab switching
     function showSection(sectionId) {
-        // Remove active class from all tab buttons
         document.querySelectorAll('.tab-button').forEach(button => {
             button.classList.remove('active');
         });
-
-        // Hide all sections
         document.querySelectorAll('.content-section').forEach(section => {
             section.classList.remove('active');
         });
-
-        // Show the selected section
         document.getElementById(sectionId).classList.add('active');
-        
-        // Add active class to the clicked tab button
         event.target.classList.add('active');
     }
 </script>
