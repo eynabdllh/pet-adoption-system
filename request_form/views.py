@@ -24,7 +24,8 @@ def adopt_form(request, pet_id):
         profile = None
 
     if request.method == 'POST':
-        form = AdoptionForm(request.POST, user=user, profile=profile)
+        # Pass only `user` as the keyword argument to avoid the TypeError
+        form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
             request.session['adoption_data'] = {
                 'adopter_id': user_id,
@@ -54,7 +55,8 @@ def adopt_form(request, pet_id):
                 'contact_number': profile.phone_number,
             })
 
-        form = AdoptionForm(initial=initial_data, user=user, profile=profile)
+        # Pass only `user` as a keyword argument
+        form = AdoptionForm(initial=initial_data, user=user)
 
     today = timezone.localdate()
     return render(request, 'adopt_form.html', {
