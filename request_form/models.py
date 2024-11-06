@@ -16,4 +16,4 @@ class Adoption(models.Model):
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} adopting {self.pet.name}"
+        return f"{self.first_name} {self.last_name} wants to adopt {self.pet.name}"
