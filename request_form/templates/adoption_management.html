@@ -1,0 +1,407 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Adoption Management{% endblock %}
+
+{% block content %}
+{% load static %}
+<style>
+    .table-card {
+        border-radius: 0 0 12px 12px;
+        background-color: #ffffff;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        height: 60vh; 
+        overflow-y: auto;
+    }
+
+    .img-pet {
+        width: 50px; 
+        height: 50px; 
+        object-fit: cover; 
+        margin-right: 10px;
+        border-radius: 14px;
+    }
+
+    .navtab {
+        color: #FF6F61 ;
+    }
+
+    ul.nav-tabs .nav-link {
+        color: #616161 !important; 
+    }
+
+    ul.nav-tabs .nav-link.active {
+        color: #ff5733 !important; 
+        font-weight: 700;
+    }   
+
+    .btn-color{
+        background-color: #FF6F61 ;
+        color: #ffffff;
+    }
+
+    .form-check-input {
+        width: 6.25rem; 
+        height: 1.25rem;
+        margin-top: 0.2rem; 
+    }
+
+</style>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <button class="btn btn-color" data-toggle="modal" data-target="#addPetModal">
+            <i class="fas fa-plus"></i> Add new pet
+        </button>
+
+         <!-- Add Pet Modal -->
+         <div class="modal fade" id="addPetModal" tabindex="-1" role="dialog" aria-labelledby="addPetModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addPetModalLabel">Add Pet</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'admin_add_pet' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label for="pet_name">Pet Name</label>
+                                <input type="text" name="name" class="form-control" id="pet_name" required>
+                                {% if pet_form.name.errors %}
+                                    <p class="text-danger">{{ pet_form.name.errors }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_age">Age</label>
+                                <input type="number" name="age" class="form-control" id="pet_age" min="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_gender">Gender</label>
+                                <select name="gender" class="form-control" id="pet_gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_breed">Breed</label>
+                                <input type="text" name="breed" class="form-control" id="pet_breed" required>
+                            </div>
+        
+                            <div class="form-group">
+                                <label for="pet_type">Type of Species</label>
+                                <select name="pet_type" class="form-control" id="pet_type" required>
+                                    <option value="">Select Species</option>
+                                    <option value="dog">Dog</option>
+                                    <option value="cat">Cat</option>
+                                    <option value="fish">Fish</option>
+                                    <option value="bird">Bird</option>
+                                    <option value="hamster">Hamster</option>
+                                    <option value="rabbit">Rabbit</option>
+                                    <option value="guinea_pig">Guinea Pig</option>
+                                    <option value="turtle">Turtle</option>
+                                    <option value="lizard">Lizard</option>
+                                    <option value="snake">Snake</option>
+                                    <option value="frog">Frog</option>
+                                    <option value="parrot">Parrot</option>
+                                    <option value="chinchilla">Chinchilla</option>
+                                    <option value="ferret">Ferret</option>
+                                    <option value="hedgehog">Hedgehog</option>
+                                    <option value="horse">Horse</option>
+                                    <option value="goat">Goat</option>
+                                </select>
+                            </div>
+        
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea name="description" class="form-control" id="description" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="adoption_fee">Adoption Fee (₱)</label>
+                                <input type="number" name="adoption_fee" class="form-control" id="adoption_fee" step="0.01" required>
+                            </div>
+
+                            <div class="form-group form-check">
+                                <label class="form-check-label" for="is_available">Is Available</label>
+                                <input type="checkbox" name="is_available" class="form-check-input" id="is_available">
+                            </div>
+ 
+                            <div class="form-group">
+                                <label for="time_in_shelter">Time in Shelter</label>
+                                <input type="date" name="time_in_shelter" class="form-control" id="time_in_shelter" required>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="pet_images">Upload Images</label>
+                                <input type="file" name="images" id="pet_images" class="form-control" accept="image/*" multiple required>
+                            </div>
+        
+                            <div class="modal-footer">
+                                <a href="{% url 'admin_pet_list' %}" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-color">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+      
+        <div class="d-flex mb-0">
+            <form method="GET" action="{% url 'admin_pet_list' %}" class="mr-2 d-flex">
+                <!-- Search Bar -->
+                <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
+
+                <!-- Filter Dropdown faor Pet Type -->
+                <label for="filterPetType" class="sr-only">Filter by</label>
+                <select name="pet_type" id="filterPetType" class="form-control form-control-sm ml-2">
+                    <option value="">Species</option>
+                    <option value="dog" {% if pet_type == 'Dog' %}selected{% endif %}>Dog</option>
+                    <option value="cat" {% if pet_type == 'Cat' %}selected{% endif %}>Cat</option>
+                    <option value="fish" {% if pet_type == 'Fish' %}selected{% endif %}>Fish</option>
+                    <option value="bird" {% if pet_type == 'Bird' %}selected{% endif %}>Bird</option>
+                    <option value="hamster" {% if pet_type == 'Hamster' %}selected{% endif %}>Hamster</option>
+                    <option value="rabbit" {% if pet_type == 'Rabbit' %}selected{% endif %}>Rabbit</option>
+                    <option value="guinea_pig" {% if pet_type == 'Guinea Pig' %}selected{% endif %}>Guinea Pig</option>
+                    <option value="turtle" {% if pet_type == 'Turtle' %}selected{% endif %}>Turtle</option>
+                    <option value="lizard" {% if pet_type == 'Lizard' %}selected{% endif %}>Lizard</option>
+                    <option value="snake" {% if pet_type == 'Snake' %}selected{% endif %}>Snake</option>
+                    <option value="frog" {% if pet_type == 'Frog' %}selected{% endif %}>Frog</option>
+                    <option value="parrot" {% if pet_type == 'Parrot' %}selected{% endif %}>Parrot</option>
+                    <option value="chinchilla" {% if pet_type == 'Chinchilla' %}selected{% endif %}>Chinchilla</option>
+                    <option value="ferret" {% if pet_type == 'Ferret' %}selected{% endif %}>Ferret</option>
+                    <option value="hedgehog" {% if pet_type == 'Hedgehog' %}selected{% endif %}>Hedgehog</option>
+                    <option value="horse" {% if pet_type == 'Horse' %}selected{% endif %}>Horse</option>
+                    <option value="goat" {% if pet_type == 'Goat' %}selected{% endif %}>Goat</option>
+
+                </select>
+
+                <!-- Filter Dropdown for Gender -->
+                <label for="filterGender" class="sr-only">Filter by</label>
+                <select name="gender" id="filterGender" class="form-control form-control-sm ml-2">
+                    <option value="">Gender</option>
+                    <option value="male" {% if gender == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if gender == 'female' %}selected{% endif %}>Female</option>
+                    <option value="none" {% if gender == 'none' %}selected{% endif %}>None</option>
+                </select>
+
+                <!-- Sort Dropdown -->
+                <label for="sortBy" class="sr-only">Sort by</label>
+                <select name="sort_by" id="sortBy" class="form-control form-control-sm ml-2">
+                    <option value="">Sort by</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                    <option value="id" {% if sort_by == 'id' %}selected{% endif %}>ID</option>
+                    <option value="age" {% if sort_by == 'age' %}selected{% endif %}>Age</option>
+                    <option value="time_in_shelter" {% if sort_by == 'time_in_shelter' %}selected{% endif %}>Time in Shelter</option>
+                </select>
+                <button type="submit" class="btn btn-color btn-sm ml-2">Apply</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs navtab">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#pending">Pending</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#approved">Approved</a>
+        </li>
+    </ul>
+
+    <div class="card table-card shadow-lg p-4">
+    <div class="tab-content mt-3">
+        <!-- Available Pets -->
+        <div id="pending" class="tab-pane fade show active">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pet</th>
+                            <th>Species</th>
+                            <th>Adopter</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pet in pets %}
+                        {% if pet.is_available %}
+                        <tr>
+                            <td>{{ pet.id }}</td>
+                            <td>
+                                {% if pet.main_image %}
+                                    <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
+                                {% else %}
+                                    <img src="{% static 'images/default_image.jpg' %}" alt="No Image Available" class="img-pet">
+                                {% endif %}
+                                {{ pet.name }}
+                            </td>
+                            
+                            <td>{{ pet.pet_type|capfirst }}</td>
+                            <td>{{ user.first_name}} {{user.last_name }}</td>
+                            <td>{{ pet.age }}</td>
+                            <td>{{ pet.gender|capfirst }}</td>
+                            <td>₱{{ pet.adoption_fee }}</td>
+                            <td>{{ pet.time_in_shelter }}</td>
+                            <td><span class="badge badge-success">Available</span></td>
+                            <td>
+                                <a href="{% url 'admin_view_pet' pet.id %}" class="text-secondary"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="text-secondary" data-toggle="modal" data-target="#updatePetModal{{ pet.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_delete_pet' pet.id %}" class="text-secondary"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Adopted Pets -->
+        <div id="approved" class="tab-pane fade">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pet</th>
+                            <th>Species</th>
+                            <th>Adopter</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Adoption Fee</th>
+                            <th>Time in Shelter</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pet in pets %}
+                        {% if not pet.is_available %}
+                        <tr>
+                            <td>{{ pet.id }}</td>
+                            <td>
+                                {% if pet.main_image %}
+                                    <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
+                                {% endif %}
+                                {{ pet.name }}
+                            </td>
+                            
+                            <td>{{ pet.pet_type|capfirst }}</td>
+                            <td>{{ pet.breed }}</td>
+                            <td>{{ pet.age }}</td>
+                            <td>{{ pet.gender|capfirst }}</td>
+                            <td>₱{{ pet.adoption_fee }}</td>
+                            <td>{{ pet.time_in_shelter }}</td>
+                            <td><span class="badge badge-secondary">Adopted</span></td>
+                            <td>
+                                <a href="{% url 'admin_view_pet' pet.id %}" class="text-secondary"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="text-secondary" data-toggle="modal" data-target="#updatePetModal{{ pet.id }}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_delete_pet' pet.id %}" class="text-secondary"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Update Pet Modal -->
+        {% for pet in pets %}   
+        <div class="modal fade" id="updatePetModal{{ pet.id }}" tabindex="-1" role="dialog" aria-labelledby="updatePetModalLabel{{ pet.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updatePetModalLabel{{ pet.id }}">Update Pet</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'admin_edit_pet' pet.id %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label for="pet_name">Pet Name</label>
+                                <input type="text" name="name" class="form-control" id="pet_name_{{ pet.id }}" value="{{ pet.name }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_age">Age</label>
+                                <input type="number" name="age" class="form-control" id="pet_age_{{ pet.id }}" value="{{ pet.age }}" min="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_gender">Gender</label>
+                                <select name="gender" class="form-control" id="pet_gender_{{ pet.id }}" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male" {% if pet.gender == 'male' %} selected {% endif %}>Male</option>
+                                    <option value="female" {% if pet.gender == 'female' %} selected {% endif %}>Female</option>
+                                </select>                        
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_breed">Breed</label>
+                                <input type="text" name="breed" class="form-control" id="pet_breed_{{ pet.id }}" value="{{ pet.breed }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_type">Type of Species</label>
+                                <select name="pet_type" class="form-control" id="pet_type_{{ pet.id }}" required>
+                                    <option value="">Select Species</option>
+                                    {% for type, label in pet.PET_TYPE_CHOICES %}
+                                        <option value="{{ type }}" {% if pet.pet_type == type %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea name="description" class="form-control" id="description" rows="3">{{ pet.description }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="adoption_fee">Adoption Fee (₱)</label>
+                                <input type="number" name="adoption_fee" class="form-control" id="adoption_fee" value="{{ pet.adoption_fee }}" step="0.01" required>
+                            </div>
+
+                            <div class="form-group form-check">
+                                <label class="form-check-label" for="is_available">Is Available</label>
+                                <input type="checkbox" name="is_available" class="form-check-input" id="is_available" {% if pet.is_available %} checked {% endif %}>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="time_in_shelter">Time in Shelter</label>
+                                <input type="date" name="time_in_shelter" class="form-control" id="time_in_shelter" value="{{ pet.time_in_shelter|date:'Y-m-d' }}" required>
+                            </div>
+        
+                            <div class="modal-footer">
+                                <a href="{% url 'admin_pet_list' %}" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-color">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+</div>
+
+{% endblock %}
