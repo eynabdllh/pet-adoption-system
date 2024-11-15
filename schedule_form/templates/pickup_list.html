@@ -63,7 +63,7 @@ Pick Up List
             
             <div class="pickup-details">
                 <h2>{{ pickup.pet.name }}</h2>
-                <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
+                <p>{{ pickup.pet.pet_type|capfirst }} | {{ pickup.pet.breed }}</p>
 
                 <div class="date-time">
                     <p><strong>Scheduled Pick-Up Date:</strong> {{ pickup.month }} {{ pickup.day }}, {{ pickup.year }}</p>

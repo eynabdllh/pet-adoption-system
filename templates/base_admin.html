@@ -210,7 +210,7 @@
                 <img src="{% static 'images/adoption.png' %}" alt="Pet Management" class="icon-img">
                 Pet Management
             </a>
-            <a href="#">
+            <a href="{% url 'adoption_management' %}" class="{% if request.resolver_match.url_name == 'adoption_management' %} active {% endif %}">
                 <img src="{% static 'images/home.png' %}" alt="Adoption Management" class="icon-img">
                 Adoption Management
             </a>
