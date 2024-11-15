@@ -119,7 +119,7 @@ My Adoption
             <div class="pickup-details-container">
                 <div class="pickup-details">
                     <h2>{{ pickup.pet.name }}</h2>
-                    <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
+                    <p>{{ pickup.pet.pet_type|capfirst }} | {{ pickup.pet.breed }}</p>
                     <p style="color: #333;">{{ pickup.pet.description }}</p>
                 </div>
                 <div class="button-container">
