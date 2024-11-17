@@ -1,0 +1,98 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Adoption Management{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<style>
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: space-between;
+}
+
+.profile-section img {
+    width: 100px;
+    height: 100px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    margin-left: 20px;
+}
+
+.label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.field {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.approve-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #FF6F61;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
+<!--Add Back Button pa and utrohon ang design, Not functional yet-->
+<div class="container">
+    <h2 class="header"> <strong>Adopter Application</strong>  </h2>
+
+    <div class="profile-section">
+        <div>
+            <p><strong>Adopter ID:</strong> {{ adoption.adopter_id }}</p>
+            <p><strong>Pet:</strong> {{ adoption.pet.name }}</p>
+        </div>
+        <div>
+            {% if profile.profile_image %}
+                <img src="{{ profile.profile_image.url }}" alt="Adopter's Picture">
+            {% else %}
+                <img src="{% static 'images/default_profile.jpg' %}" alt="Default Picture">
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="field"><span class="label">Name:</span> {{ adoption.first_name }} {{ adoption.last_name }}</div>
+    <div class="field"><span class="label">Age:</span> {{ adoption.age }}</div>
+    <div class="field"><span class="label">Contact No:</span> {{ adoption.contact_number }}</div>
+    <div class="field"><span class="label">Address:</span> {{ adoption.address }}</div>
+    <div class="field"><span class="label">Email:</span> {{ adoption.email }}</div>
+    <div class="field"><span class="label">Date of Request:</span> {{ adoption.date }}</div>
+
+    <div class="approve-button">
+        <button type="button">Approve</button>
+    </div>
+</div>
+
+{% endblock %}

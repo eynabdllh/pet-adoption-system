@@ -42,6 +42,12 @@ def adopt_form(request, pet_id):
                 email=user.email,
                 date=form.cleaned_data['date'],
             )
+
+            # Update the pet's is_requested field
+            pet.is_requested = True
+            pet.is_available = False
+            pet.save()
+
             # Redirect to the schedule form view with pet_id
             return redirect('schedule', pet_id=pet.id)
 
@@ -73,35 +79,25 @@ def adopt_form(request, pet_id):
 @login_required
 @admin_required
 def adoption_management(request):
-    # Fetch query parameters for filtering and sorting
-    query = request.GET.get('q', '')
-    pet_type = request.GET.get('pet_type', '')
-    gender = request.GET.get('gender', '')
-    sort_by = request.GET.get('sort_by', 'id')  # Default to 'id' if empty
+    # Filter pets that are requested
+    pets = Pet.objects.filter(is_requested=True).prefetch_related(
+        'adoption_set'  # Assuming 'adoption_set' is the related name for the Adoption model (Django default)
+    )
 
-    # Get all adoption records with related pet and adopter information
-    adoptions = Adoption.objects.select_related('pet', 'adopter__user').all()
-
-    # Filter by pet name
-    if query:
-        adoptions = adoptions.filter(pet__name__icontains=query)
-    # Filter by pet type
-    if pet_type:
-        adoptions = adoptions.filter(pet__pet_type__iexact=pet_type)
-    # Filter by gender
-    if gender:
-        if gender == 'none':
-            adoptions = adoptions.filter(pet__gender__isnull=True)
-        else:
-            adoptions = adoptions.filter(pet__gender__iexact=gender)
-
-    # Order the results
-    adoptions = adoptions.order_by(sort_by)
-
+    # Pass both `pets` and related `adoptions` to the template
     return render(request, 'adoption_management.html', {
-        'adoptions': adoptions,
-        'query': query,
-        'pet_type': pet_type,
-        'gender': gender,
-        'sort_by': sort_by,
+        'pets': pets,
+    })
+
+@login_required
+@admin_required
+def review_form(request, pet_id):
+    # Get the adoption record for the given pet
+    adoption = get_object_or_404(Adoption.objects.select_related('adopter__user'), pet__id=pet_id)
+    profile = adoption.adopter
+
+    # Pass the adoption record to the template
+    return render(request, 'review_form.html', {
+        'adoption': adoption,
+        'profile': profile,
     })
