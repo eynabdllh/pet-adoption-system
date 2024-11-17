@@ -1,0 +1,232 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block page_title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f5f5f5;
+        font-family: Arial, sans-serif;
+    }
+    .card {
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        color: #333;
+    }
+    .card-orange {
+        background-color: #f8d7a1;
+    }
+    .card-pink {
+        background-color: #f8c8d7;
+    }
+    .card-green {
+        background-color: #c8f8d7;
+    }
+    .card i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .card h5 {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    .card h3 {
+        font-size: 2rem;
+        margin: 0;
+    }
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    .btn-approve {
+        background-color: #28a745;
+        color: white;
+    }
+    .btn-reject {
+        background-color: #dc3545;
+        color: white;
+    }
+    .calendar {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+    }
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .calendar-header h5 {
+        margin: 0;
+    }
+    .calendar-header i {
+        cursor: pointer;
+    }
+    .calendar-table {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .calendar-table th, .calendar-table td {
+        text-align: center;
+        padding: 10px;
+    }
+    .calendar-table .active {
+        background-color: #f8c8d7;
+        border-radius: 50%;
+    }
+    .schedule {
+        margin-top: 20px;
+    }
+    .schedule h6 {
+        margin-bottom: 10px;
+    }
+    .schedule .table th, .schedule .table td {
+        vertical-align: middle;
+    }
+    .schedule .table .fa-check {
+        color: #28a745;
+    }
+</style>
+
+<div class="container mt-5">
+    <!-- Dashboard Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card card-orange">
+                <i class="fas fa-paw"></i>
+                <h5>Adopted Pets</h5>
+                <h3>{{ adopted_pets_count }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-pink">
+                <i class="fas fa-cat"></i>
+                <h5>Available Pets</h5>
+                <h3>{{ available_pets_count }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-green">
+                <i class="fas fa-dog"></i>
+                <h5>Total Pets Listed</h5>
+                <h3>{{ total_pets_count }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adoption Requests Table -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <h5><i class="fas fa-bars"></i> Adoption Request List</h5>
+                <table class="table mt-3">
+                    <thead>
+                        <tr>
+                            <th>Adopter</th>
+                            <th>Pet</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in adoption_requests %}
+                        <tr>
+                            <td>
+                                <img src="{{ request.adopter.profile_image.url }}" alt="Adopter Image" class="rounded-circle" height="30" width="30"/>
+                                {{ request.adopter.name }}
+                            </td>
+                            <td>
+                                <img src="{{ request.pet.image.url }}" alt="Pet Image" class="rounded-circle" height="30" width="30"/>
+                                {{ request.pet.name }}
+                            </td>
+                            <td>
+                                <button class="btn btn-approve btn-sm">Approve</button>
+                                <button class="btn btn-reject btn-sm">Reject</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Calendar and Pickup Schedule -->
+        <div class="col-md-6">
+            <div class="calendar">
+                <div class="calendar-header">
+                    <h5><i class="fas fa-calendar-alt"></i> Pickup Calendar</h5>
+                    <div>
+                        <i class="fas fa-chevron-left"></i>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                <table class="calendar-table">
+                    <thead>
+                        <tr>
+                            <th>Sun</th>
+                            <th>Mon</th>
+                            <th>Tue</th>
+                            <th>Wed</th>
+                            <th>Thu</th>
+                            <th>Fri</th>
+                            <th>Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for week in calendar_weeks %}
+                        <tr>
+                            {% for day in week %}
+                            <td class="{% if day.has_pickup %}active{% endif %}" data-day="{{ day.date }}">
+                                {{ day.date|date:"j" }}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pickup Schedule List -->
+            <div class="schedule">
+                <h6>Pickup Schedule for {{ selected_date|date:"F j, Y" }}</h6>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Adopter</th>
+                            <th>Pet</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pickup in pickups %}
+                        <tr>
+                            <td>{{ pickup.adopter.name }}</td>
+                            <td>{{ pickup.pet.name }}</td>
+                            <td>{{ pickup.time|time:"H:i" }}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm"><i class="fas fa-check"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // mock function for now, needs JS logic to make calendar functional
+    document.querySelectorAll('.calendar-table td.active').forEach(function(day) {
+        day.addEventListener('click', function() {
+            const selectedDay = day.getAttribute('data-day');
+            alert('Show pickups for ' + selectedDay);
+            // incomplte
+            // need to update the pickup schedule based on the selected day.
+        });
+    });
+</script>
+{% endblock %}
