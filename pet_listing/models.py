@@ -36,6 +36,8 @@ class Pet(models.Model):
     main_image = models.ImageField(upload_to='pets/main/', null=True, blank=True) 
     time_in_shelter = models.DateField(null=True, blank=True)
     description = models.TextField(blank=True, null=True)
+    is_adopted = models.BooleanField(default=False)
+    is_requested = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name} - {self.pet_type} ({self.breed})'
