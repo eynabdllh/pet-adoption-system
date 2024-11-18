@@ -12,6 +12,7 @@ class Schedule(models.Model):
     year= models.IntegerField()
     time = models.CharField(max_length=10)
     scheduled_at = models.DateTimeField(auto_now_add=True)
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Pickup for {self.pet} by {self.adopter} on {self.month} {self.day} {self.year} at {self.time}"
