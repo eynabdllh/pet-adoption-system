@@ -5,6 +5,13 @@ from profile_management.models import Profile
 from django.utils import timezone
 
 class Adoption(models.Model):  
+    
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
     adopter = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True) 
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -14,6 +21,7 @@ class Adoption(models.Model):
     email = models.EmailField()
     date = models.DateField(default=timezone.now)
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} wants to adopt {self.pet.name}"
