@@ -121,8 +121,8 @@ Dashboard
     <div class="row">
         <div class="col-md-6">
             <div class="card">
-                <h5><i class="fas fa-bars"></i> Adoption Request List</h5>
-                <table class="table mt-3">
+                <h5><i class="fas fa-bars"></i>Adoption Requests</h5>
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Adopter</th>
@@ -133,17 +133,11 @@ Dashboard
                     <tbody>
                         {% for request in adoption_requests %}
                         <tr>
+                            <td>{{ request.adopter.username }}</td>
+                            <td>{{ request.pet.name }}</td>
                             <td>
-                                <img src="{{ request.adopter.profile_image.url }}" alt="Adopter Image" class="rounded-circle" height="30" width="30"/>
-                                {{ request.adopter.name }}
-                            </td>
-                            <td>
-                                <img src="{{ request.pet.image.url }}" alt="Pet Image" class="rounded-circle" height="30" width="30"/>
-                                {{ request.pet.name }}
-                            </td>
-                            <td>
-                                <button class="btn btn-approve btn-sm">Approve</button>
-                                <button class="btn btn-reject btn-sm">Reject</button>
+                                <button>Approve</button>
+                                <button>Reject</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -152,34 +146,23 @@ Dashboard
             </div>
         </div>
 
-        <!-- Calendar and Pickup Schedule -->
+        <!-- Calendar -->
         <div class="col-md-6">
             <div class="calendar">
-                <div class="calendar-header">
-                    <h5><i class="fas fa-calendar-alt"></i> Pickup Calendar</h5>
-                    <div>
-                        <i class="fas fa-chevron-left"></i>
-                        <i class="fas fa-chevron-right"></i>
-                    </div>
-                </div>
-                <table class="calendar-table">
+                <table>
                     <thead>
                         <tr>
-                            <th>Sun</th>
-                            <th>Mon</th>
-                            <th>Tue</th>
-                            <th>Wed</th>
-                            <th>Thu</th>
-                            <th>Fri</th>
-                            <th>Sat</th>
+                            <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for week in calendar_weeks %}
                         <tr>
                             {% for day in week %}
-                            <td class="{% if day.has_pickup %}active{% endif %}" data-day="{{ day.date }}">
-                                {{ day.date|date:"j" }}
+                            <td>
+                                {% if day.has_pickup %}
+                                <span>{{ day.date.day }}</span>
+                                {% endif %}
                             </td>
                             {% endfor %}
                         </tr>
@@ -187,7 +170,6 @@ Dashboard
                     </tbody>
                 </table>
             </div>
-
             <!-- Pickup Schedule List -->
             <div class="schedule">
                 <h6>Pickup Schedule for {{ selected_date|date:"F j, Y" }}</h6>
@@ -217,16 +199,4 @@ Dashboard
         </div>
     </div>
 </div>
-
-<script>
-    // mock function for now, needs JS logic to make calendar functional
-    document.querySelectorAll('.calendar-table td.active').forEach(function(day) {
-        day.addEventListener('click', function() {
-            const selectedDay = day.getAttribute('data-day');
-            alert('Show pickups for ' + selectedDay);
-            // incomplte
-            // need to update the pickup schedule based on the selected day.
-        });
-    });
-</script>
 {% endblock %}
