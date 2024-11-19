@@ -16,7 +16,7 @@ Adopt a Pet
         max-width: 1000px;
         margin: auto;
         margin-top: 50px;
-        }
+    }
     .pet-card {
         border-radius: 12px;
         background-color: #ffffff;
@@ -27,7 +27,7 @@ Adopt a Pet
     }
     .form-row {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         margin-bottom: 20px;
     }
     .form-group { flex: 1; margin-right: 20px; }
@@ -70,7 +70,7 @@ Adopt a Pet
         margin-bottom: 30px;
         color: #555;
     }
-    #day {
+    #day, #month, #year {
         width: 25%;
         padding: 8px;
         border: 1px solid #ccc;
@@ -79,35 +79,9 @@ Adopt a Pet
         color: #333;
         font-size: 16px;
         transition: border-color 0.3s;
-        margin-right: 50px;
     }
-    #day:hover { border-color: #999; }
-    #day option:checked { background-color: #FF6F61; color: white; }
-    #month {
-        width: 25%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-        color: #333;
-        font-size: 16px;
-        transition: border-color 0.3s;
-        margin-right: 50px;
-    }
-    #month:hover { border-color: #999; }
-    #month option:checked { background-color: #FF6F61; color: white; }
-    #year {
-        width: 25%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-        color: #333;
-        font-size: 16px;
-        transition: border-color 0.3s;    
-    }
-    #year:hover { border-color: #999; }
-    #year option:checked { background-color: #FF6F61; color: white; }
+    #day:hover, #month:hover, #year:hover { border-color: #999; }
+    #day option:checked, #month option:checked, #year option:checked { background-color: #FF6F61; color: white; }
     .pickup-time-fieldset {
         border: 2px solid #ccc;
         border-radius: 8px;
@@ -150,7 +124,7 @@ Adopt a Pet
         color: white;
         border-color: #FF6F61;
     }
-        .btn-back {
+    .btn-back {
         background-color: #FF6F61;
         border: none;
         color: #fff;
@@ -160,18 +134,16 @@ Adopt a Pet
         width: 130px;
     }
     .modal {
-        display: none; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
         position: fixed;
         z-index: 1000;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
-        overflow: auto;
-        background-color: rgb(0, 0, 0); 
-        background-color: rgba(0, 0, 0, 0.4); 
-        justify-content: center;
-        align-items: center;
+        background-color: rgba(0, 0, 0, 0.4);
     }
     .modal-content {
         background-color: #fff;
@@ -180,8 +152,10 @@ Adopt a Pet
         border-radius: 10px;
         width: 80%;
         max-width: 500px;
+        text-align: center;
     }
     .btn-cancel, .btn-finish { cursor: pointer; }
+    .btn-sched-final { background-color: #FF6F61; color: white; padding: 10px 20px; border-radius: 8px; width: 130px; }
 </style>
 
 <div class="mb-3">
@@ -191,34 +165,23 @@ Adopt a Pet
     <p class="p-font">Pick-Up Schedule</p>
     <form action="{% url 'schedule' pet.id %}" method="post" id="scheduleForm">
         {% csrf_token %}
+        
+        <label for="year">Year:</label>
+        <select id="year" name="year" onchange="updateMonthOptions()">
+            <option value="" disabled selected>Select Year</option>
+            {% for year in years %}
+            <option value="{{ year }}" {% if year == current_year %} selected {% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        
         <label for="month">Month:</label>
-        <select id="month" name="month">
-          <option value="January">January</option>
-          <option value="February">February</option>
-          <option value="March">March</option>
-          <option value="April">April</option>
-          <option value="May">May</option>
-          <option value="June">June</option>
-          <option value="July">July</option>
-          <option value="August">August</option>
-          <option value="September">September</option>
-          <option value="October">October</option>
-          <option value="November">November</option>
-          <option value="December">December</option>
+        <select id="month" name="month" onchange="updateDayOptions()">
+            <option value="" disabled selected>Select Month</option>
         </select>
 
         <label for="day">Day:</label>
         <select id="day" name="day">
-          {% for day in days %}
-            <option value="{{ day }}">{{ day }}</option>
-          {% endfor %}
-        </select>
-
-        <label for="year">Year:</label>
-        <select id="year" name="year">
-            {% for year in years %}
-            <option value="{{ year }}">{{ year }}</option>
-            {% endfor %}
+            <option value="" disabled selected>Select Day</option>
         </select>
 
         <fieldset class="pickup-time-fieldset">
@@ -242,43 +205,211 @@ Adopt a Pet
                 </div>
             </div>
         </fieldset>
-        <div class="btnSched">
-            <button type="button" class="btn btn-sched" onclick="showModal()">Schedule Pickup</button>
+
+        <div class="form-row">
+            <button type="submit" class="btn btn-sched">Submit</button>
         </div>
     </form>
 </div>
 
-<div id="successModal" class="modal">
+<!-- Success Modal -->
+<div id="successModal" class="modal" style="display: none;">
     <div class="modal-content" style="width: 500px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             <img src="{% static 'images/confirm.png' %}" alt="Confirm" style="width: 150px; height: 120px;">
         </div>
         <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 20px;">Success!</h2>
         <p style="font-family: 'Fredoka', sans-serif; color: #555; font-size: 16px; margin-bottom: 30px;">
-            NOTE: You have successfully scheduled your pickup time.
+            You have successfully scheduled your pickup time.
         </p>
         <div style="display: flex; justify-content: space-around; margin-top: 20px;">
             <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                 Back
             </button>
-            <button type="button" onclick="submitForm()" class="btn btn-confirm" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+            <button type="button" onclick="finishFormSubmission()" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                 Finish
             </button>
         </div>
     </div>
 </div>
 
+<!-- Error Modal -->
+<div id="errorModal" class="modal" style="display: none;">
+    <div class="modal-content" style="width: 500px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 150px; height: 120px;">
+        </div>
+        <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 20px;">Stop!</h2>
+        <p style="font-family: 'Fredoka', sans-serif; color: #555; font-size: 16px; margin-bottom: 30px;">
+            Your Pet can only be picked up in a duration of 1 month.
+        </p>
+        <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+            <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                OK
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-    function showModal() {
-        document.getElementById('successModal').style.display = 'flex';
+   // Function to open the success modal
+function openSuccessModal() {
+    document.getElementById("successModal").style.display = "flex";
+}
+
+// Function to open the error modal
+function openErrorModal() {
+    document.getElementById("errorModal").style.display = "flex";
+}
+
+// Function to close both modals
+function closeModal() {
+    document.getElementById("successModal").style.display = "none";
+    document.getElementById("errorModal").style.display = "none";
+}
+
+// Function to handle form submission when Finish is clicked
+function submitForm(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    const year = document.getElementById('year').value;
+    const month = document.getElementById('month').value;
+    const day = document.getElementById('day').value;
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth(); // 0-11 (January = 0, December = 11)
+    const currentDay = currentDate.getDate(); // Current day of the month
+
+    // Convert the selected date to a Date object
+    if (year && month && day) {
+        const monthIndex = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"].indexOf(month);
+        const selectedDate = new Date(year, monthIndex, day);
+
+        // Check if the selected date is more than a month from the current date
+        const diffInTime = selectedDate.getTime() - currentDate.getTime();
+        const diffInDays = diffInTime / (1000 * 3600 * 24); // Convert time difference to days
+
+        if (diffInDays > 31) {
+            openErrorModal();  // Show error modal if the selected date is more than 1 month from today
+        } else {
+            openSuccessModal(); // Show success modal if valid date is selected
+        }
+    } else {
+        openErrorModal(); // If year, month, or day is missing, show error
     }
-    function closeModal() {
-        document.getElementById('successModal').style.display = 'none';
+}
+
+// Function to update month options based on selected year
+function updateMonthOptions() {
+    const year = document.getElementById('year').value;
+    const monthSelect = document.getElementById('month');
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth(); // 0-11 (January = 0, December = 11)
+
+    // Clear existing options in month select
+    monthSelect.innerHTML = '';
+
+    // Add empty option to the month select
+    let defaultMonthOption = document.createElement("option");
+    defaultMonthOption.value = "";
+    defaultMonthOption.textContent = "Select Month";
+    defaultMonthOption.disabled = true;
+    defaultMonthOption.selected = true;
+    monthSelect.appendChild(defaultMonthOption);
+
+    let months = [
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    ];
+
+    if (year == currentYear) {
+        // Only allow months from current month onwards
+        for (let i = currentMonth; i < months.length; i++) {
+            let option = document.createElement("option");
+            option.value = months[i];
+            option.textContent = months[i];
+            monthSelect.appendChild(option);
+        }
+    } else {
+        // Allow all months for future years
+        months.forEach(month => {
+            let option = document.createElement("option");
+            option.value = month;
+            option.textContent = month;
+            monthSelect.appendChild(option);
+        });
     }
 
-    function submitForm() {
-        document.getElementById('scheduleForm').submit();
+    // Call updateDayOptions to refresh the day options when the month changes
+    updateDayOptions();
+}
+
+// Function to update day options based on selected month and year
+function updateDayOptions() {
+    const year = document.getElementById('year').value;
+    const month = document.getElementById('month').value;
+    const daySelect = document.getElementById('day');
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth(); // 0-11 (January = 0, December = 11)
+    const currentDay = currentDate.getDate(); // Current day of the month
+
+    // Clear existing options in the day select
+    daySelect.innerHTML = '';
+
+    // Add empty option to the day select
+    let defaultDayOption = document.createElement("option");
+    defaultDayOption.value = "";
+    defaultDayOption.textContent = "Select Day";
+    defaultDayOption.disabled = true;
+    defaultDayOption.selected = true;
+    daySelect.appendChild(defaultDayOption);
+
+    // If both month and year are selected, restrict the days
+    if (year && month) {
+        const monthsList = [
+            "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+        ];
+
+        const daysInMonth = new Date(year, monthsList.indexOf(month) + 1, 0).getDate(); // Get number of days in the selected month
+
+        // If the selected month is the current month, restrict days to current day onwards
+        if (year == currentYear && monthsList.indexOf(month) == currentMonth) {
+            // Start from today's date and add days till the end of the month
+            for (let i = currentDay + 1; i <= daysInMonth; i++) {
+                let option = document.createElement("option");
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+        } else {
+            // Otherwise, allow all days for the selected month
+            for (let i = 1; i <= daysInMonth; i++) {
+                let option = document.createElement("option");
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+        }
     }
+}
+
+// Initialize the month options when the page loads
+window.onload = function() {
+    updateMonthOptions();
+    const submitButton = document.querySelector(".btn-sched");
+    submitButton.addEventListener("click", submitForm); // Add event listener to the submit button
+};
+
+// Function to submit the form after clicking "Finish" in the modal
+function finishFormSubmission() {
+    // Close the success modal
+    closeModal();
+
+    // Trigger the form submission
+    document.getElementById("scheduleForm").submit();
+}
+
 </script>
-
 {% endblock %}
