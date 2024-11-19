@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'request_form',
     'schedule_form',
     'notifications',
+    'dashboard',
 ]
 
 MIDDLEWARE = [
@@ -111,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 

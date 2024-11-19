@@ -99,6 +99,38 @@ Adopt a Pet
     .btn-back:hover {
         background-color: #e65c51;
     }
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    width: 80%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fefefe;
+    text-align: center;
+}
+
+    .modal .btn {
+        margin: 10px;
+    }
+    .btn-cancel {
+        background-color: #6c757d;
+    }
+
+    .btn-confirm {
+        background-color: #FF6F61;
+    }
 </style>
 
 <!-- Main Content -->
@@ -111,7 +143,7 @@ Adopt a Pet
         <p class="p-font">Adoption Form</p>
     </div>
     
-    <form method="post">
+    <form method="post" id="adoptionForm">
         {% csrf_token %}
         <div class="form-row">
             <div class="form-group">
@@ -138,30 +170,65 @@ Adopt a Pet
         <div class="form-row">
             <div class="form-group">
                 <label for="age">Age:</label>
-                <input type="text" id="age" name="age" value="{{ user.age }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+                <input type="text" id="age" name="age" value="{{ form.age.value }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
             </div>
             <div class="form-group">
                 <label for="contact_number">Contact Number:</label>
-                <input type="text" id="contact_number" name="contact_number" value="{{ user.contact_no }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+                <input type="text" id="contact_number" name="contact_number" value="{{ form.contact_number.value }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
             </div>
         </div>
         
         <div class="form-row">
             <div class="form-group">
                 <label for="address">Address:</label>
-                <input type="text" id="address" name="address" value="{{ user.address }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+                <input type="text" id="address" name="address" value="{{ form.address.value }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="text" id="email" name="email" value="{{ user.email }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #5d5b5b;">
+                <input type="text" id="email" name="email" value="{{ form.email.value }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #5d5b5b;">
             </div>
         </div>
         
         <div class="d-flex">
             <button type="reset" class="btn btn-clear">Clear All</button> 
-            <button type="submit" class="btn btn-next">Next</button>
+            <button type="button" onclick="showModal()" class="btn btn-next">Next</button>
         </div>
     </form>
 </div>
+
+<!-- Modal for Confirmation -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content" style="width: 500px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <img src="{% static 'images/caution.png' %}" alt="Confirm" style="width: 130px; height: 120px; margin-left: 30px;">
+        </div>
+        <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 20px;">Do you want to Proceed?</h2>
+        <p style="font-family: 'Fredoka', sans-serif; color: #555; font-size: 16px; margin-bottom: 30px;">
+            NOTE: Please review the form details before proceeding to avoid mistakes.
+        </p>
+        <div style="display: flex; justify-content: space-around; gap: 20px;">
+            <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                Back
+            </button>
+            <button type="button" onclick="submitForm()" class="btn btn-confirm" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showModal() {
+        document.getElementById('confirmationModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('confirmationModal').style.display = 'none';
+    }
+
+    function submitForm() {
+        document.getElementById('adoptionForm').submit();
+    }
+</script>
 
 {% endblock %}

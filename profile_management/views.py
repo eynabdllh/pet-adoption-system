@@ -29,6 +29,7 @@ def adopter_profile_view(request):
 
             request.session['user_first_name'] = user_form.cleaned_data['first_name']
             request.session['user_last_name'] = user_form.cleaned_data['last_name']
+            request.session['profile_image_url'] = profile.profile_image.url if profile.profile_image else None
 
             messages.success(request, 'Your profile has been updated!')
             return redirect('adopter_profile_view')
@@ -68,6 +69,7 @@ def admin_profile_view(request):
 
             request.session['user_first_name'] = user_form.cleaned_data['first_name']
             request.session['user_last_name'] = user_form.cleaned_data['last_name']
+            request.session['profile_image_url'] = profile.profile_image.url if profile.profile_image else None
 
             messages.success(request, 'Your profile has been updated!')
             return redirect('admin_profile_view')
@@ -92,6 +94,9 @@ def upload_profile_image(request):
         if 'profile_image' in request.FILES:
             profile.profile_image = request.FILES['profile_image']
             profile.save()
+
+            request.session['profile_image_url'] = profile.profile_image.url if profile.profile_image else None
+
             messages.success(request, 'Profile image updated!')
 
     if current_user.isAdmin:
@@ -118,3 +123,4 @@ def delete_profile_image(request):
         return redirect('admin_profile_view')
     else:
         return redirect('adopter_profile_view')
+    

@@ -22,6 +22,9 @@ def Login(request):
                 request.session['user_first_name'] = user.first_name
                 request.session['user_last_name'] = user.last_name
 
+                profile = Profile.objects.filter(user=user).first()
+                request.session['profile_image_url'] = profile.profile_image.url if profile and profile.profile_image else None
+
                 next_url = request.GET.get('next', 'admin_pet_list' if user.isAdmin else 'adopter_pet_list')
                 return redirect(next_url)
                

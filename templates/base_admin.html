@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{% static 'favicon/Logo_2.png' %}">
     <title>adopt-a-pet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -14,7 +16,7 @@
 
         /* Sidebar styles */
         .sidebar {
-            width: 270px;
+            width: 280px;
             background-color: #FAF8F6;
             padding-top: 20px;
             display: flex;
@@ -195,14 +197,13 @@
     </style>
 </head>
 <body>
-    {% load static %}
     <div class="container-wrapper">
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="text-center mb-4">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
             </div>
-            <a href="#">
+            <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard'%} active {% endif %}">  
                 <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="icon-img">
                 Dashboard
             </a>
@@ -210,7 +211,7 @@
                 <img src="{% static 'images/adoption.png' %}" alt="Pet Management" class="icon-img">
                 Pet Management
             </a>
-            <a href="#">
+            <a href="{% url 'adoption_management' %}" class="{% if request.resolver_match.url_name == 'adoption_management' or request.resolver_match.url_name == 'review_form' %} active {% endif %}">
                 <img src="{% static 'images/home.png' %}" alt="Adoption Management" class="icon-img">
                 Adoption Management
             </a>
@@ -243,7 +244,7 @@
                         </a>
                     </div>
                     <a href="{% url 'admin_profile_view' %}" class="profile">
-                        <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture" class="rounded-circle">
+                        <img src="{% if request.session.profile_image_url %}{{ request.session.profile_image_url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture" class="rounded-circle">
                         <div class="profile-info">
                             <div class="profile-name">
                                 {{ request.session.user_first_name }} {{ request.session.user_last_name }}

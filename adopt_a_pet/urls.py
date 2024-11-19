@@ -27,6 +27,7 @@ urlpatterns = [
     path('requestform/', include('request_form.urls')),
     path('scheduleform/', include('schedule_form.urls')),
     path('notifications/', include('notifications.urls')),  
+    path('dashboard/', include('dashboard.urls')),
 ]
 
 if settings.DEBUG:

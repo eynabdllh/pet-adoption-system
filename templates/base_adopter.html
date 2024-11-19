@@ -1,11 +1,14 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{% static 'favicon/Logo_2.png' %}">
     <title>adopt-a-pet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@700&display=swap" rel="stylesheet">
     <style>
         .container-wrapper {
             display: flex;
@@ -208,7 +211,6 @@
     </style>
 </head>
 <body>
-    {% load static %}
     <div class="container-wrapper">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -219,7 +221,7 @@
                 <img src="{% static 'images/adoption.png' %}" alt="Adopt" class="icon-img">
                 Adopt a Pet
             </a>
-            <a href="#">
+            <a href="{% url 'my_adoption' %}" class="{% if request.resolver_match.url_name == 'my_adoption' or request.resolver_match.url_name == 'view_details'%} active {% endif %}">
                 <img src="{% static 'images/home.png' %}" alt="My Adoption" class="icon-img">
                 My Adoption
             </a>
@@ -252,7 +254,8 @@
                         </a>
                     </div>
                     <a href="{% url 'adopter_profile_view' %}" class="profile">
-                        <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture" class="rounded-circle">
+                        <img src="{% if request.session.profile_image_url %}{{ request.session.profile_image_url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture" class="rounded-circle">
+
                         <div class="profile-info">
                             <div class="profile-name">
                                 {{ request.session.user_first_name }} {{ request.session.user_last_name }}

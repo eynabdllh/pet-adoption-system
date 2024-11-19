@@ -7,9 +7,7 @@ Adopt a Pet
 
 {% block content %}
 <style>
-    .content {
-        padding: 20px;
-    }
+    .content { padding: 20px; }
     .containForm {
         background-color: #f9f9f9;
         padding: 30px;
@@ -32,17 +30,9 @@ Adopt a Pet
         justify-content: space-between;
         margin-bottom: 20px;
     }
-    .form-group {
-        flex: 1;
-        margin-right: 20px;
-    }
-    .form-group:last-child {
-        margin-right: 0;
-    }
-    label {
-        font-weight: bold;
-        color: #555;
-    }
+    .form-group { flex: 1; margin-right: 20px; }
+    .form-group:last-child { margin-right: 0; }
+    label { font-weight: bold; color: #555; }
     input[type="text"], input[type="email"], input[type="number"], input[type="date"] {
         width: 100%;
         padding: 8px;
@@ -57,152 +47,109 @@ Adopt a Pet
         border-radius: 10px;
         width:150px;
     }
-        .btn-sched {
-            background-color: #FF6F61;
-            color: white;
-            height: 43px;
-            margin-bottom: 10px;
-            margin-top: 10px;
-            width: 200px;
-            border-radius: 10px;
-        }
-        .btn-clear {
-            background-color: #ffffff;
-            color: black;
-            border: 1px solid #000000;
-        }
-        .btn:hover {
-            opacity: 0.9;
-        }
-        .btnSched{
-            display:flex;
-            justify-content: center;
-        }
-        .d-flex {
-            justify-content: space-between;
-        }
-        .p-font{
-            font-size: 25px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            color: #555;
-        }
-
-        #day {
-            width: 25%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            color: #333;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            margin-right: 50px;
-        }
-        #day:hover {
-            border-color: #999;
-        }
-        #day option:checked {
-            background-color: #FF6F61;
-            color: white;
-        }
-
-        #month {
-            width: 25%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            color: #333;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            margin-right: 50px;
-        }
-        #month:hover {
-            border-color: #999;
-        }
-        #month option:checked {
-            background-color: #FF6F61;
-            color: white;
-        }
-
-        #year {
-            width: 25%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            color: #333;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            
-        }
-        #year:hover {
-            border-color: #999;
-        }
-        #year option:checked {
-            background-color: #FF6F61;
-            color: white;
-        }
-
-        .pickup-time-fieldset {
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            max-width: 1200px;
-            margin: auto;
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-
-        .pickup-time-fieldset legend {
-            font-size: 20px;
-            font-weight: bold;
-            color: #FF6F61;
-            text-align: center;
-            padding: 0 10px;
-            width: auto;
-            margin: 0 auto;
-        }
-
-        .time-slot {
-            margin-top: 20px;
-            margin-bottom: 15px;
-        }
-
-        .time-slot-title {
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 10px;
-        }
-
-        .time-options {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .time-options input[type="radio"] {
-            display: none;
-        }
-
-        .time-options label {
-            background-color: #f1f1f1;
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
-
-        .time-options input[type="radio"]:checked + label,
-        .time-options label:hover {
-            background-color: #FF6F61;
-            color: white;
-            border-color: #FF6F61;
-        }
+    .btn-sched {
+        background-color: #FF6F61;
+        color: white;
+        height: 43px;
+        margin-bottom: 10px;
+        margin-top: 10px;
+        width: 200px;
+        border-radius: 10px;
+    }
+    .btn-clear {
+        background-color: #ffffff;
+        color: black;
+        border: 1px solid #000000;
+    }
+    .btn:hover { opacity: 0.9}
+    .btnSched{ display:flex; justify-content: center; }
+    .d-flex { justify-content: space-between; }
+    .p-font{
+        font-size: 25px;
+        font-weight: 700;
+        margin-bottom: 30px;
+        color: #555;
+    }
+    #day {
+        width: 25%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        color: #333;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        margin-right: 50px;
+    }
+    #day:hover { border-color: #999; }
+    #day option:checked { background-color: #FF6F61; color: white; }
+    #month {
+        width: 25%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        color: #333;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        margin-right: 50px;
+    }
+    #month:hover { border-color: #999; }
+    #month option:checked { background-color: #FF6F61; color: white; }
+    #year {
+        width: 25%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        color: #333;
+        font-size: 16px;
+        transition: border-color 0.3s;    
+    }
+    #year:hover { border-color: #999; }
+    #year option:checked { background-color: #FF6F61; color: white; }
+    .pickup-time-fieldset {
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        max-width: 1200px;
+        margin: auto;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    .pickup-time-fieldset legend {
+        font-size: 20px;
+        font-weight: bold;
+        color: #FF6F61;
+        text-align: center;
+        padding: 0 10px;
+        width: auto;
+        margin: 0 auto;
+    }
+    .time-slot { margin-top: 20px; margin-bottom: 15px; }
+    .time-slot-title { font-weight: bold; color: #555; margin-bottom: 10px; }
+    .time-options {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .time-options input[type="radio"] { display: none; }
+    .time-options label {
+        background-color: #f1f1f1;
+        padding: 8px 12px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+    .time-options input[type="radio"]:checked + label,
+    .time-options label:hover {
+        background-color: #FF6F61;
+        color: white;
+        border-color: #FF6F61;
+    }
         .btn-back {
         background-color: #FF6F61;
         border: none;
@@ -212,74 +159,126 @@ Adopt a Pet
         border-radius: 8px;
         width: 130px;
     }
+    .modal {
+        display: none; 
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0); 
+        background-color: rgba(0, 0, 0, 0.4); 
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: #fff;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 500px;
+    }
+    .btn-cancel, .btn-finish { cursor: pointer; }
+</style>
 
-    </style>
-</head>
-<body>
-    <div class="mb-3">
-        <a href="{% url 'adopt_form' pet.id %}" class="btn btn-back">Back</a>
-    </div>
-    <div class="card pet-card shadow-lg p-4">
-        <p class="p-font">Pick-Up Schedule</p>
-        <form action="{% url 'schedule' pet.id %}" method="post">
-            {% csrf_token %}
-            
-            <label for="month">Month:</label>
-            <select id="month" name="month">
-              <option value="January">January</option>
-              <option value="February">February</option>
-              <option value="March">March</option>
-              <option value="April">April</option>
-              <option value="May">May</option>
-              <option value="June">June</option>
-              <option value="July">July</option>
-              <option value="August">August</option>
-              <option value="September">September</option>
-              <option value="October">October</option>
-              <option value="November">November</option>
-              <option value="December">December</option>
-            </select>
-            
-            <label for="day">Day:</label>
-            <select id="day" name="day">
-              {% for day in days %}
-                <option value="{{ day }}">{{ day }}</option>
-              {% endfor %}
-            </select>
+<div class="mb-3">
+    <a href="{% url 'adopt_form' pet.id %}" class="btn btn-back">Back</a>
+</div>
+<div class="card pet-card shadow-lg p-4">
+    <p class="p-font">Pick-Up Schedule</p>
+    <form action="{% url 'schedule' pet.id %}" method="post" id="scheduleForm">
+        {% csrf_token %}
+        <label for="month">Month:</label>
+        <select id="month" name="month">
+          <option value="January">January</option>
+          <option value="February">February</option>
+          <option value="March">March</option>
+          <option value="April">April</option>
+          <option value="May">May</option>
+          <option value="June">June</option>
+          <option value="July">July</option>
+          <option value="August">August</option>
+          <option value="September">September</option>
+          <option value="October">October</option>
+          <option value="November">November</option>
+          <option value="December">December</option>
+        </select>
 
-            <label for="year">Year:</label>
-            <select id="year" name="year">
-                {% for year in years %}
+        <label for="day">Day:</label>
+        <select id="day" name="day">
+          {% for day in days %}
+            <option value="{{ day }}">{{ day }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="year">Year:</label>
+        <select id="year" name="year">
+            {% for year in years %}
             <option value="{{ year }}">{{ year }}</option>
-                {% endfor %}
-            </select>
-          
-            <fieldset class="pickup-time-fieldset">
-                <legend>Pick-up Time</legend>
+            {% endfor %}
+        </select>
 
-                <div class="time-slot">
-                    <p class="time-slot-title">Morning</p>
-                    <div class="time-options">
-                        {% for time in morning_hours %}
-                        <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
-                        <label for="time_{{ time }}">{{ time }}</label>
+        <fieldset class="pickup-time-fieldset">
+            <legend>Pick-up Time</legend>
+            <div class="time-slot">
+                <p class="time-slot-title">Morning</p>
+                <div class="time-options">
+                    {% for time in morning_hours %}
+                    <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                    <label for="time_{{ time }}">{{ time }}</label>
                     {% endfor %}
-                    </div>
                 </div>
-
-                <div class="time-slot">
-                    <p class="time-slot-title">Afternoon</p>
-                    <div class="time-options">
-                        {% for time in afternoon_hours %}
-                            <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
-                            <label for="time_{{ time }}">{{ time }}</label>
-                        {% endfor %}
-                    </div>
+            </div>
+            <div class="time-slot">
+                <p class="time-slot-title">Afternoon</p>
+                <div class="time-options">
+                    {% for time in afternoon_hours %}
+                    <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                    <label for="time_{{ time }}">{{ time }}</label>
+                    {% endfor %}
                 </div>
-            </fieldset>
+            </div>
+        </fieldset>
         <div class="btnSched">
-            <button type="submit" class="btn btn-sched">Schedule Pickup</button>
-        </div>     
-        </form>
+            <button type="button" class="btn btn-sched" onclick="showModal()">Schedule Pickup</button>
+        </div>
+    </form>
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content" style="width: 500px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <img src="{% static 'images/confirm.png' %}" alt="Confirm" style="width: 150px; height: 120px;">
+        </div>
+        <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 20px;">Success!</h2>
+        <p style="font-family: 'Fredoka', sans-serif; color: #555; font-size: 16px; margin-bottom: 30px;">
+            NOTE: You have successfully scheduled your pickup time.
+        </p>
+        <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+            <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                Back
+            </button>
+            <button type="button" onclick="submitForm()" class="btn btn-confirm" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                Finish
+            </button>
+        </div>
     </div>
+</div>
+
+<script>
+    function showModal() {
+        document.getElementById('successModal').style.display = 'flex';
+    }
+    function closeModal() {
+        document.getElementById('successModal').style.display = 'none';
+    }
+
+    function submitForm() {
+        document.getElementById('scheduleForm').submit();
+    }
+</script>
+
 {% endblock %}
