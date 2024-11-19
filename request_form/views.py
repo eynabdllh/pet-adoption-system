@@ -27,30 +27,23 @@ def adopt_form(request, pet_id):
         profile = None
 
     if request.method == 'POST':
-        # Use only user argument for form instantiation
         form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
-            # Save the Adoption instance
-            adoption = Adoption.objects.create(
-                adopter=user.profile,
-                pet=pet,
-                first_name=user.first_name,
-                last_name=user.last_name,
-                age=form.cleaned_data['age'],
-                address=form.cleaned_data['address'],
-                contact_number=form.cleaned_data['contact_number'],
-                email=user.email,
-                date=form.cleaned_data['date'],
-            )
-
-            # Update the pet's is_requested field
-            pet.is_requested = True
-            pet.is_available = False
-            pet.save()
+            # Convert the date to a string (ISO format) before saving it in the session
+            request.session['adoption_form_data'] = {
+                'adopter_id': user.profile.id,
+                'pet_id': pet.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'age': form.cleaned_data['age'],
+                'address': form.cleaned_data['address'],
+                'contact_number': form.cleaned_data['contact_number'],
+                'email': user.email,
+                'date': form.cleaned_data['date'].isoformat(),  # Convert date to ISO string
+            }
 
             # Redirect to the schedule form view with pet_id
             return redirect('schedule', pet_id=pet.id)
-
     else:
         initial_data = {
             'adopter_id': user.id,
