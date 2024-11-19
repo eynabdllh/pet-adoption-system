@@ -26,6 +26,7 @@ urlpatterns = [
     path('profile/', include('profile_management.urls')),
     path('requestform/', include('request_form.urls')),
     path('scheduleform/', include('schedule_form.urls')),
+    path('notifications/', include('notifications.urls')),  
     path('dashboard/', include('dashboard.urls')),
 ]
 

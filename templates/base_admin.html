@@ -211,7 +211,7 @@
                 <img src="{% static 'images/adoption.png' %}" alt="Pet Management" class="icon-img">
                 Pet Management
             </a>
-            <a href="{% url 'adoption_management' %}" class="{% if request.resolver_match.url_name == 'adoption_management' %} active {% endif %}">
+            <a href="{% url 'adoption_management' %}" class="{% if request.resolver_match.url_name == 'adoption_management' or request.resolver_match.url_name == 'review_form' %} active {% endif %}">
                 <img src="{% static 'images/home.png' %}" alt="Adoption Management" class="icon-img">
                 Adoption Management
             </a>
@@ -239,7 +239,9 @@
                 </div>
                 <div class="right-items">
                     <div class="notification-icon">
-                        <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
+                        <a href="{% url 'notification_list' %}">
+                            <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
+                        </a>
                     </div>
                     <a href="{% url 'admin_profile_view' %}" class="profile">
                         <img src="{% if request.session.profile_image_url %}{{ request.session.profile_image_url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture" class="rounded-circle">

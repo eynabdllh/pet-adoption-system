@@ -102,6 +102,18 @@
             color: #FF4A4A; 
         }
 
+        .top-bar .notification-icon.active {
+            border: #FF6F61 2px solid;
+            border-radius: 25px;
+            background-color: rgba(250, 200, 30, 0.4);
+        }
+
+        .top-bar .notification-icon:hover {
+            border: #FF6F61 2px solid;
+            border-radius: 25px;
+            background-color: rgba(250, 200, 30, 0.4);
+        }
+
         .notification {
             width: 22px;
             height: 26px;
@@ -236,8 +248,10 @@
                     <div class="page-title">{% block page_title %}{% endblock %}</div>
                 </div>
                 <div class="right-items">
-                    <div class="notification-icon">
-                        <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
+                    <div class="notification-icon {% if request.resolver_match.url_name == 'notification_list' %} active {% endif %}">
+                        <a href="{% url 'notification_list' %}">
+                            <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
+                        </a>
                     </div>
                     <a href="{% url 'adopter_profile_view' %}" class="profile">
                         <img src="{% if request.session.profile_image_url %}{{ request.session.profile_image_url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture" class="rounded-circle">

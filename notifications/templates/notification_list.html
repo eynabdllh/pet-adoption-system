@@ -1,0 +1,19 @@
+{% extends 'base_adopter.html' %}
+{% load static %}
+
+{% block page_title %}
+Notifications
+{% endblock %}
+
+
+{% block content %}
+    <h3>{% if }</h3>
+
+    {% for notification in notifications %}
+    <div>
+        <h3>{{notification.title}}</h3>
+        <p>{{notification.message}}</p>
+        <p>Date: {{notification.date_sent}}</p>
+    </div>
+    {% endfor %}
+{% endblock %}
