@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'profile_management',
     'request_form',
     'schedule_form',
+    'notifications',
 ]
 
 MIDDLEWARE = [

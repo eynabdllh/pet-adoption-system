@@ -3,8 +3,7 @@
     --darkpink: #FFDDD2;
     --beige: #FFF1EE;
 }
-<<<<<<< HEAD
-=======
+
 
 body {
     margin: 0;
@@ -290,10 +289,9 @@ form label {
     cursor: pointer;
     color: #888;
 }
-=======
+
 body {
     margin: 0;
     background-color: var(--darkpink);    
 }
 */
->>>>>>> be95b3a97b3164798857d6a2a73366fe126c3457
