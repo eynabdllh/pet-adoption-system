@@ -6,92 +6,96 @@ My Adoption
 {% endblock %}
 
 {% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 <style>
-    .tab-button.active {
-        background-color: #FF6F61;
-        color: white;
-        outline: none;
-        font-weight: 700;
+    .tab-button.active { background-color: #FF6F61; color: white; outline: none; font-weight: 700;
     }
-    .tab-button {
-        border-radius: 5px;
-        padding: 8px 20px;
-        margin-bottom: 30px;
-        cursor: pointer;
-        border: 0px solid #5e5e5e;
-        background-color: rgb(177, 177, 177);
-        color: #000;
-        width: 180px;
+    .tab-button { border-radius: 5px; padding: 8px 20px; margin-bottom: 30px; cursor: pointer;
+        border: 0px solid #5e5e5e; background-color: rgb(177, 177, 177); color: #000; width: 180px;
     }
-    .pickup-list, .adopted-list {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+    .pickup-list, .adopted-list { display: flex; flex-direction: column; gap: 20px;
     }
-    .pickup-card, .adopted-card {
-        display: flex;
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        align-items: center;
+    .pickup-card, .adopted-card { display: flex; background-color: #ffffff; padding: 20px; border-radius: 12px;
+        border: 1px solid #e0e0e0; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); align-items: center;
     }
-    .pet-image {
-        width: 100px;
-        height: 100px;
-        border-radius: 8px;
-        object-fit: cover;
-        margin-right: 20px;
+    .pet-image { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; margin-right: 20px;
     }
-    .pickup-details h2, .adopted-details h2 {
-        margin: 0;
-        color: #333;
-        font-size: 30px;
+    .pickup-details h2, .adopted-details h2 { margin: 0; color: #333; font-size: 30px;
     }
-    .pickup-details p, .adopted-details p {
-        color: #FF6F61;
-        margin: 4px 0;
+    .pickup-details p, .adopted-details p { color: #FF6F61; margin: 4px 0;
     }
-    .no_adoptions {
-        font-size: 40px;
-        color: #333;
-        font-style: italic;
-        font-weight: bolder;
-        text-align: center;
+    .no_adoptions { font-size: 40px; color: #333; font-style: italic; font-weight: bolder; text-align: center;
     }
-    .button-container {
-        display: flex;
-        flex-direction: column; 
-        align-items: flex-end; 
-        gap: 10px; 
+    .button-container { display: flex; flex-direction: column;  align-items: flex-end;  gap: 10px; 
     }
-    .btn {
-        padding: 8px 16px;
-        border-radius: 5px;
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-        display: inline-block;
+    .btn { padding: 8px 16px; border-radius: 5px; text-decoration: none; 
+        color: white; font-weight: bold; display: inline-block;
     }
-    .btn-view-details {
-        background-color: #20c997;
-        width: 150px;
+    .btn-view-details { background-color: #20c997; width: 170px;
     }
-    .btn-cancel-request {
-        background-color: #ffc107;
-        width: 150px;
+    .btn-view-certificate { background-color: #D9B700; width: 170px;
     }
-    .pickup-details-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-        width: 100%; 
+    .btn-cancel-request { background-color: #B3261E; width: 170px;
     }
-    .pickup-details {
-        flex: 1;
-        margin-right: auto; 
+    .pickup-details-container { display: flex; justify-content: space-between; align-items: center; 
+        gap: 20px; width: 100%; 
+    }
+    .pickup-details { flex: 1; margin-right: auto; 
+    }
+    .modal { display: none;  position: fixed;  z-index: 1000; left: 0; top: 0;
+    width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); justify-content: center; 
+    align-items: center; padding: 0;
+    }
+    .modal.show { display: flex; 
+    }
+    .modal-content { background-color: #fff; padding: 20px; border: 1px solid #888; width: 90%; 
+        max-width: 1000px; height: auto; max-height: 90%; border-radius: 0px; box-shadow: none; 
+        position: relative; overflow: hidden; 
+    }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold;
+    }
+    .close:hover,
+    .close:focus { color: black; text-decoration: none; cursor: pointer;
+    }
+
+    .certificate-container { width: 100%; height: auto; border: 10px solid #000;
+        padding: 20px; position: relative; background-color: #fff; border-radius: 0px; 
+    }
+    .certificate-container:before, .certificate-container:after {
+        content: ''; position: absolute; border: 5px solid #000; width: calc(100% - 20px);
+        height: calc(100% - 20px); top: 10px; left: 10px;
+    }
+
+    .certificate-container:after { top: 20px; left: 20px; width: calc(100% - 40px);
+        height: calc(100% - 40px);
+    }
+
+    .certificate-header { text-align: center; font-size: 36px; font-family: 'Times New Roman', Times, serif;
+        font-weight: bold; margin-bottom: 20px; margin-top: 15px;
+    }
+
+    .certificate-content { text-align: center; font-family: 'Times New Roman', Times, serif;
+        font-size: 18px;
+    }
+
+    .certificate-content strong { font-weight: bold;
+    }
+
+    .certificate-footer { margin-top: 40px; display: flex; justify-content: center; align-items: center;
+    }
+    .signature-container { display: flex; justify-content: space-between;  width: 80%;  max-width: 600px; 
+    }
+    .adopter-sign,
+    .admin-sign { text-align: center; width: 45%; 
+    }
+    .adopter-sign p,
+    .admin-sign p { margin: 5px 0; 
+    }
+    .footer-text { margin-top: 20px; font-weight: bold;
+    }
+    #downloadCertificate { align-self: flex-end;  padding: 8px 16px; border-radius: 5px;
+            text-decoration: none; color: white; font-weight: bold; background-color: #FF6F61;
+            width: auto; 
     }
 </style>
 
@@ -101,46 +105,166 @@ My Adoption
 </div>
 
 <div id="adopted" class="tab-content adopted-list">
-    {% for pet in adopted_pets %}
+    {% for pickup in pickups %}
+    {% if pickup.pet.is_adopted %}
         <div class="adopted-card">
-            <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="pet-image">
+            <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
+            <div class="pickup-details-container">
             <div class="adopted-details">
-                <h2>{{ pet.name }}</h2>
-                <p>{{ pet.pet_type }} | {{ pet.breed }}</p>
-                <p>{{ pet.description }}</p>
+                <h2>{{ pickup.pet.name }}</h2>
+                <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
+                <p style="color: #333;">{{ pickup.pet.description }}</p>
+            </div>
+            <div class="button-container">
+                <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
+                <a href="javascript:void(0);" class="btn btn-view-certificate" 
+                   data-adopter-name="{{ pickup.adopter.first_name|escapejs }} {{ pickup.adopter.last_name|escapejs }}"
+                   data-adopter-name2="{{ pickup.adopter.first_name|escapejs }} {{ pickup.adopter.last_name|escapejs }}"
+                   data-pet-name="{{ pickup.pet.name|escapejs }}"
+                   data-pet-name2="{{ pickup.pet.name|escapejs }}" 
+                   data-adoption-date="{{ pickup.month }} {{ pickup.day }}, {{ pickup.year }}"  
+                   onclick="openCertificateModal(this)">View Certificate</a>
             </div>
         </div>
+        </div>
+        {% endif %}
     {% empty %}
         <p class="no_adoptions">You currently have no adoptions.</p>
     {% endfor %}
 </div>
-<div id="requested" class="tab-content pickup-list" style="display: none;">
-    {% for pickup in pickups %}
-        <div class="pickup-card">
-            <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
-            <div class="pickup-details-container">
-                <div class="pickup-details">
-                    <h2>{{ pickup.pet.name }}</h2>
-                    <p>{{ pickup.pet.pet_type|capfirst }} | {{ pickup.pet.breed }}</p>
-                    <p style="color: #333;">{{ pickup.pet.description }}</p>
-                </div>
-                <div class="button-container">
-                    <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
-                    <a href="#" class="btn btn-cancel-request">Cancel Request</a>
+
+<!-- Certificate Modal -->
+<div id="certificateModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="certificate-container">
+            <div class="certificate-header">
+                ADOPTION CERTIFICATE
+            </div>
+            <div style="text-align: center; margin-bottom: 20px; ">
+                <img src="{% static 'images/award.png' %}" alt="A badge with a paw print in the center, surrounded by a yellow and red ribbon" width="100" height="100">
+            </div>
+            <div class="certificate-content">
+                <p>This certifies that <strong id="adopter-name"></strong> has finally adopted <strong id="pet-name"></strong>
+                on <strong id="adoption_date"></strong> from <strong>Adopt-A-Pet</strong>.</p>
+                <p>Congratulations on welcoming <strong id="pet-name2"></strong> into your family! We wish you many happy and loving years together.</p>
+                <p>Remember to provide your new family member with proper care, regular veterinary check-ups, and lots of love.</p>
+            </div>
+            <div class="certificate-footer">
+                <div class="signature-container">
+                    <div class="adopter-sign">
+                        <p style="margin-top: 30px;"><strong id="adopter-name2"></strong></p>
+                        <p style="margin-top: -20px;">________________________________</p>
+                        <p><strong>Adopter</strong></p>
+                    </div>
+                    <div class="admin-sign">
+                        <img src="{% static 'images/signature.png' %}" alt="sign" width="70" height="50" margin-bottom="-30px;">
+                        <p style="margin-top: -20px;"><strong>Adopt-A-Pet</strong></p>
+                        <p style="margin-top: -20px;">________________________________</p>
+                        <p><strong>Admin</strong> </p>
+                    </div>
                 </div>
             </div>
         </div>
+        <button id="downloadCertificate" class="btn btn-download-certificate" onclick="downloadCertificate()">Download Certificate</button>
+    </div>
+</div>
+
+<div id="requested" class="tab-content pickup-list" style="display: none;">
+    {% for pickup in pickups %}
+    {% if pickup.pet.is_requested %}
+        <div class="pickup-card">
+            <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
+            <div class="pickup-details">
+                <h2>{{ pickup.pet.name }}</h2>
+                <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
+                <p>{{ pickup.pet.description }}</p>
+            </div>
+            <div class="button-container">
+                <a href="javascript:void(0);" class="btn btn-cancel-request" 
+                   onclick="cancelRequest()">Cancel Request</a>
+            </div>
+        </div>
+    {% endif %}
     {% empty %}
-        <p class="no_adoptions">No scheduled pick-ups at this time.</p>
+        <p class="no_adoptions">You currently have no requests.</p>
     {% endfor %}
 </div>
-<script>
-    function showTab(tabName) {
-        document.getElementById('adopted').style.display = tabName === 'adopted' ? 'block' : 'none';
-        document.getElementById('requested').style.display = tabName === 'requested' ? 'block' : 'none';
 
-        document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-        document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
+<script>
+function showTab(tab) {
+    const adoptedTab = document.getElementById('adopted');
+    const requestedTab = document.getElementById('requested');
+    const adoptedButton = document.querySelector('.tab-button.active');
+
+    if (tab === 'adopted') {
+        adoptedTab.style.display = 'block';
+        requestedTab.style.display = 'none';
+        adoptedButton.classList.add('active');
+        document.querySelector('.tab-button.ms-3').classList.remove('active');
+    } else {
+        adoptedTab.style.display = 'none';
+        requestedTab.style.display = 'block';
+        adoptedButton.classList.remove('active');
+        document.querySelector('.tab-button.ms-3').classList.add('active');
+    }
+}
+
+function openCertificateModal(element) {
+    var adopterName = element.getAttribute('data-adopter-name');
+    var adopterName2 = element.getAttribute('data-adopter-name2');
+    var petName = element.getAttribute('data-pet-name');
+    var petName2 = element.getAttribute('data-pet-name2');
+    var adoptionDate = element.getAttribute('data-adoption-date');
+
+    // Populate the modal with the data
+    document.getElementById('adopter-name').innerText = adopterName;
+    document.getElementById('adopter-name2').innerText = adopterName2;
+    document.getElementById('pet-name').innerText = petName;
+    document.getElementById('pet-name2').innerText = petName2;
+    document.getElementById('adoption_date').innerText = adoptionDate;
+
+    // Display the modal
+    var modal = document.getElementById('certificateModal').classList.add('show');
+    modal.style.display = 'block';
+}
+
+function closeModal() {
+    var modal = document.getElementById('certificateModal').classList.remove('show');
+    modal.style.display = 'none';
+}
+
+function downloadCertificate() {
+        // Select the content to convert to PDF
+        var modalContent = document.querySelector('.certificate-container');
+
+        // Temporarily ensure the modal is visible (if hidden)
+        var originalDisplay = modalContent.style.display;
+        modalContent.style.display = 'block';
+
+        // PDF generation options
+        var opt = {
+            margin: 1,
+            filename: 'Adoption_Certificate.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true }, 
+            jsPDF: { unit: 'mm', format: [297, 170], orientation: 'landscape' },
+        };
+
+        // Generate PDF
+        html2pdf()
+            .from(modalContent)
+            .set(opt)
+            .save()
+            .then(() => {
+                // Restore original display style after PDF generation
+                modalContent.style.display = originalDisplay;
+            })
+            .catch((error) => {
+                console.error('Error generating PDF:', error);
+                alert('An error occurred while generating the PDF.');
+            });
     }
 </script>
+
 {% endblock %}
