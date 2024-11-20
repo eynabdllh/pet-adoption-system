@@ -131,7 +131,7 @@
             <div class="btnContainer">
                 <!--<button type="button" onclick="showModal()" class="btn btn-next">Next</button>-->
                 <button type="button" onclick="approveRequest()" class="btn-approve">Approve Request</button>
-                <button type="button" onclick="approveRequest()" class="btn-reject">Reject Request</button>
+                <button type="button" onclick="rejectRequest()" class="btn-reject">Reject Request</button>
             </div>
         </div>
     </div>
@@ -238,7 +238,7 @@
     }
 
     function rejectRequest() {
-        updatePetStatus('cancelled'); // Set status to 'cancelled'
+        updatePetStatus('cancelled'); 
     }
 </script>
 {% endblock %}

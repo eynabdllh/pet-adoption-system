@@ -6,6 +6,7 @@ My Adoption
 {% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 <style>
     .tab-button.active { background-color: #FF6F61; color: white; outline: none; font-weight: 700;
@@ -93,6 +94,32 @@ My Adoption
     }
     .footer-text { margin-top: 20px; font-weight: bold;
     }
+    .modalCancel {
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.modalCancel-content {
+    background-color: #f0f0f0;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    width: 700px;
+    max-width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    margin: auto;
+    margin-top: 120px;
+}
+
+
     #downloadCertificate { align-self: flex-end;  padding: 8px 16px; border-radius: 5px;
             text-decoration: none; color: white; font-weight: bold; background-color: #FF6F61;
             width: auto; 
@@ -112,7 +139,7 @@ My Adoption
             <div class="pickup-details-container">
             <div class="adopted-details">
                 <h2>{{ pickup.pet.name }}</h2>
-                <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
+                <p>{{ pickup.pet.pet_type|capfirst }} | {{ pickup.pet.breed }}</p>
                 <p style="color: #333;">{{ pickup.pet.description }}</p>
             </div>
             <div class="button-container">
@@ -177,12 +204,12 @@ My Adoption
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details">
                 <h2>{{ pickup.pet.name }}</h2>
-                <p>{{ pickup.pet.pet_type }} | {{ pickup.pet.breed }}</p>
-                <p>{{ pickup.pet.description }}</p>
+                <p>{{ pickup.pet.pet_type|capfirst }} | {{ pickup.pet.breed }}</p>
+                <p style="color: #333;">{{ pickup.pet.description }}</p>
             </div>
             <div class="button-container">
-                <a href="javascript:void(0);" class="btn btn-cancel-request" 
-                   onclick="cancelRequest()">Cancel Request</a>
+                <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
+                <button onclick="cancelRequest(`{{ pet.id }}`)" class="btn btn-cancel-request">Cancel Request</button>
             </div>
         </div>
     {% endif %}
@@ -190,6 +217,27 @@ My Adoption
         <p class="no_adoptions">You currently have no requests.</p>
     {% endfor %}
 </div>
+
+<!-- Cancel Modal -->
+<div id="cancelModal" class="modalCancel" style="display: none;">
+    <div class="modalCancel-content">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 155px; height: 140px;">
+        </div>
+        <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 20px;">
+            Are you sure you want to cancel your adoption request?
+        </h2>
+        <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+            <button type="button" onclick="closeCancelModal()" class="btn btn-cancel" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                Back
+            </button>
+            <button type="button" onclick="approveRequest()" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                Confirm
+            </button>
+        </div>
+    </div>
+</div>
+
 
 <script>
  function showTab(tabName) {
@@ -248,6 +296,44 @@ function downloadCertificate() {
                 alert('An error occurred while generating the PDF.');
             });
     }
-</script>
 
+/// Cancel Request functionality
+function cancelRequest(petId) {
+    document.getElementById('cancelModal').style.display = 'flex';  // Open the cancel modal
+    window.currentPetId = petId;  // Store the pet ID globally
+}
+
+// Close cancellation modal
+function closeCancelModal() {
+    document.getElementById('cancelModal').style.display = 'none';  // Close the cancel modal
+}
+
+// Update pet status (used for cancellation or other actions)
+async function updatePetStatus(status) {
+    if (!window.currentPetId) {
+        return;  // If no pet_id is set, do nothing
+    }
+
+    // Send the request to the current URL with the pet_id and status
+    const response = await fetch('', { // Empty URL sends request to the current view
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+        },
+        body: JSON.stringify({ status: status, pet_id: window.currentPetId }),  // Send pet ID and status
+    });
+
+    const result = await response.json();  // Parse JSON response
+
+    if (response.ok && result.success) {
+        location.reload();  // Reload the page to reflect changes
+    }
+}
+
+// Confirm cancellation
+function approveRequest() {
+    updatePetStatus('cancelled');  // Send the 'cancelled' status for this pet
+}
+</script>
 {% endblock %}
