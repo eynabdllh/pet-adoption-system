@@ -130,8 +130,8 @@
 
             <div class="btnContainer">
                 <!--<button type="button" onclick="showModal()" class="btn btn-next">Next</button>-->
-                <button type="button" class="btn-approve">Approve Request</button>
-                <button type="button" class="btn-reject">Reject Request</button>
+                <button type="button" onclick="approveRequest()" class="btn-approve">Approve Request</button>
+                <button type="button" onclick="approveRequest()" class="btn-reject">Reject Request</button>
             </div>
         </div>
     </div>
@@ -150,7 +150,7 @@
             <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                 Back
             </button>
-            <button type="button" onclick="approveRequest()" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+            <button type="button" onclick="rejectRequest()" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                 Confirm
             </button>
         </div>
@@ -178,6 +178,22 @@
 </div>
 
 <script>
+    const petId = "{{ adoption.pet.id }}"; // Safely embed the pet ID as a string
+
+    function showApproveModal() {
+        document.getElementById('approveModal').style.display = 'block';
+    }
+
+    function showRejectModal() {
+        document.getElementById('cancelModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById("cancelModal").style.display = "none";
+        document.getElementById("approveModal").style.display = "none";
+        document.getElementById("validationModal").style.display = "none";
+    }
+
     function showSection(sectionId) {
         document.querySelectorAll('.tab-button').forEach(button => {
             button.classList.remove('active');
@@ -187,6 +203,42 @@
         });
         document.getElementById(sectionId).classList.add('active');
         event.target.classList.add('active');
+    }
+
+    async function updatePetStatus(status) {
+        try {
+            const response = await fetch('', { // Empty URL sends request to the current view
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token for security
+                },
+                body: JSON.stringify({ status: status, pet_id: petId }), // Send pet ID and status
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    location.reload(); // Reload to reflect changes
+                } else {
+                    alert(result.message);
+                }
+            } else {
+                alert('Failed to update the status. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while updating the status.');
+        }
+    }
+
+    function approveRequest() {
+        updatePetStatus('adopted'); // Set status to 'adopted'
+    }
+
+    function rejectRequest() {
+        updatePetStatus('cancelled'); // Set status to 'cancelled'
     }
 </script>
 {% endblock %}

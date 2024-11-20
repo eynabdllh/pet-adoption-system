@@ -83,12 +83,12 @@ def schedule(request, pet_id):
             messages.error(request, "Please fill in all required fields: month, day, time, and year.")
             
     current_year = datetime.now().year
-    years = range(current_year, current_year + 5)  # Include years from current year to next 4 years
+    years = range(current_year, current_year + 5)  
 
     return render(request, 'schedule.html', {
         'pet': pet,
         'user': user,
-        'days': range(1, 32),  # You can keep this as-is for now, but you may need to dynamically adjust this
+        'days': range(1, 32), 
         'morning_hours': [f"{hour}:{minute:02d} AM" for hour in range(9, 12) for minute in (0, 30)],
         'afternoon_hours': [f"{hour}:{minute:02d} PM" for hour in range(1, 6) for minute in (0, 30)],
         'years': years,  # Pass the dynamic years
@@ -96,7 +96,7 @@ def schedule(request, pet_id):
 
 def pickup_list(request):
     user_id = request.session.get('user_id')
-    user = get_object_or_404(User, id=user_id)  
+    user = get_object_or_404(User, id=user_id) 
     pickups = Schedule.objects.filter(adopter=user)
 
     return render(request, 'pickup_list.html', {'pickups': pickups})
@@ -106,7 +106,17 @@ def my_adoption(request):
     user = get_object_or_404(User, id=user_id)  
     pickups = Schedule.objects.filter(adopter=user)
 
-    return render(request, 'my_adoption.html', {'pickups': pickups})
+    # Prepare the certificate details for each adoption
+    certificate_data = []
+    for pickup in pickups:
+        if pickup.pet.is_adopted:
+            certificate_data.append({
+                'adopter_name': f"{pickup.adopter.first_name} {pickup.adopter.last_name}",
+                'pet_name': pickup.pet.name,
+                'adoption_date': f"{pickup.month} {pickup.day} {pickup.year}",
+            })
+
+    return render(request, 'my_adoption.html', {'pickups': pickups, 'certificate_data': certificate_data})
 
 @login_required
 def view_details(request, user_id, pet_id):
