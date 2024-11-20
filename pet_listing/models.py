@@ -39,6 +39,7 @@ class Pet(models.Model):
     is_adopted = models.BooleanField(default=False)
     is_requested = models.BooleanField(default=False)
     is_rejected = models.BooleanField(default=False)
+    is_cancelled= models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.name} - {self.pet_type} ({self.breed})'
