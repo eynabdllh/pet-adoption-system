@@ -192,23 +192,13 @@ My Adoption
 </div>
 
 <script>
-function showTab(tab) {
-    const adoptedTab = document.getElementById('adopted');
-    const requestedTab = document.getElementById('requested');
-    const adoptedButton = document.querySelector('.tab-button.active');
+ function showTab(tabName) {
+        document.getElementById('adopted').style.display = tabName === 'adopted' ? 'block' : 'none';
+        document.getElementById('requested').style.display = tabName === 'requested' ? 'block' : 'none';
 
-    if (tab === 'adopted') {
-        adoptedTab.style.display = 'block';
-        requestedTab.style.display = 'none';
-        adoptedButton.classList.add('active');
-        document.querySelector('.tab-button.ms-3').classList.remove('active');
-    } else {
-        adoptedTab.style.display = 'none';
-        requestedTab.style.display = 'block';
-        adoptedButton.classList.remove('active');
-        document.querySelector('.tab-button.ms-3').classList.add('active');
+        document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+        document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
     }
-}
 
 function openCertificateModal(element) {
     var adopterName = element.getAttribute('data-adopter-name');
@@ -217,14 +207,12 @@ function openCertificateModal(element) {
     var petName2 = element.getAttribute('data-pet-name2');
     var adoptionDate = element.getAttribute('data-adoption-date');
 
-    // Populate the modal with the data
     document.getElementById('adopter-name').innerText = adopterName;
     document.getElementById('adopter-name2').innerText = adopterName2;
     document.getElementById('pet-name').innerText = petName;
     document.getElementById('pet-name2').innerText = petName2;
     document.getElementById('adoption_date').innerText = adoptionDate;
 
-    // Display the modal
     var modal = document.getElementById('certificateModal').classList.add('show');
     modal.style.display = 'block';
 }
@@ -235,14 +223,11 @@ function closeModal() {
 }
 
 function downloadCertificate() {
-        // Select the content to convert to PDF
         var modalContent = document.querySelector('.certificate-container');
 
-        // Temporarily ensure the modal is visible (if hidden)
         var originalDisplay = modalContent.style.display;
         modalContent.style.display = 'block';
 
-        // PDF generation options
         var opt = {
             margin: 1,
             filename: 'Adoption_Certificate.pdf',
@@ -251,13 +236,11 @@ function downloadCertificate() {
             jsPDF: { unit: 'mm', format: [297, 170], orientation: 'landscape' },
         };
 
-        // Generate PDF
         html2pdf()
             .from(modalContent)
             .set(opt)
             .save()
             .then(() => {
-                // Restore original display style after PDF generation
                 modalContent.style.display = originalDisplay;
             })
             .catch((error) => {
