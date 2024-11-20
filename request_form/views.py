@@ -19,8 +19,6 @@ def adopt_form(request, pet_id):
         return redirect('login')
 
     user = User.objects.get(id=user_id)
-
-    # Attempt to retrieve the user's Profile data
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
@@ -29,7 +27,6 @@ def adopt_form(request, pet_id):
     if request.method == 'POST':
         form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
-            # Convert the date to a string (ISO format) before saving it in the session
             request.session['adoption_form_data'] = {
                 'adopter_id': user.profile.id,
                 'pet_id': pet.id,
@@ -39,10 +36,9 @@ def adopt_form(request, pet_id):
                 'address': form.cleaned_data['address'],
                 'contact_number': form.cleaned_data['contact_number'],
                 'email': user.email,
-                'date': form.cleaned_data['date'].isoformat(),  # Convert date to ISO string
+                'date': form.cleaned_data['date'].isoformat(),  
             }
 
-            # Redirect to the schedule form view with pet_id
             return redirect('schedule', pet_id=pet.id)
     else:
         initial_data = {
@@ -72,12 +68,10 @@ def adopt_form(request, pet_id):
 @login_required
 @admin_required
 def adoption_management(request):
-    # Filter pets that are requested
     pets = Pet.objects.filter(is_requested=True).prefetch_related(
-        'adoption_set'  # Assuming 'adoption_set' is the related name for the Adoption model (Django default)
+        'adoption_set' 
     )
 
-    # Pass both `pets` and related `adoptions` to the template
     return render(request, 'adoption_management.html', {
         'pets': pets,
     })
@@ -85,11 +79,9 @@ def adoption_management(request):
 @login_required
 @admin_required
 def review_form(request, pet_id):
-    # Get the adoption record for the given pet
     adoption = get_object_or_404(Adoption.objects.select_related('adopter__user'), pet__id=pet_id)
     profile = adoption.adopter
 
-    # Pass the adoption record to the template
     return render(request, 'review_form.html', {
         'adoption': adoption,
         'profile': profile,
