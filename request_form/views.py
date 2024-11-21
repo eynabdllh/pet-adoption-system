@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import AdoptionForm
 from pet_listing.models import Pet
+from schedule_form.models import Schedule
 from django.contrib.auth.decorators import login_required
 from login_register.decorators import admin_required, adopter_required
 from login_register.models import User
@@ -142,16 +143,16 @@ def review_form(request, pet_id):
 @login_required
 @admin_required
 def admin_pickup(request):
-    status = request.GET.get('status', 'requested')  # Default to 'requested'
+    status = request.GET.get('status', 'upcoming')  # Default to 'requested'
 
-    if status == 'adopted':
-        pets = Pet.objects.filter(is_adopted=True).prefetch_related('adoption_set')
+    if status == 'completed':
+        schedules = Schedule.objects.filter(completed=True).prefetch_related('adoption_set')
     elif status == 'cancelled':
-        pets = Pet.objects.filter(is_cancelled=True).prefetch_related('adoption_set')
+        schedules = Schedule.objects.filter(cancelled=True).prefetch_related('adoption_set')
     else:  
-        pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
+        schedules = Schedule.objects.filter(upcoming=True).prefetch_related('adoption_set')
 
     return render(request, 'admin_pickup.html', {
-        'pets': pets,
+        'schedules': schedules,
         'status': status,  
     })

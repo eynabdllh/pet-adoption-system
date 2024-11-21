@@ -67,10 +67,10 @@
     <!-- Tabs -->
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
-            <a class="nav-link {% if status == 'requested' %}active{% endif %}" href="?status=requested">Pending</a>
+            <a class="nav-link {% if status == 'upcoming' %}active{% endif %}" href="?status=upcoming">Upcoming</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'adopted' %}active{% endif %}" href="?status=adopted">Approved</a>
+            <a class="nav-link {% if status == 'completed' %}active{% endif %}" href="?status=completed">Completed</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="?status=cancelled">Cancelled</a>
@@ -79,8 +79,8 @@
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">
-        <!-- Pending Pets -->
-        <div id="requested" class="tab-pane fade {% if status == 'requested' %}show active{% endif %}">
+        <!-- Upcoming Pets -->
+        <div id="upcoming" class="tab-pane fade {% if status == 'upcoming' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -125,8 +125,8 @@
             </div>
         </div>
 
-        <!-- Approved Pets -->
-        <div id="adopted" class="tab-pane fade {% if status == 'adopted' %}show active{% endif %}">
+        <!-- Completed Pets -->
+        <div id="completed" class="tab-pane fade {% if status == 'completed' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -141,8 +141,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for pet in pets %}
-                        {% if pet.is_adopted %}
+                        {% for schedule in schedules %}
+                        {% if schedule.completed %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>
