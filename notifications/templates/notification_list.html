@@ -1,4 +1,5 @@
-{% extends 'base_adopter.html' %}
+{% extends base_template %}
+
 {% load static %}
 
 {% block page_title %}
@@ -7,13 +8,110 @@ Notifications
 
 
 {% block content %}
-    <h3>{% if }</h3>
+<style>
+    .notif_message{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;   
+    }
 
-    {% for notification in notifications %}
-    <div>
-        <h3>{{notification.title}}</h3>
-        <p>{{notification.message}}</p>
-        <p>Date: {{notification.date_sent}}</p>
+    .button_all_use_position{
+        padding: 15px 5px;
+    }
+
+    .notif_message:hover{
+        display: block;
+    }
+
+    .notif_container{
+        background-color: white;
+        box-shadow: 0 4px 100px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        overflow: auto;
+        height: 100%;
+    }
+
+    .notif_box,.notif_box_read{
+        position: relative;
+        padding: 15px;
+        border: 0.7px black solid;
+        border-radius: 11px;
+        margin-bottom: 10px;
+    }
+
+    .notif_box_read{
+        color: gray;
+        border: 0.1px #CDCDCD solid;
+        background-color: #F6F6f6;
+    }
+
+    .button-position{
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 10px;
+    }
+
+    .button_mark_as_read,.button_remove_notif{
+        border-radius: 5px;   
+        border: none;
+        width: fit-content;
+        padding: 9px 10px;
+    }
+
+    .button_remove_notif{
+        background-color: #FF6F61;
+        color: white
+    }
+
+    .button_mark_as_read{
+        background-color: lightgray;
+    }
+</style>
+
+    <div class="notif_container">
+        <div class="button_all_use_position">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="mark_all_as_read" class="button_mark_as_read">Mark All as Read</button>
+                <button type="submit" name="remove_all_read" class="button_remove_notif">Delete Read Notifications</button>
+            </form>
+        </div>
+        
+
+        {% if notif_count > 0 %}
+            {% for notification in notifications %}
+                {% if notification.isRead %}
+                    <div class="notif_box_read">
+                {% else %}
+                    <div class="notif_box">
+                {% endif %}
+
+                    <div>
+                        <h3>{{notification.title}}</h3>
+                        <p class="notif_message">{{notification.message}}</p>
+                        <p>{{notification.date_sent}}</p>
+                    </div>
+                    
+                    <div class="button-position">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="notif_id" value="{{ notification.id }}">
+
+                            {% if not notification.isRead %}
+                                <button type="submit" name="mark_as_read" class="button_mark_as_read">Mark as Read</button>
+                            {% endif %}
+
+                            <button type="submit" name="remove_notif" class="button_remove_notif">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <h4>There are no notifications</h4>
+        {% endif %}
+
     </div>
-    {% endfor %}
 {% endblock %}
