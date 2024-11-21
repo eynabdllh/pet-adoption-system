@@ -73,7 +73,7 @@
             <a class="nav-link {% if status == 'adopted' %}active{% endif %}" href="?status=adopted">Approved</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="?status=cancelled">Cancelled</a>
+            <a class="nav-link {% if status == 'rejected' %}active{% endif %}" href="?status=rejected">Rejected</a>
         </li>
     </ul>
 
@@ -170,8 +170,8 @@
             </div>
         </div>
 
-        <!-- Cancelled Pets -->
-        <div id="cancelled" class="tab-pane fade {% if status == 'cancelled' %}show active{% endif %}">
+        <!-- Rejected Pets -->
+        <div id="rejected" class="tab-pane fade {% if status == 'rejected' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -187,7 +187,7 @@
                     </thead>
                     <tbody>
                         {% for pet in pets %}
-                        {% if pet.is_cancelled %}
+                        {% if pet.is_rejected %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>
@@ -206,8 +206,8 @@
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
                             {% endfor %}
-                            <td><span class="badge badge-success" style="background-color: #B3261E">Cancelled</span></td>
-                            <td>Reason for cancel.....</td>
+                            <td><span class="badge badge-success" style="background-color: #B3261E">Rejected</span></td>
+                            <td>Reason for rejection.....</td>
                         </tr>
                         {% endif %}
                         {% endfor %}

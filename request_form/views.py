@@ -85,18 +85,21 @@ def adopt_form(request, pet_id):
 @login_required
 @admin_required
 def adoption_management(request):
-    status = request.GET.get('status', 'requested')  # Default to 'requested'
+    # Get the status from the GET parameters, default to 'requested'
+    status = request.GET.get('status', 'requested')  
 
+    # Filter pets based on the status passed via GET parameter
     if status == 'adopted':
         pets = Pet.objects.filter(is_adopted=True).prefetch_related('adoption_set')
-    elif status == 'cancelled':
-        pets = Pet.objects.filter(is_cancelled=True).prefetch_related('adoption_set')
-    else:  
+    elif status == 'rejected':
+        pets = Pet.objects.filter(is_rejected=True).prefetch_related('adoption_set')
+    else:  # Default to 'requested'
         pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
 
+    # Pass the pets and status to the template
     return render(request, 'adoption_management.html', {
         'pets': pets,
-        'status': status,  
+        'status': status,  # Pass the current status to highlight the correct tab in the template
     })
 
 @login_required
@@ -119,9 +122,9 @@ def review_form(request, pet_id):
                 pet.save()
                 return JsonResponse({'success': True, 'message': 'The pet has been marked as adopted.'})
 
-            elif status == 'cancelled':
+            elif status == 'rejected':
                 pet.is_requested = False
-                pet.is_available = True
+                pet.is_rejected = True
                 pet.save()
                 return JsonResponse({'success': True, 'message': 'The pet request has been cancelled and marked as available.'})
 
