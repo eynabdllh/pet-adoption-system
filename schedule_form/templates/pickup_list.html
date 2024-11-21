@@ -58,6 +58,7 @@ Pick Up List
 
 <div class="pickup-list">
     {% for pickup in pickups %}
+        {% if pickup.pet.is_adopted %}
         <div class="pickup-card">
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             
@@ -73,6 +74,7 @@ Pick Up List
                 <p>If you have any questions or need support, feel free to contact us. <strong>{{ pickup.pet.name }}</strong> is excited to meet you and thank you for giving them a loving home!</p>
             </div>
         </div>
+        {% endif %}
     {% empty %}
         <p>No scheduled pick-ups at this time.</p>
     {% endfor %}

@@ -51,12 +51,12 @@
     }
     a {
     color: #FF6F61;
-    text-decoration: none; /* Removes underline */
+    text-decoration: none; 
     }
 
     a:hover {
-        color: #df2588; /* Changes color on hover */
-        text-decoration: none; /* Ensures no underline on hover */
+        color: #df2588; 
+        text-decoration: none; 
     }
 
 </style>
@@ -70,6 +70,9 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#approved">Approved</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#rejected">Rejected</a>
         </li>
     </ul>
 
@@ -144,24 +147,66 @@
                             <td>
                                 {% if pet.main_image %}
                                     <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
+                                {% else %}
+                                    <img src="{% static 'images/default_image.jpg' %}" alt="No Image Available" class="img-pet">
                                 {% endif %}
                                 {{ pet.name }}
                             </td>
                             
                             <td>{{ pet.pet_type|capfirst }}</td>
-                            <td>{{ pet.breed }}</td>
-                            <td>{{ pet.age }}</td>
-                            <td>{{ pet.gender|capfirst }}</td>
-                            <td>₱{{ pet.adoption_fee }}</td>
-                            <td>{{ pet.time_in_shelter }}</td>
-                            <td><span class="badge badge-secondary">Adopted</span></td>
+                    
+                            {# Access related Adoption details #}
+                            {% for adoption in pet.adoption_set.all %}
+                                <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
+                                <td>{{ adoption.date }}</td>
+                            {% endfor %}
+                            <td><span class="badge badge-success" style="background-color: #1EBE91">Adopted</span></td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Rejected Pets -->
+        <div id="approved" class="tab-pane fade">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pet</th>
+                            <th>Species</th>
+                            <th>Adopter</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pet in pets %}
+                        {% if pet.is_adopted %}
+                        <tr>
+                            <td>{{ pet.id }}</td>
                             <td>
-                                <a href="{% url 'admin_view_pet' pet.id %}" class="text-secondary"><i class="fas fa-eye"></i></a>
-                                <a href="#" class="text-secondary" data-toggle="modal" data-target="#updatePetModal{{ pet.id }}">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{% url 'admin_delete_pet' pet.id %}" class="text-secondary"><i class="fas fa-trash"></i></a>
+                                {% if pet.main_image %}
+                                    <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
+                                {% else %}
+                                    <img src="{% static 'images/default_image.jpg' %}" alt="No Image Available" class="img-pet">
+                                {% endif %}
+                                {{ pet.name }}
                             </td>
+                            
+                            <td>{{ pet.pet_type|capfirst }}</td>
+                    
+                            {# Access related Adoption details #}
+                            {% for adoption in pet.adoption_set.all %}
+                                <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
+                                <td>{{ adoption.date }}</td>
+                            {% endfor %}
+                            <td><span class="badge badge-success">Pending</span></td>
+                            <td><a href="{% url 'review_form' pet.id %}">Review Application >>></a></td>
                         </tr>
                         {% endif %}
                         {% endfor %}

@@ -117,7 +117,7 @@ My Adoption
                 <div class="pet-details">
                     <p>
                         <img src="{% static 'images/gender_2.png' %}" alt="Gender Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                        <strong>Gender:</strong> &nbsp; &nbsp; &nbsp;{{ pet.gender }}
+                        <strong>Gender:</strong> &nbsp; &nbsp; &nbsp;{{ pet.gender|capfirst }}
                     </p>
                     <p>
                         <img src="{% static 'images/heart_2.png' %}" alt="Heart Icon" style="width: 25px; height: 25px; margin-right: 30px;">

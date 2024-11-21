@@ -23,7 +23,8 @@ Adopt a Pet
     }
 
     .d-flex {
-        justify-content: space-between;
+        display: flex;
+        justify-content: center;
     }
 
     .btn:hover {
@@ -36,7 +37,7 @@ Adopt a Pet
         height: 43px;
         margin-bottom: 10px;
         border-radius: 10px;
-        width: 150px;
+        width: 200px;
     }
 
     .titleCard {
@@ -113,8 +114,8 @@ Adopt a Pet
 }
 
 .modal-content {
-    width: 80%;
-    max-width: 500px;
+    width: 100%;
+    max-width: 700px;
     padding: 20px;
     border-radius: 8px;
     background-color: #fefefe;
@@ -190,7 +191,6 @@ Adopt a Pet
         </div>
         
         <div class="d-flex">
-            <button type="reset" class="btn btn-clear">Clear All</button> 
             <button type="button" onclick="showModal()" class="btn btn-next">Next</button>
         </div>
     </form>
@@ -198,13 +198,13 @@ Adopt a Pet
 
 <!-- Modal for Confirmation -->
 <div id="confirmationModal" class="modal">
-    <div class="modal-content" style="width: 500px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
+    <div class="modal-content" style="width: 700px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             <img src="{% static 'images/caution.png' %}" alt="Confirm" style="width: 130px; height: 120px; margin-left: 30px;">
         </div>
         <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 20px;">Do you want to Proceed?</h2>
-        <p style="font-family: 'Fredoka', sans-serif; color: #555; font-size: 16px; margin-bottom: 30px;">
-            NOTE: Please review the form details before proceeding to avoid mistakes.
+        <p style="font-family: 'Fredoka', sans-serif; color: #555; font-size: 20px; margin-bottom: 30px;">
+            Please review the form details before proceeding to avoid mistakes.
         </p>
         <div style="display: flex; justify-content: space-around; gap: 20px;">
             <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
