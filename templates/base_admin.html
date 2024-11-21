@@ -95,10 +95,23 @@
         }
 
         .top-bar .notification-icon {
+            border: white 2px solid;
             margin-right: 20px;
             font-size: 20px;
             padding: 5px;
             color: #FF4A4A; 
+        }
+
+        .top-bar .notification-icon.active {
+            border: #FF6F61 2px solid;
+            border-radius: 25px;
+            background-color: rgba(250, 200, 30, 0.4);
+        }
+
+        .top-bar .notification-icon:hover {
+            border: #FF6F61 2px solid;
+            border-radius: 25px;
+            background-color: rgba(250, 200, 30, 0.4);
         }
 
         .notification {
@@ -238,7 +251,7 @@
                     <div class="page-title">{% block page_title %}{% endblock %}</div>
                 </div>
                 <div class="right-items">
-                    <div class="notification-icon">
+                    <div class="notification-icon {% if request.resolver_match.url_name == 'notification_list' %} active {% endif %}">
                         <a href="{% url 'notification_list' %}">
                             <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
                         </a>
