@@ -3,6 +3,7 @@
 
 {% block content %}
 {% load static %}
+
 <style>
     .table-card {
         border-radius: 0 0 12px 12px;
@@ -50,13 +51,13 @@
         background-color: #FF6E00 ;
     }
     a {
-    color: #FF6F61;
-    text-decoration: none; 
+        color: #FF6F61;
+        text-decoration: none; /* Removes underline */
     }
 
     a:hover {
-        color: #df2588; 
-        text-decoration: none; 
+        color: #df2588; /* Changes color on hover */
+        text-decoration: none; /* Ensures no underline on hover */
     }
 
 </style>
@@ -66,20 +67,20 @@
     <!-- Tabs -->
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#pending">Pending</a>
+            <a class="nav-link {% if status == 'requested' %}active{% endif %}" href="?status=requested">Pending</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#approved">Approved</a>
+            <a class="nav-link {% if status == 'adopted' %}active{% endif %}" href="?status=adopted">Approved</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#rejected">Rejected</a>
+            <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="?status=cancelled">Cancelled</a>
         </li>
     </ul>
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">
         <!-- Pending Pets -->
-        <div id="pending" class="tab-pane fade show active">
+        <div id="requested" class="tab-pane fade {% if status == 'requested' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -125,7 +126,7 @@
         </div>
 
         <!-- Approved Pets -->
-        <div id="approved" class="tab-pane fade">
+        <div id="adopted" class="tab-pane fade {% if status == 'adopted' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -155,7 +156,7 @@
                             
                             <td>{{ pet.pet_type|capfirst }}</td>
                     
-                            {# Access related Adoption details #}
+                             {# Access related Adoption details #}
                             {% for adoption in pet.adoption_set.all %}
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
@@ -169,8 +170,8 @@
             </div>
         </div>
 
-        <!-- Rejected Pets -->
-        <div id="approved" class="tab-pane fade">
+        <!-- Cancelled Pets -->
+        <div id="cancelled" class="tab-pane fade {% if status == 'cancelled' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -181,12 +182,12 @@
                             <th>Adopter</th>
                             <th>Request Date</th>
                             <th>Status</th>
-                            <th> </th>
+                            <th>Reason</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for pet in pets %}
-                        {% if pet.is_adopted %}
+                        {% if pet.is_cancelled %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>
@@ -200,13 +201,13 @@
                             
                             <td>{{ pet.pet_type|capfirst }}</td>
                     
-                            {# Access related Adoption details #}
+                             {# Access related Adoption details #}
                             {% for adoption in pet.adoption_set.all %}
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
                             {% endfor %}
-                            <td><span class="badge badge-success">Pending</span></td>
-                            <td><a href="{% url 'review_form' pet.id %}">Review Application >>></a></td>
+                            <td><span class="badge badge-success" style="background-color: #B3261E">Cancelled</span></td>
+                            <td>Reason for cancel.....</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -214,6 +215,7 @@
                 </table>
             </div>
         </div>
+
     </div>
     </div>
 </div>

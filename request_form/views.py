@@ -28,6 +28,22 @@ def adopt_form(request, pet_id):
     if request.method == 'POST':
         form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
+            adoption = Adoption.objects.create(
+                adopter=user.profile,
+                pet=pet,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                age=form.cleaned_data['age'],
+                address=form.cleaned_data['address'],
+                contact_number=form.cleaned_data['contact_number'],
+                email=user.email,
+                date=form.cleaned_data['date'],
+            )
+            
+            pet.is_requested = True
+            pet.is_available = False
+            pet.save()
+           
             request.session['adoption_form_data'] = {
                 'adopter_id': user.profile.id,
                 'pet_id': pet.id,
@@ -69,15 +85,18 @@ def adopt_form(request, pet_id):
 @login_required
 @admin_required
 def adoption_management(request):
-    pets = Pet.objects.filter(is_requested=True).prefetch_related(
-        'adoption_set' 
-    )
-    pets = Pet.objects.filter(is_adopted=True).prefetch_related(
-        'adoption_set' 
-    )
+    status = request.GET.get('status', 'requested')  # Default to 'requested'
+
+    if status == 'adopted':
+        pets = Pet.objects.filter(is_adopted=True).prefetch_related('adoption_set')
+    elif status == 'cancelled':
+        pets = Pet.objects.filter(is_cancelled=True).prefetch_related('adoption_set')
+    else:  
+        pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
 
     return render(request, 'adoption_management.html', {
         'pets': pets,
+        'status': status,  
     })
 
 @login_required
@@ -88,11 +107,11 @@ def review_form(request, pet_id):
 
     if request.method == 'POST':
         try:
-            # Parse JSON data from the request
+           
             data = json.loads(request.body)
             status = data.get('status')
 
-            pet = adoption.pet  # Get the pet object directly from the adoption record
+            pet = adoption.pet 
 
             if status == 'adopted':
                 pet.is_requested = False
@@ -115,4 +134,21 @@ def review_form(request, pet_id):
     return render(request, 'review_form.html', {
         'adoption': adoption,
         'profile': profile,
+    })
+
+@login_required
+@admin_required
+def admin_pickup(request):
+    status = request.GET.get('status', 'requested')  # Default to 'requested'
+
+    if status == 'adopted':
+        pets = Pet.objects.filter(is_adopted=True).prefetch_related('adoption_set')
+    elif status == 'cancelled':
+        pets = Pet.objects.filter(is_cancelled=True).prefetch_related('adoption_set')
+    else:  
+        pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
+
+    return render(request, 'admin_pickup.html', {
+        'pets': pets,
+        'status': status,  
     })
