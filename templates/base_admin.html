@@ -228,7 +228,7 @@
                 <img src="{% static 'images/home.png' %}" alt="Adoption Management" class="icon-img">
                 Adoption Management
             </a>
-            <a href="#">
+            <a href="{% url 'admin_pickup' %}" class="{% if request.resolver_match.url_name == 'admin_pickup' %} active {% endif %}">
                 <img src="{% static 'images/pickup.png' %}" alt="Pick Up Schedule" class="icon-img">
                 Pick Up Schedule
             </a>
