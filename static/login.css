@@ -29,7 +29,7 @@ body {
     background-color: var(--darkpink);
 }
 
-#loginBox {
+#contentBox {
     position: fixed;
     right: 0;
     width: 50%;
@@ -59,7 +59,7 @@ body {
     height: 200px;
 }
 
-input[type="email"], input[type="password"], input[type="text"], input[type="number"] {
+/* input[type="email"], input[type="password"], input[type="text"], input[type="number"] {
     margin: 0 auto;
     border: 2px #9F9F9F solid;
     border-radius: 5px;
@@ -69,22 +69,9 @@ input[type="email"], input[type="password"], input[type="text"], input[type="num
     height: 20px;
     width: 100%;
     max-width: 95%;
-}
+} */
 
-input[type="submit"] {
-    background-color: var(--pink);
-    border: none;
-    border-radius: 100px;
-    color: white;
-    padding: 15px 60px;
-    margin-top: 30px;
-    font-size: 1em;
-    cursor: pointer;
-}
 
-input[type="submit"]:hover {
-    background-color: #e55b50;
-}
 
 .validation-text {
     color: red;
@@ -92,7 +79,6 @@ input[type="submit"]:hover {
     display: block;
     margin-top: 5px;
     text-align: left;
-    padding-left: 10px;
 }
 
 h1 {
@@ -114,11 +100,6 @@ a {
 form {
     margin: 0 auto;
     width: 500px;
-
-}
-
-.center {
-    text-align: center;
 }
 
 form label {
@@ -126,85 +107,7 @@ form label {
     display: block;
 }
 
-.password-container {
-    position: relative;
-}
-
-.password-container input {
-    width: 100%;
-}
-
-.password-container .toggle-password {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #888;
-}
-/*
-:root {
-    --pink: #FF6F61;
-    --darkpink: #FFDDD2;
-    --beige: #FFF1EE;
->>>>>>> be95b3a97b3164798857d6a2a73366fe126c3457
-
-body {
-    margin: 0;
-    background-color: var(--darkpink);    
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-}
-
-#logo {
-    width: 12%;
-    height: 5%;
-}
-
-#person {
-    width: 30.2%;
-    height: 55.2%;
-}
-
-#designBox {
-    position: fixed;
-    left: 0;
-    width: 50%;
-    height: 100%;
-    background-color: var(--darkpink);
-}
-
-#loginBox {
-    position: fixed;
-    right: 0;
-    margin-top: 8px;
-    width: 50%;
-    height: 100%;
-    background-color: var(--beige);
-    border-radius: 25px 0px 0px 25px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    color: #735858;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.form-header {
-    position: relative;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.paw-icon {
-    position: absolute;
-    top: -110px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 200px;
-}
-
-input[type="email"], input[type="password"], input[type="text"], input[type="number"] {
+form .form-text{
     margin: 0 auto;
     border: 2px #9F9F9F solid;
     border-radius: 5px;
@@ -216,7 +119,20 @@ input[type="email"], input[type="password"], input[type="text"], input[type="num
     max-width: 95%;
 }
 
-input[type="submit"] {
+form .remember_me{
+    margin-top: 10px;
+}
+
+form .remember_me label{
+    display: inline;
+}
+
+form .remember_me input{
+    height: 20px;
+    width: 20px;
+}
+
+form .submit{
     background-color: var(--pink);
     border: none;
     border-radius: 100px;
@@ -227,50 +143,15 @@ input[type="submit"] {
     cursor: pointer;
 }
 
-input[type="submit"]:hover {
+form .submit:hover {
     background-color: #e55b50;
-}
-
-.validation-text {
-    color: red;
-    font-size: 0.75em;  
-    display: block;
-    margin-top: 5px;
-    text-align: left;
-    padding-left: 10px;
-}
-
-h1 {
-    color: #3E2828;
-    font-size: 8.5vmin;
-}
-
-h2 {
-    color: #735858;
-    font-size: 4vmin;
-    font-style: bold;
-}
-
-a {
-    color: var(--pink);
-    text-decoration: none;
-}
-
-form {
-    margin: 0 auto;
-    width: 500px;
-
 }
 
 .center {
     text-align: center;
 }
 
-<<<<<<< HEAD
-form label {
-    margin-top: 10px;
-    display: block;
-}
+
 
 .password-container {
     position: relative;
@@ -288,9 +169,3 @@ form label {
     cursor: pointer;
     color: #888;
 }
-
-body {
-    margin: 0;
-    background-color: var(--darkpink);    
-}
-*/

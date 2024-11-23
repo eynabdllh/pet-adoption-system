@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>{% block page_title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'favicon/Logo_2.png' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div>
+        <div id="designBox">
+        <img src="{% static 'images/logo.png' %}" id="logo" style="position: fixed; left: 8%; top: 4%;">
+        <h1 id="slogan" style="position: fixed; left: 12%; top: 15%; max-width: 100%;"><span style="color: #FF6F61;">Happiness</span><br>starts here</h1>
+        <img src="{% static 'images/login-person.png' %}" id="person" style="position: fixed; left: 14%; top: 45%;">
+        </div>
+    </div>
+
+    <div id="contentBox">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

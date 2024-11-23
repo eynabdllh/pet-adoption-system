@@ -1,9 +1,11 @@
 from django import forms
 from django.contrib.auth.hashers import make_password
 from .models import User
+
 class LoginForm(forms.Form):
-    email = forms.EmailField(label="Email")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput)
+    email = forms.EmailField(label="Email Address:", widget=forms.TextInput(attrs={'class': 'form-text'}))
+    password = forms.CharField(label="Password:", widget=forms.PasswordInput(attrs={'class': 'form-text'}))
+    remember_me = forms.BooleanField(label="Remember Me", initial=False ,required=False, label_suffix="", widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}))
 
 class RegisterForm(forms.ModelForm):
     full_name = forms.CharField(label="Full Name", max_length=100)

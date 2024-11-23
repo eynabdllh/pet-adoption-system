@@ -13,6 +13,7 @@ def Login(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
+            remember_me = form.cleaned_data['remember_me']
 
             user = User.objects.filter(email=email).first()
 
@@ -21,6 +22,8 @@ def Login(request):
                 request.session['user_type'] = 'Admin' if user.isAdmin else 'Adopter'
                 request.session['user_first_name'] = user.first_name
                 request.session['user_last_name'] = user.last_name
+
+                request.session['remember_me'] =  True if remember_me else False
 
                 profile = Profile.objects.filter(user=user).first()
                 request.session['profile_image_url'] = profile.profile_image.url if profile and profile.profile_image else None
@@ -31,16 +34,17 @@ def Login(request):
             else:
                 validation_error = 'Invalid email or password.'
     else:
-        form = LoginForm()
+        if request.session['remember_me'] == True:
+            id = request.session['user_id']
+            user = User.objects.get(id=id)
+            form = LoginForm(initial={'remember_me': True, 'email': user.email})
+
+        else:
+            form = LoginForm()
 
     return render(request, 'login.html', {
         'form': form,
         'validation': validation_error,
-        'title_text': 'Login',
-        'submit_text': 'Log in',
-        'redirect_message': "Don't have an account?",
-        'redirect_title': 'Sign up',
-        'redirect_link': 'register'
     })
 
 def Register(request): 
@@ -69,7 +73,9 @@ def Register(request):
 
 
 def logout(request):
-    if 'user_id' in request.session:
+    remember_me = request.session['remember_me']
+
+    if 'user_id' in request.session and not remember_me:
         del request.session['user_id']
     if 'user_type' in request.session:
         del request.session['user_type']
