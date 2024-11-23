@@ -217,7 +217,7 @@ My Adoption
 <div id="adopted" class="tab-content adopted-list">
     {% for pickup in pickups %}
     {% if pickup.pet.is_adopted %}
-        <div class="adopted-card">
+        <div class="adopted-card" style="margin-bottom: 10px;">
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details-container">
             <div class="adopted-details">
@@ -286,7 +286,7 @@ My Adoption
 <div id="requested" class="tab-content pickup-list" style="display: none;">
     {% for pickup in pickups %}
     {% if pickup.pet.is_requested %}
-        <div class="pickup-card">
+        <div class="pickup-card" style="margin-bottom: 10px;">
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details">
                 <h2>{{ pickup.pet.name }}</h2>
