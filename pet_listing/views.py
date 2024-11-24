@@ -7,42 +7,38 @@ from .forms import PetForm
 from login_register.decorators import admin_required, adopter_required
 from django.contrib import messages
 from django.db.models import Q
+from django.utils import timezone
 
 @login_required
 @adopter_required
 def adopter_pet_list(request):
-    query = request.GET.get('q', '')
-    pets = Pet.objects.filter(is_available=True) 
-    if query:
-        pets = pets.filter(
-            Q(name__icontains=query) | 
-            Q(pet_type__iexact=query) |  
-            Q(breed__icontains=query) |  
-            Q(gender__iexact=query)
-        )
-    return render(request, 'adopter_pet_list.html', {'pets': pets, 'query': query})
+    today = timezone.now().date()
 
-@login_required
-def view_pet_detail(request, pet_id):
-    pet = get_object_or_404(Pet, id=pet_id)
-    return render(request, 'view_pet.html', {'pet': pet})
-
-@login_required
-@admin_required
-def admin_pet_list(request):
     query = request.GET.get('q', '')
     pet_type = request.GET.get('pet_type', '')
     gender = request.GET.get('gender', '')
-    sort_by = request.GET.get('sort_by', '')
+    status = request.GET.get('status', '')
+    age = request.GET.get('age', '')
+    adoption_fee_min = request.GET.get('adoption_fee_min', '')
+    adoption_fee_max = request.GET.get('adoption_fee_max', '')
+    time_in_shelter_min = request.GET.get('time_in_shelter_min', '')
+    time_in_shelter_max = request.GET.get('time_in_shelter_max', '')
+    sort_by_name = request.GET.get('sort_by_name', '')
+    sort_by_age = request.GET.get('sort_by_age', '')
+    sort_by_time_in_shelter = request.GET.get('sort_by_time_in_shelter', '')
+    sort_by_adoption_fee = request.GET.get('sort_by_adoption_fee', '')
 
-    pets = Pet.objects.all()
+    pets = Pet.objects.filter(is_available=True)
+
+    # filters
     if query:
         pets = pets.filter(
-            Q(name__icontains=query) | 
-            Q(pet_type__iexact=query) |  
-            Q(breed__icontains=query) |  
+            Q(name__icontains=query) |
+            Q(pet_type__iexact=query) |
+            Q(breed__icontains=query) |
             Q(gender__iexact=query)
         )
+    
     if pet_type:
         pets = pets.filter(pet_type__iexact=pet_type)
     if gender:
@@ -50,15 +46,168 @@ def admin_pet_list(request):
             pets = pets.filter(gender__isnull=True)
         else:
             pets = pets.filter(gender__iexact=gender)
-    pets = pets.order_by(sort_by or 'id')
+    if age:
+        pets = pets.filter(age=age)
+    if adoption_fee_min:
+        pets = pets.filter(adoption_fee__gte=adoption_fee_min)
+    if adoption_fee_max:
+        pets = pets.filter(adoption_fee__lte=adoption_fee_max)
+    if time_in_shelter_min:
+        pets = pets.filter(time_in_shelter__gte=time_in_shelter_min)
+    if time_in_shelter_max:
+        pets = pets.filter(time_in_shelter__lte=time_in_shelter_max)
 
-    return render(request, 'admin_pet_list.html', {
+    # sorting
+    if sort_by_name:
+        if sort_by_name == 'asc':
+            pets = pets.order_by('name')
+        elif sort_by_name == 'desc':
+            pets = pets.order_by('-name')
+
+    if sort_by_age:
+        if sort_by_age == 'asc':
+            pets = pets.order_by('age')
+        elif sort_by_age == 'desc':
+            pets = pets.order_by('-age')
+
+    if sort_by_time_in_shelter:
+        if sort_by_time_in_shelter == 'asc':
+            pets = pets.order_by('time_in_shelter')
+        elif sort_by_time_in_shelter == 'desc':
+            pets = pets.order_by('-time_in_shelter')
+
+    if sort_by_adoption_fee:
+        if sort_by_adoption_fee == 'asc':
+            pets = pets.order_by('adoption_fee')
+        elif sort_by_adoption_fee == 'desc':
+            pets = pets.order_by('-adoption_fee')
+
+    return render(request, 'adopter_pet_list.html', {
         'pets': pets,
         'query': query,
         'pet_type': pet_type,
         'gender': gender,
-        'sort_by': sort_by,
+        'status': status,
+        'age': age,
+        'adoption_fee_min': adoption_fee_min,
+        'adoption_fee_max': adoption_fee_max,
+        'time_in_shelter_min': time_in_shelter_min,
+        'time_in_shelter_max': time_in_shelter_max,
+        'today': today,
+        'sort_by_name': sort_by_name,
+        'sort_by_age': sort_by_age,
+        'sort_by_time_in_shelter': sort_by_time_in_shelter,
+        'sort_by_adoption_fee': sort_by_adoption_fee,
     })
+
+@login_required
+def view_pet_detail(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    return render(request, 'view_pet.html', {'pet': pet})
+
+from django.utils import timezone
+
+@login_required
+@admin_required
+def admin_pet_list(request):
+    today = timezone.now().date()
+
+    query = request.GET.get('q', '')
+    pet_type = request.GET.get('pet_type', '')
+    gender = request.GET.get('gender', '')
+    status = request.GET.get('status', '')
+    age = request.GET.get('age', '')
+    adoption_fee_min = request.GET.get('adoption_fee_min', '')
+    adoption_fee_max = request.GET.get('adoption_fee_max', '')
+    time_in_shelter_min = request.GET.get('time_in_shelter_min', '')
+    time_in_shelter_max = request.GET.get('time_in_shelter_max', '')
+    sort_by_id = request.GET.get('sort_by_id', '')
+    sort_by_name = request.GET.get('sort_by_name', '')
+    sort_by_age = request.GET.get('sort_by_age', '')
+    sort_by_time_in_shelter = request.GET.get('sort_by_time_in_shelter', '')
+    sort_by_adoption_fee = request.GET.get('sort_by_adoption_fee', '')
+
+    pet_type_choices = Pet.PET_TYPE_CHOICES
+
+    pets = Pet.objects.all()
+
+    # Filtering
+    if query:
+        pets = pets.filter(
+            Q(name__icontains=query) | 
+            Q(pet_type__iexact=query) |  
+            Q(breed__icontains=query) |  
+            Q(gender__iexact=query)
+        )
+
+    if pet_type:
+        pets = pets.filter(pet_type__iexact=pet_type)
+    if gender:
+        if gender == 'none':
+            pets = pets.filter(gender__isnull=True)
+        else:
+            pets = pets.filter(gender__iexact=gender)
+    if age:
+        pets = pets.filter(age__exact=age)
+    if adoption_fee_min:
+        pets = pets.filter(adoption_fee__gte=adoption_fee_min)
+    if adoption_fee_max:
+        pets = pets.filter(adoption_fee__lte=adoption_fee_max)
+    if time_in_shelter_min:
+        pets = pets.filter(time_in_shelter__gte=time_in_shelter_min)
+    if time_in_shelter_max:
+        pets = pets.filter(time_in_shelter__lte=time_in_shelter_max)
+
+    # Sorting
+    if sort_by_id:
+        if sort_by_id == 'asc':
+            pets = pets.order_by('id')
+        elif sort_by_id == 'desc':
+            pets = pets.order_by('-id')
+
+    if sort_by_name:
+        if sort_by_name == 'asc':
+            pets = pets.order_by('name')
+        elif sort_by_name == 'desc':
+            pets = pets.order_by('-name')
+
+    if sort_by_age:
+        if sort_by_age == 'asc':
+            pets = pets.order_by('age')
+        elif sort_by_age == 'desc':
+            pets = pets.order_by('-age')
+
+    if sort_by_time_in_shelter:
+        if sort_by_time_in_shelter == 'asc':
+            pets = pets.order_by('time_in_shelter')
+        elif sort_by_time_in_shelter == 'desc':
+            pets = pets.order_by('-time_in_shelter')
+
+    if sort_by_adoption_fee:
+        if sort_by_adoption_fee == 'asc':
+            pets = pets.order_by('adoption_fee')
+        elif sort_by_adoption_fee == 'desc':
+            pets = pets.order_by('-adoption_fee')
+    return render(request, 'admin_pet_list.html', {
+        'pets': pets,
+        'query': query,
+        'pet_type': pet_type,
+        'pet_type_choices': pet_type_choices, 
+        'gender': gender,
+        'status': status,
+        'age': age,
+        'adoption_fee_min': adoption_fee_min,
+        'adoption_fee_max': adoption_fee_max,
+        'time_in_shelter_min': time_in_shelter_min,
+        'time_in_shelter_max': time_in_shelter_max,
+        'today': today,
+        'sort_by_id': sort_by_id,
+        'sort_by_name': sort_by_name,
+        'sort_by_age': sort_by_age,
+        'sort_by_time_in_shelter': sort_by_time_in_shelter,
+        'sort_by_adoption_fee': sort_by_adoption_fee,
+    })
+
 
 @login_required
 @admin_required
