@@ -129,22 +129,29 @@ My Adoption
     .pickup-details { flex: 1; margin-right: auto; 
     }
     .modal { display: none;  position: fixed;  z-index: 1000; left: 0; top: 0;
-    width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); justify-content: center; 
-    align-items: center; padding: 0;
+    width: 100%; height: 100vh; background-color: rgba(0, 0, 0, 0.4); justify-content: center; 
+    align-items: center; padding: 0; overflow-y: auto;
     }
     .modal.show { display: flex; 
     }
-    .modal-content { background-color: #fff; padding: 20px; border: 1px solid #888; width: 90%; 
-        max-width: 1000px; height: auto; max-height: 90%; border-radius: 0px; box-shadow: none; 
-        position: relative; overflow: hidden; 
+    .modal-content {
+    background-color: #fff; padding: 20px; border: 1px solid #888; width: 100%; 
+    max-width: 1122px; height: 100%; max-height: none; border-radius: 0px; box-shadow: none; 
+        position: relative; overflow-y: auto; aspect-ratio: 11.69 / 8.23;
     }
-    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold;
+    .close { color: #504e4e; float: right; font-size: 28px; font-weight: bold;
     }
     .close:hover,
     .close:focus { color: black; text-decoration: none; cursor: pointer;
     }
-    .certificate-container { width: 100%; height: auto; border: 10px solid #000;
-        padding: 20px; position: relative; background-color: #fff; border-radius: 0px; 
+    .certificate-container { width: 100%;
+        max-width: 1122px; /* Landscape width */
+    aspect-ratio: 11.69 / 8.23; height: auto;
+         border: 10px solid #000;
+        padding: 40px; /* Optional: Add padding around the content */
+    margin: 0 auto; /* Center the content */ position: relative; background-color: #fff; border-radius: 0px;  
+        background-image: url('{% static "images/certificate_bg.png" %}');  background-size: cover;  
+        background-repeat: no-repeat; /* Prevents tiling */ 
     }
     .certificate-container:before, .certificate-container:after {
         content: ''; position: absolute; border: 5px solid #000; width: calc(100% - 20px);
@@ -153,23 +160,23 @@ My Adoption
     .certificate-container:after { top: 20px; left: 20px; width: calc(100% - 40px);
         height: calc(100% - 40px);
     }
-    .certificate-header { text-align: center; font-size: 36px; font-family: 'Times New Roman', Times, serif;
+    .certificate-header { text-align: center; font-size: 36px; font-family: 'Verdana', sans-serif;
         font-weight: bold; margin-bottom: 20px; margin-top: 15px;
     }
-    .certificate-content { text-align: center; font-family: 'Times New Roman', Times, serif;
-        font-size: 18px;
+    .certificate-content { text-align: center; font-family: 'Verdana', sans-serif;
+        font-size:20px;
     }
     .certificate-content strong { font-weight: bold;
     }
-    .certificate-footer { margin-top: 40px; display: flex; justify-content: center; align-items: center;
+    .certificate-footer { margin-top: 40px; display: flex; justify-content: center; align-items: center; font-size:22px;
     }
-    .signature-container { display: flex; justify-content: space-between;  width: 80%;  max-width: 600px; 
+    .signature-container { display: flex; justify-content: space-between;  width: 100%;  max-width: 1000px;
     }
     .adopter-sign,
-    .admin-sign { text-align: center; width: 45%; 
+    .admin-sign { text-align: center; width: 100%; 
     }
     .adopter-sign p,
-    .admin-sign p { margin: 5px 0; 
+    .admin-sign p { margin: 0px 0; 
     }
     .footer-text { margin-top: 20px; font-weight: bold;
     }
@@ -196,7 +203,7 @@ My Adoption
     margin: auto;
     margin-top: 120px;
 }
-    #downloadCertificate { align-self: flex-end;  padding: 8px 16px; border-radius: 5px;
+    #downloadCertificate { align-self: center;  padding: 8px 16px; border-radius: 5px;
             text-decoration: none; color: white; font-weight: bold; background-color: #FF6F61;
             width: auto; 
     }
@@ -210,7 +217,7 @@ My Adoption
 <div id="adopted" class="tab-content adopted-list">
     {% for pickup in pickups %}
     {% if pickup.pet.is_adopted %}
-        <div class="adopted-card">
+        <div class="adopted-card" style="margin-bottom: 10px;">
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details-container">
             <div class="adopted-details">
@@ -239,32 +246,35 @@ My Adoption
 <!-- Certificate Modal -->
 <div id="certificateModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="close" style = "align-self: flex-end;" onclick="closeModal()">&times;</span>
         <div class="certificate-container">
             <div class="certificate-header">
                 ADOPTION CERTIFICATE
             </div>
             <div style="text-align: center; margin-bottom: 20px; ">
-                <img src="{% static 'images/award.png' %}" alt="A badge with a paw print in the center, surrounded by a yellow and red ribbon" width="100" height="100">
+                <img src="{% static 'images/award.png' %}" alt="badge" width="180" height="180">
             </div>
             <div class="certificate-content">
                 <p>This certifies that <strong id="adopter-name"></strong> has finally adopted <strong id="pet-name"></strong>
                 on <strong id="adoption_date"></strong> from <strong>Adopt-A-Pet</strong>.</p>
-                <p>Congratulations on welcoming <strong id="pet-name2"></strong> into your family! We wish you many happy and loving years together.</p>
-                <p>Remember to provide your new family member with proper care, regular veterinary check-ups, and lots of love.</p>
+                <p>Congratulations on welcoming <strong id="pet-name2"></strong> into your family! We wish you many happy and loving years together. 
+                    Remember to provide your new family member with proper care, regular veterinary check-ups, and lots of love.</p>
             </div>
             <div class="certificate-footer">
-                <div class="signature-container">
-                    <div class="adopter-sign">
-                        <p style="margin-top: 30px;"><strong id="adopter-name2"></strong></p>
+                <div class="signature-container" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 100px; margin-top: 40px;">
+                    <!-- Adopter Sign Section -->
+                    <div class="adopter-sign" style="text-align: center;">
+                        <p style="margin-top: 40px;"><strong id="adopter-name2">Adopter Name</strong></p>
                         <p style="margin-top: -20px;">________________________________</p>
                         <p><strong>Adopter</strong></p>
                     </div>
-                    <div class="admin-sign">
-                        <img src="{% static 'images/signature.png' %}" alt="sign" width="70" height="50" margin-bottom="-30px;">
+                    
+                    <!-- Admin Sign Section -->
+                    <div class="admin-sign" style="text-align: center;">
+                        <img src="{% static 'images/signature.png' %}" alt="Admin Signature" width="100" height="80" style="margin-bottom: -10px;">
                         <p style="margin-top: -20px;"><strong>Adopt-A-Pet</strong></p>
                         <p style="margin-top: -20px;">________________________________</p>
-                        <p><strong>Admin</strong> </p>
+                        <p><strong>Admin</strong></p>
                     </div>
                 </div>
             </div>
@@ -276,7 +286,7 @@ My Adoption
 <div id="requested" class="tab-content pickup-list" style="display: none;">
     {% for pickup in pickups %}
     {% if pickup.pet.is_requested %}
-        <div class="pickup-card">
+        <div class="pickup-card" style="margin-bottom: 10px;">
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details">
                 <h2>{{ pickup.pet.name }}</h2>
@@ -358,7 +368,7 @@ function downloadCertificate() {
             filename: 'Adoption_Certificate.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true }, 
-            jsPDF: { unit: 'mm', format: [297, 170], orientation: 'landscape' },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
         };
 
         html2pdf()
