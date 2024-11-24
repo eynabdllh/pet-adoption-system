@@ -72,7 +72,10 @@ def admin_add_pet(request):
                 if i == 0:
                     pet.main_image = pet_image.image
                     pet.save()
+            messages.success(request, 'Pet successfully added!')
             return redirect('admin_pet_list')
+        else:
+            messages.error(request, 'There was an error adding the pet.')
     else:
         pet_form = PetForm()
     return render(request, 'admin_pet_list.html', {'pet_form': pet_form})
@@ -91,7 +94,8 @@ def admin_edit_pet(request, pet_id):
 
             messages.success(request, 'Pet updated successfully.')
             return redirect('admin_pet_list')
-
+        else:
+            messages.error(request, 'There was an error updating the pet.')
     else:
         pet_form = PetForm(instance=pet)
 
@@ -111,4 +115,5 @@ def admin_view_pet(request, pet_id):
 def admin_delete_pet(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     pet.delete()
+    messages.success(request, 'Pet successfully deleted!')
     return redirect('admin_pet_list')
