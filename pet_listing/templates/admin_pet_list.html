@@ -40,27 +40,148 @@
         color: #ffffff;
     }
 
-    .form-check-input {
+    /*Search Styling*/
+    .search-bar .input-group-text {
+        background-color: transparent;
+        border-right: none;
+        cursor: pointer;
+    }
+
+    .search-bar .input-group-text i {
+        color: #FF6F61; 
+    }
+
+    /*Sort and Filter Styling*/
+    .form-check-available {
         width: 6.25rem; 
         height: 1.25rem;
         margin-top: 0.2rem; 
     }
 
+    .container-fluid {
+        padding-top: 20px;
+    }
+
+    .filter-sort-buttons {
+        display: flex;
+        gap: 20px;
+    }
+
+    .filter-sort-buttons a {
+        cursor: pointer;
+    }
+
+    .filter-sort-dropdown {
+        position: relative;
+    }
+
+    .filter-sort-dropdown .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 350px;
+        z-index: 1050;
+        height: 500px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .divider {
+        border-bottom: 1px solid #e0e0e0;
+        margin: 10px 0;
+    }
+
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .radio-group label {
+        margin-bottom: 5px;
+    }
+
+    .form-control-sm {
+        font-size: 0.9rem;
+    }
+
+    .reset-button {
+        color: #FF6F61;
+        width: 100px;
+        padding: 5px 10px 5px 10px;
+        border: 1px solid #FF6F61;
+        border-radius: 5px;
+    }
+
+    a:hover{ 
+        text-decoration: none; 
+        color: #999;
+    }
+
+    .apply-btn {
+        background-color: #FF6F61;
+        color: white;
+        width: 80px;
+        padding: 5px;
+        border: 0px;
+        border-radius: 5px;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields {
+        display: flex;
+        gap: 10px;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .form-group-label {
+        color:#999;
+    }
+
+    .form-check-label {
+        margin-bottom: 10px;    
+        font-weight: 500;
+    }
+
+    .form-check {
+        margin-left: 10%;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column; 
+    }
+
+    .field-group label{
+       font-size: small;
+       font-weight: 500;
+       margin-bottom: 1px;
+    }
+
+    .radio-group input[type="radio"]:checked {
+        background-color: #FF6F61;
+        border-color: #f8f9fa;
+    }
 </style>
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-5">
-        <div class="d-flex justify-content-start align-items-center mb-2">
-            <!-- Add Pet Button -->
-            <button class="btn btn-color mr-2" data-toggle="modal" data-target="#addPetModal">
-                <i class="fas fa-plus"></i> Add new pet
-            </button>
-
-            <!-- Export to Excel Button -->
-            <a href="{% url 'export_pets_to_excel' %}" class="btn btn-success">
-                <i class="fas fa-download"></i> Export to Excel
-            </a>
-         </div>
+        <button class="btn btn-color mr-2" data-toggle="modal" data-target="#addPetModal">
+            <i class="fas fa-plus"></i> Add new pet
+        </button>
 
          <!-- Add Pet Modal -->
          <div class="modal fade" id="addPetModal" tabindex="-1" role="dialog" aria-labelledby="addPetModalLabel" aria-hidden="true">
@@ -91,10 +212,11 @@
 
                             <div class="form-group">
                                 <label for="pet_gender">Gender</label>
-                                <select name="gender" class="form-control" id="pet_gender" required>
+                                <select name="gender" class="form-select form-select-sm" id="pet_gender" required>
                                     <option value="">Select Gender</option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
+                                    <option value="none">None</option>
                                 </select>
                             </div>
 
@@ -102,31 +224,15 @@
                                 <label for="pet_breed">Breed</label>
                                 <input type="text" name="breed" class="form-control" id="pet_breed" required>
                             </div>
-        
                             <div class="form-group">
                                 <label for="pet_type">Type of Species</label>
-                                <select name="pet_type" class="form-control" id="pet_type" required>
+                                <select name="pet_type" class="form-select form-select-sm" id="pet_type" required>
                                     <option value="">Select Species</option>
-                                    <option value="dog">Dog</option>
-                                    <option value="cat">Cat</option>
-                                    <option value="fish">Fish</option>
-                                    <option value="bird">Bird</option>
-                                    <option value="hamster">Hamster</option>
-                                    <option value="rabbit">Rabbit</option>
-                                    <option value="guinea_pig">Guinea Pig</option>
-                                    <option value="turtle">Turtle</option>
-                                    <option value="lizard">Lizard</option>
-                                    <option value="snake">Snake</option>
-                                    <option value="frog">Frog</option>
-                                    <option value="parrot">Parrot</option>
-                                    <option value="chinchilla">Chinchilla</option>
-                                    <option value="ferret">Ferret</option>
-                                    <option value="hedgehog">Hedgehog</option>
-                                    <option value="horse">Horse</option>
-                                    <option value="goat">Goat</option>
+                                    {% for type, label in pet_type_choices %}
+                                        <option value="{{ type }}">{{ label }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
-        
                             <div class="form-group">
                                 <label for="description">Description</label>
                                 <textarea name="description" class="form-control" id="description" rows="3"></textarea>
@@ -139,7 +245,7 @@
 
                             <div class="form-group form-check">
                                 <label class="form-check-label" for="is_available">Is Available</label>
-                                <input type="checkbox" name="is_available" class="form-check-input" id="is_available">
+                                <input type="checkbox" name="is_available" class="form-check-available" id="is_available">
                             </div>
  
                             <div class="form-group">
@@ -162,58 +268,199 @@
             </div>
         </div>
         
-      
         <div class="d-flex mb-0">
-            <form method="GET" action="{% url 'admin_pet_list' %}" class="mr-2 d-flex">
-                <!-- Search Bar -->
-                <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
-
-                <!-- Filter Dropdown faor Pet Type -->
-                <label for="filterPetType" class="sr-only">Filter by</label>
-                <select name="pet_type" id="filterPetType" class="form-control form-control-sm ml-2">
-                    <option value="">Species</option>
-                    <option value="dog" {% if pet_type == 'Dog' %}selected{% endif %}>Dog</option>
-                    <option value="cat" {% if pet_type == 'Cat' %}selected{% endif %}>Cat</option>
-                    <option value="fish" {% if pet_type == 'Fish' %}selected{% endif %}>Fish</option>
-                    <option value="bird" {% if pet_type == 'Bird' %}selected{% endif %}>Bird</option>
-                    <option value="hamster" {% if pet_type == 'Hamster' %}selected{% endif %}>Hamster</option>
-                    <option value="rabbit" {% if pet_type == 'Rabbit' %}selected{% endif %}>Rabbit</option>
-                    <option value="guinea_pig" {% if pet_type == 'Guinea Pig' %}selected{% endif %}>Guinea Pig</option>
-                    <option value="turtle" {% if pet_type == 'Turtle' %}selected{% endif %}>Turtle</option>
-                    <option value="lizard" {% if pet_type == 'Lizard' %}selected{% endif %}>Lizard</option>
-                    <option value="snake" {% if pet_type == 'Snake' %}selected{% endif %}>Snake</option>
-                    <option value="frog" {% if pet_type == 'Frog' %}selected{% endif %}>Frog</option>
-                    <option value="parrot" {% if pet_type == 'Parrot' %}selected{% endif %}>Parrot</option>
-                    <option value="chinchilla" {% if pet_type == 'Chinchilla' %}selected{% endif %}>Chinchilla</option>
-                    <option value="ferret" {% if pet_type == 'Ferret' %}selected{% endif %}>Ferret</option>
-                    <option value="hedgehog" {% if pet_type == 'Hedgehog' %}selected{% endif %}>Hedgehog</option>
-                    <option value="horse" {% if pet_type == 'Horse' %}selected{% endif %}>Horse</option>
-                    <option value="goat" {% if pet_type == 'Goat' %}selected{% endif %}>Goat</option>
-
-                </select>
-
-                <!-- Filter Dropdown for Gender -->
-                <label for="filterGender" class="sr-only">Filter by</label>
-                <select name="gender" id="filterGender" class="form-control form-control-sm ml-2">
-                    <option value="">Gender</option>
-                    <option value="male" {% if gender == 'male' %}selected{% endif %}>Male</option>
-                    <option value="female" {% if gender == 'female' %}selected{% endif %}>Female</option>
-                    <option value="none" {% if gender == 'none' %}selected{% endif %}>None</option>
-                </select>
-
-                <!-- Sort Dropdown -->
-                <label for="sortBy" class="sr-only">Sort by</label>
-                <select name="sort_by" id="sortBy" class="form-control form-control-sm ml-2">
-                    <option value="">Sort by</option>
-                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
-                    <option value="id" {% if sort_by == 'id' %}selected{% endif %}>ID</option>
-                    <option value="age" {% if sort_by == 'age' %}selected{% endif %}>Age</option>
-                    <option value="time_in_shelter" {% if sort_by == 'time_in_shelter' %}selected{% endif %}>Time in Shelter</option>
-                </select>
-                <button type="submit" class="btn btn-color btn-sm ml-2">Apply</button>
+            <form method="GET" action="{% url 'admin_pet_list' %}" class="form-inline search-bar">
+                <div class="input-group w-80">
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
+                </div>
             </form>
+
+             <!-- Filter Dropdown -->
+            <div class="filter-sort-dropdown mr-1 radio-group">
+                <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    <i class="fas fa-filter"></i> Filter
+                </a>
+                <div class="dropdown-menu p-3">
+                    <!-- Filter Header -->
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-filter me-3"></i>
+                        <h5 class="mb-0">Filter</h5>
+                    </div>
+                    
+                    <div class="divider"></div>
+                    <form method="GET" action="{% url 'admin_pet_list' %}">
+                        <!-- Species Filter -->
+                        <div class="form-group">
+                            <label class="form-group-label" for="pet_type">Species</label>
+                            <select name="pet_type" id="pet_type" class="form-select form-select-sm">
+                                <option value="">Select Species</option>
+                                <option value="dog" {% if pet_type == 'dog' %}selected{% endif %}>Dog</option>
+                                <option value="cat" {% if pet_type == 'cat' %}selected{% endif %}>Cat</option>
+                                <option value="fish" {% if pet_type == 'fish' %}selected{% endif %}>Fish</option>
+                                <option value="bird" {% if pet_type == 'bird' %}selected{% endif %}>Bird</option>
+                                <option value="hamster" {% if pet_type == 'hamster' %}selected{% endif %}>Hamster</option>
+                                <option value="rabbit" {% if pet_type == 'rabbit' %}selected{% endif %}>Rabbit</option>
+                                <option value="guinea_pig" {% if pet_type == 'guinea_pig' %}selected{% endif %}>Guinea Pig</option>
+                                <option value="turtle" {% if pet_type == 'turtle' %}selected{% endif %}>Turtle</option>
+                                <option value="lizard" {% if pet_type == 'lizard' %}selected{% endif %}>Lizard</option>
+                                <option value="snake" {% if pet_type == 'snake' %}selected{% endif %}>Snake</option>
+                                <option value="frog" {% if pet_type == 'frog' %}selected{% endif %}>Frog</option>
+                                <option value="parrot" {% if pet_type == 'parrot' %}selected{% endif %}>Parrot</option>
+                                <option value="chinchilla" {% if pet_type == 'chinchilla' %}selected{% endif %}>Chinchilla</option>
+                                <option value="ferret" {% if pet_type == 'ferret' %}selected{% endif %}>Ferret</option>
+                                <option value="hedgehog" {% if pet_type == 'hedgehog' %}selected{% endif %}>Hedgehog</option>
+                                <option value="horse" {% if pet_type == 'horse' %}selected{% endif %}>Horse</option>
+                                <option value="goat" {% if pet_type == 'goat' %}selected{% endif %}>Goat</option>
+                            </select>
+                        </div>
+                        <!-- Gender Filter -->
+                        <div class="divider"></div>
+                        <div class="form-group">
+                            <label class="form-group-label" for="gender">Gender</label>
+                            <select name="gender" id="gender" class="form-select form-select-sm">
+                                <option value="">All Genders</option>
+                                <option value="male" {% if gender == 'male' %}selected{% endif %}>Male</option>
+                                <option value="female" {% if gender == 'female' %}selected{% endif %}>Female</option>
+                                <option value="none" {% if gender == 'none' %}selected{% endif %}>None</option>
+                            </select>
+                        </div>
+                        <!-- Age Filter -->
+                        <div class="divider"></div>
+                        <div class="form-group">
+                            <label class="form-group-label" for="age">Age</label>
+                            <input type="number" name="age" id="age" class="form-control form-control-sm" value="{{ request.GET.age }}">
+                        </div>
+                        <!-- Adoption Fee Filter -->
+                        <div class="divider"></div>
+                        <div class="form-group">
+                            <label class="form-group-label" for="adoption_fee">Adoption Fee (₱)</label>
+                            <div class="inline-fields">
+                                <input type="number" name="adoption_fee_min" class="form-control form-control-sm" placeholder="Min" value="{{ request.GET.adoption_fee_min }}"> -
+                                <input type="number" name="adoption_fee_max" class="form-control form-control-sm" placeholder="Max" value="{{ request.GET.adoption_fee_max }}">
+                            </div>
+                        </div>
+                        <!-- Time in Shelter Filter -->
+                        <div class="divider"></div>
+                        <div class="form-group">
+                            <label class="form-group-label" for="time_in_shelter">Time in Shelter</label>
+                            <div class="inline-fields">
+                                <div class="field-group">
+                                    <label for="time_in_shelter_min">From:</label>
+                                    <input type="date" name="time_in_shelter_min" class="form-control form-control-sm w-100" value="{{ request.GET.time_in_shelter_min }}" max="{{ today }}">
+                                </div>
+                                <div class="field-group">
+                                    <label for="time_in_shelter_max">To:</label>
+                                    <input type="date" name="time_in_shelter_max" class="form-control form-control-sm w-100" value="{{ request.GET.time_in_shelter_max }}" max="{{ today }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="divider"></div>                   
+                        <button type="submit" class="apply-btn">Apply</button>
+                        <a href="{% url 'admin_pet_list' %}" class="reset-button">Reset</a>
+                    </form>
+                </div>
+            </div>
+    
+            <!-- Sort Dropdown -->
+            <div class="filter-sort-dropdown mr-1 radio-group">
+                <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    <i class="fas fa-sort"></i> Sort
+                </a>
+                <div class="dropdown-menu p-3">
+                    <form method="GET" action="{% url 'admin_pet_list' %}">
+                         <!-- Sort Header -->
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-sort me-3"></i>
+                            <h5 class="mb-0">Sort</h5>
+                        </div>
+                        <div class="divider"></div>
+                        <!-- ID Sort -->
+                        <div class="form-group">
+                            <label class="form-group-label" for="sort_by_id">Sort by ID</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_id" value="asc" {% if sort_by_id == 'asc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_id">Ascending</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_id" value="desc" {% if sort_by_id == 'desc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_id">Descending</label>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+
+                        <!-- Name Sort -->
+                        <div class="form-group">
+                            <label class="form-group-label" for="sort_by_name">Sort by Name</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_name" value="desc" {% if sort_by_name == 'desc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_name">A-Z</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_name" value="asc" {% if sort_by_name == 'asc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_name">Z-A</label>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+
+                        <!-- Age Sort -->
+                        <div class="form-group">
+                            <label class="form-group-label" for="sort_by_age">Sort by Age</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_age" value="asc" {% if sort_by_age == 'asc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_age">Ascending</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_age" value="desc" {% if sort_by_age == 'desc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_age">Descending</label>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+
+                        <!-- Time in Shelter Sort -->
+                        <div class="form-group">
+                            <label class="form-group-label" for="sort_by_time_in_shelter">Sort by Time in Shelter</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_time_in_shelter" value="asc" {% if sort_by_time_in_shelter == 'asc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_time_in_shelter">Ascending</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_time_in_shelter" value="desc" {% if sort_by_time_in_shelter == 'desc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_time_in_shelter">Descending</label>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+
+                        <!-- Adoption Fee Sort -->
+                        <div class="form-group">
+                            <label class="form-group-label" for="sort_by_adoption_fee">Sort by Adoption Fee</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_adoption_fee" value="asc" {% if sort_by_adoption_fee == 'asc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_adoption_fee">Ascending</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="sort_by_adoption_fee" value="desc" {% if sort_by_adoption_fee == 'desc' %}checked{% endif %}>
+                                <label class="form-check-label" for="sort_by_adoption_fee">Descending</label>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- Apply Button and Reset Button -->
+                        <button type="submit" class="apply-btn">Apply</button>
+                        <a href="{% url 'admin_pet_list' %}" class="reset-button">Reset</a>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Export to Excel Button -->
+            <a href="{% url 'export_pets_to_excel' %}" class="btn btn-success" title="Export to Excel">
+                <i class="fas fa-download"></i>
+            </a>
         </div>
-    </div>
+    </div> 
 
     <!-- Tabs -->
     <ul class="nav nav-tabs navtab">
@@ -360,10 +607,11 @@
 
                             <div class="form-group">
                                 <label for="pet_gender">Gender</label>
-                                <select name="gender" class="form-control" id="pet_gender_{{ pet.id }}" required>
+                                <select name="gender" class="form-select form-select-sm" id="pet_gender_{{ pet.id }}" required>
                                     <option value="">Select Gender</option>
                                     <option value="male" {% if pet.gender == 'male' %} selected {% endif %}>Male</option>
                                     <option value="female" {% if pet.gender == 'female' %} selected {% endif %}>Female</option>
+                                    <option value="none" {% if pet.gender == 'none' %} selected {% endif %}>None</option>
                                 </select>                        
                             </div>
 
@@ -374,7 +622,7 @@
 
                             <div class="form-group">
                                 <label for="pet_type">Type of Species</label>
-                                <select name="pet_type" class="form-control" id="pet_type_{{ pet.id }}" required>
+                                <select name="pet_type" class="form-select form-select-sm" id="pet_type_{{ pet.id }}" required>
                                     <option value="">Select Species</option>
                                     {% for type, label in pet.PET_TYPE_CHOICES %}
                                         <option value="{{ type }}" {% if pet.pet_type == type %}selected{% endif %}>{{ label }}</option>
@@ -394,7 +642,7 @@
 
                             <div class="form-group form-check">
                                 <label class="form-check-label" for="is_available">Is Available</label>
-                                <input type="checkbox" name="is_available" class="form-check-input" id="is_available" {% if pet.is_available %} checked {% endif %}>
+                                <input type="checkbox" name="is_available" class="form-check-available" id="is_available" {% if pet.is_available %} checked {% endif %}>
                             </div>
 
                             <div class="form-group">
