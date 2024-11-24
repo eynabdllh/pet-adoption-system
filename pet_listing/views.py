@@ -4,6 +4,7 @@ from .models import Pet, PetImage
 from .forms import PetForm, PetImageFormSet
 from login_register.decorators import admin_required, adopter_required
 from django.contrib import messages
+from django.db.models import Q
 
 @login_required
 @adopter_required
@@ -11,7 +12,12 @@ def adopter_pet_list(request):
     query = request.GET.get('q', '')
     pets = Pet.objects.filter(is_available=True) 
     if query:
-        pets = pets.filter(name__icontains=query)
+        pets = pets.filter(
+            Q(name__icontains=query) | 
+            Q(pet_type__iexact=query) |  
+            Q(breed__icontains=query) |  
+            Q(gender__iexact=query)
+        )
     return render(request, 'adopter_pet_list.html', {'pets': pets, 'query': query})
 
 @login_required
@@ -29,7 +35,12 @@ def admin_pet_list(request):
 
     pets = Pet.objects.all()
     if query:
-        pets = pets.filter(name__icontains=query)
+        pets = pets.filter(
+            Q(name__icontains=query) | 
+            Q(pet_type__iexact=query) |  
+            Q(breed__icontains=query) |  
+            Q(gender__iexact=query)
+        )
     if pet_type:
         pets = pets.filter(pet_type__iexact=pet_type)
     if gender:
