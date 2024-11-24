@@ -50,9 +50,17 @@
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-5">
-        <button class="btn btn-color" data-toggle="modal" data-target="#addPetModal">
-            <i class="fas fa-plus"></i> Add new pet
-        </button>
+        <div class="d-flex justify-content-start align-items-center mb-2">
+            <!-- Add Pet Button -->
+            <button class="btn btn-color mr-2" data-toggle="modal" data-target="#addPetModal">
+                <i class="fas fa-plus"></i> Add new pet
+            </button>
+
+            <!-- Export to Excel Button -->
+            <a href="{% url 'export_pets_to_excel' %}" class="btn btn-success">
+                <i class="fas fa-download"></i> Export to Excel
+            </a>
+         </div>
 
          <!-- Add Pet Modal -->
          <div class="modal fade" id="addPetModal" tabindex="-1" role="dialog" aria-labelledby="addPetModalLabel" aria-hidden="true">

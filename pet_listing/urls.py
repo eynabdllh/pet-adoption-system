@@ -9,4 +9,5 @@ urlpatterns = [
     path('admin-dashboard/delete/<int:pet_id>/', views.admin_delete_pet, name='admin_delete_pet'),
     path('', views.adopter_pet_list, name='adopter_pet_list'),
     path('<int:pet_id>/', views.view_pet_detail, name='view_pet'),
+    path('admin/pets/export/', views.export_pets_to_excel, name='export_pets_to_excel'),
 ]
