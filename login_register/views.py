@@ -34,12 +34,12 @@ def Login(request):
             else:
                 validation_error = 'Invalid email or password.'
     else:
-        if request.session['remember_me'] == True:
-            id = request.session['user_id']
-            user = User.objects.get(id=id)
-            form = LoginForm(initial={'remember_me': True, 'email': user.email})
+        # if request.session['remember_me'] == True:
+        #     id = request.session['user_id']
+        #     user = User.objects.get(id=id)
+        #     form = LoginForm(initial={'remember_me': True, 'email': user.email, 'password': user.password})
 
-        else:
+        # else:
             form = LoginForm()
 
     return render(request, 'login.html', {
@@ -73,9 +73,9 @@ def Register(request):
 
 
 def logout(request):
-    remember_me = request.session['remember_me']
+    #remember_me = request.session['remember_me']
 
-    if 'user_id' in request.session and not remember_me:
+    if 'user_id' in request.session: #and not remember_me:
         del request.session['user_id']
     if 'user_type' in request.session:
         del request.session['user_type']
