@@ -104,6 +104,7 @@ def upload_profile_image(request):
     else:
         return redirect('adopter_profile_view')
 
+
 @login_required
 def delete_profile_image(request):
     current_user_id = request.session.get('user_id')
@@ -113,8 +114,10 @@ def delete_profile_image(request):
     if request.method == 'POST':
         if profile.profile_image:
             profile.profile_image.delete()  
-            profile.profile_image = None  
+            profile.profile_image = None 
             profile.save()
+
+            request.session['profile_image_url'] = None 
             messages.success(request, 'Profile image has been deleted.')
         else:
             messages.error(request, 'No profile image to delete.')
@@ -123,4 +126,3 @@ def delete_profile_image(request):
         return redirect('admin_profile_view')
     else:
         return redirect('adopter_profile_view')
-    
