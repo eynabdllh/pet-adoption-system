@@ -12,69 +12,58 @@
 
     <form method="post">
         {% csrf_token %}
-            
-        <label for="full_name">Full Name:</label>
-            {{ form.full_name }}
-            {% if form.full_name.errors %}
-                <span class="validation-text">{{ form.full_name.errors.0 }}</span>
+
+        {% for field in form %}
+            {% if field.name == "password" or field.name == "confirm_password" %}
+                <div>
+                    {{ field.label_tag }}
+                    <div class="password-container">
+                        {{ field }}
+                        <i class="fas fa-eye toggle-password"></i>
+                    </div>
+                    {% if field.errors %}
+                        <span class="validation-text">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <span class="validation-text">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
             {% endif %}
+        {% endfor %}
 
-            <label for="email">Email:</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <span class="validation-text">{{ form.email.errors.0 }}</span>
-            {% endif %}
+        {% if validation %}
+            <span class="validation-text center">{{ validation }}</span>
+        {% endif %}
 
-            <label for="password">Password:</label>
-            <div class="password-container">
-                {{ form.password }}
-                <i class="fas fa-eye toggle-password"></i>
-            </div>
-            {% if form.password.errors %}
-                <span class="validation-text">{{ form.password.errors.0 }}</span>
-            {% endif %}
+        <div class="center">
+            <input class="submit" type="submit" value="Sign up">
+            <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+        </div>
+    </form>
+</body>
 
-            <label for="confirm_password">Confirm Password:</label>
-            <div class="password-container">
-                {{ form.confirm_password }}
-                <i class="fas fa-eye toggle-password"></i>
-            </div>
-            {% if form.confirm_password.errors %}
-                <span class="validation-text">{{ form.confirm_password.errors.0 }}</span>
-            {% endif %}
-
-            {% if validation %}
-                <span class="validation-text">{{ validation }}</span>
-            {% endif %}
-
-            <div class="center">
-                <input type="submit" value="Sign up">
-            </div>
-
-            <p class="center">
-                Already have an account? <a href="{% url 'login' %}">Log in</a>
-            </p>
-        </form>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll(".toggle-password").forEach(function(element) {
-                element.addEventListener("click", function() {
-                    const passwordField = element.previousElementSibling;
-                    if (passwordField.type === "password") {
-                        passwordField.type = "text";
-                        element.classList.remove("fa-eye");
-                        element.classList.add("fa-eye-slash");
-                    } else {
-                        passwordField.type = "password";
-                        element.classList.remove("fa-eye-slash");
-                        element.classList.add("fa-eye");
-                    }
-                });
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".toggle-password").forEach(function(element) {
+        element.addEventListener("click", function() {
+            const passwordField = element.previousElementSibling;
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    element.classList.remove("fa-eye");
+                    element.classList.add("fa-eye-slash");
+                } else {
+                    passwordField.type = "password";
+                    element.classList.remove("fa-eye-slash");
+                    element.classList.add("fa-eye");
+                }
             });
         });
-    </script>
-    
-</body>
+    });
+</script>
 
 {% endblock %}

@@ -7,30 +7,11 @@
 <body>
     <div class="form-header">
         <img src="{% static 'images/paw.png' %}" class="paw-icon">
-    <h2 class="center">Login</h2>
-
+        <h2 class="center">Login</h2>
     </div>
 
     <form method="post">
         {% csrf_token %}
-            <!-- <label for="email">Email Address:</label>
-            {{ form.email }}
-            {% if form.email.errors %}
-                <span class="validation-text">{{ form.email.errors.0 }}</span>
-            {% endif %}
-
-            <label for="password">Password:</label>
-            <div class="password-container">
-                {{ form.password }}
-                <i class="fas fa-eye toggle-password"></i>
-            </div>
-            {% if form.password.errors %}
-                <span class="validation-text">{{ form.password.errors.0 }}</span>
-            {% endif %}
-
-            {% if validation %}
-                <span class="validation-text">{{ validation }}</span>
-            {% endif %} -->
             
         {% for field in form %}
             {% if field.name == "remember_me" %}

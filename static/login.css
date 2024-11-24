@@ -59,20 +59,6 @@ body {
     height: 200px;
 }
 
-/* input[type="email"], input[type="password"], input[type="text"], input[type="number"] {
-    margin: 0 auto;
-    border: 2px #9F9F9F solid;
-    border-radius: 5px;
-    font-size: 1em;
-    margin-top: 5px;
-    padding: 10px;
-    height: 20px;
-    width: 100%;
-    max-width: 95%;
-} */
-
-
-
 .validation-text {
     color: red;
     font-size: 0.75em;  
@@ -150,8 +136,6 @@ form .submit:hover {
 .center {
     text-align: center;
 }
-
-
 
 .password-container {
     position: relative;

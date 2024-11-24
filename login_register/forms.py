@@ -3,13 +3,15 @@ from django.contrib.auth.hashers import make_password
 from .models import User
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(label="Email Address:", widget=forms.TextInput(attrs={'class': 'form-text'}))
-    password = forms.CharField(label="Password:", widget=forms.PasswordInput(attrs={'class': 'form-text'}))
+    email = forms.EmailField(label="Email Address", widget=forms.TextInput(attrs={'class': 'form-text'}))
+    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'form-text'}))
     remember_me = forms.BooleanField(label="Remember Me", initial=False ,required=False, label_suffix="", widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}))
 
 class RegisterForm(forms.ModelForm):
-    full_name = forms.CharField(label="Full Name", max_length=100)
-    confirm_password = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
+    full_name = forms.CharField(label="Full Name", max_length=100, widget=forms.TextInput(attrs={'class': 'form-text'}))
+    email = forms.EmailField(label="Email", widget=forms.TextInput(attrs={'class': 'form-text'}))
+    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'form-text'}))
+    confirm_password = forms.CharField(label="Confirm Password", widget=forms.PasswordInput(attrs={'class': 'form-text'}))
 
     class Meta:
         model = User
@@ -51,10 +53,11 @@ class RegisterForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-
+    
     @staticmethod
     def split_full_name(full_name):
-        parts = full_name.split(maxsplit=1)
-        first_name = parts[0]
-        last_name = parts[1] if len(parts) > 1 else ""      
+        parts = full_name.split()
+        first_name = ' '.join(parts[:-1])
+        last_name = parts[-1]
+       
         return first_name, last_name
