@@ -278,9 +278,13 @@
                                 <input type="number" name="adoption_fee" class="form-control" id="adoption_fee" step="0.01" required>
                             </div>
 
-                            <div class="form-group form-check">
-                                <label class="form-check-label" for="is_available">Is Available</label>
-                                <input type="checkbox" name="is_available" class="form-check-available" id="is_available">
+                            <div class="form-group">
+                                <label for="is_available">Status</label>
+                                <select name="is_available" class="form-select form-select-sm" id="is_available" required>
+                                    <option value="">Select Status</option>
+                                    <option value="True">Available</option>
+                                    <option value="False">Adopted</option>
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -364,9 +368,13 @@
                                 <input type="number" name="adoption_fee" class="form-control" id="adoption_fee" value="{{ pet.adoption_fee }}" step="0.01" required>
                             </div>
 
-                            <div class="form-group form-check">
-                                <label class="form-check-label" for="is_available">Is Available</label>
-                                <input type="checkbox" name="is_available" class="form-check-available" id="is_available" {% if pet.is_available %} checked {% endif %}>
+                            <div class="form-group">
+                                <label for="is_available">Status</label>
+                                <select name="is_available" class="form-select form-select-sm" id="is_available" value="{{ pet.is_available }}" required>
+                                    <option value="">Select Status</option>
+                                    <option value="True" {% if pet.is_available %}selected{% endif %}>Available</option>
+                                    <option value="False" {% if not pet.is_available %}selected{% endif %}>Adopted</option>
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -684,7 +692,7 @@
                     </thead>
                     <tbody>
                         {% for pet in pets %}
-                        {% if pet.is_adopted %}
+                        {% if not pet.is_available %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>

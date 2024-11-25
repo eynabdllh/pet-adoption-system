@@ -158,6 +158,11 @@ def admin_pet_list(request):
     if time_in_shelter_max:
         pets = pets.filter(time_in_shelter__lte=time_in_shelter_max)
 
+    if status == 'adopted':
+        pets = pets.filter(is_adopted=True)
+    elif status == 'available':
+        pets = pets.filter(is_available=True)
+
     # Sorting
     if sort_by_id:
         if sort_by_id == 'asc':
@@ -221,6 +226,12 @@ def admin_add_pet(request):
         
         if pet_form.is_valid():
             pet = pet_form.save()
+
+            if pet.is_available == False:
+                pet.is_adopted = True
+            else:
+                pet.is_adopted = False
+
             for i, image in enumerate(images):
                 pet_image = PetImage(pet=pet, image=image)
                 pet_image.save()
@@ -249,6 +260,11 @@ def admin_edit_pet(request, pet_id):
 
         if pet_form.is_valid():
             pet = pet_form.save()
+
+            if pet.is_available == False:
+                pet.is_adopted = True
+            else:
+                pet.is_adopted = False
 
             for i, image in enumerate(images):
                 if i >= 5: 
