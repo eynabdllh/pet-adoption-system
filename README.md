@@ -1,7 +1,7 @@
 <a id="readme-top"></a>
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="static/images/logo.png" alt="Logo" width="300" height="80">
+    <img src="static/images/logo.png" alt="Logo" width="350" height="80">
   </a>
   <p align="center"><i>This project, adopt-a-pet, is a Django-based web application that simplifies the process of adopting pets from shelters. It is developed as     part of our Information Management 2 capstone.</i></p>
   <a href="https://github.com/eynabdllh/pet-adoption-system/stargazers"><img src="https://img.shields.io/github/stars/eynabdllh/pet-adoption-system" alt="Stars Badge"/></a>
@@ -15,29 +15,25 @@
 
 ---
 
-## 📗 Table of Contents
+## Table of Contents
 
 - [Introduction](#introduction)
 - [Features](#features)
+- [Built With](#built-with)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Setup](#setup)
-  - [Install](#install)
-  - [Usage](#usage)
-  - [Run tests](#run-tests)
-  - [Deployment](#deployment)
 - [ERD](#erd-entity-relationship-diagram)
 - [UI/UX](#uiux-design)
 - [Gantt Chart](#gantt-chart)
 - [Developers](#developers)
-- [Contributors](#contributors)
+- [Top Contributors](#top-contributors)
 - [License](#license)
 
 ---
 
-## 📖 Introduction
+## Introduction
 
-[![Admin Dashboard][product-screenshot]]('static/images/admin-dashboard.png')
+[![Admin-Dashboard](https://github.com/eynabdllh/pet-adoption-system/raw/main/static/images/screenshot.png)](https://github.com/eynabdllh/pet-adoption-system)
 
 adopt-a-pet is a web application designed to make the pet adoption process easier for both animal shelters and adopters. It helps users browse pets, submit adoption requests, schedule pick-ups, and receive notifications, while shelter admins can manage pet listings and oversee the adoption process. This project aims to develop a streamlined and efficient pet adoption system to improve the adoption experience for both shelters and potential adopters.
 
@@ -54,17 +50,75 @@ adopt-a-pet is a web application designed to make the pet adoption process easie
 6. **Notifications:** Receive updates on adoption status, new pet listings, and scheduled visits.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ---
 
-### Built With
-
+## Built With
+<section id="technologies">
+  <a href="https://www.djangoproject.com/" target="_blank">
+    <img src="https://img.shields.io/badge/Django-blue?style=for-the-badge&logo=django" alt="Django" />
+  </a>
+  <a href="https://getbootstrap.com" target="_blank">
+    <img src="https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap" />
+  </a>
+  <a href="https://www.w3.org/Style/CSS/" target="_blank">
+    <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS" />
+  </a>
+  <a href="https://html.spec.whatwg.org/multipage/" target="_blank">
+      <img src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML" />
+  </a>
+  <a href="https://www.javascript.com/" target="_blank">
+      <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Javascript" />
+  </a>
+</section>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
 
-## 💻 Getting Started
+## Getting Started
 
+This is an example of how you may give instructions on setting up your project locally.
+To get a local copy up and running follow these simple example steps.
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.
+#### 1. Install Python
+Install ```python-3.12.5```. Follow the steps from the below reference document based on your Operating System.
+Reference: [https://docs.python-guide.org/starting/installation/](https://docs.python-guide.org/starting/installation/) 
+
+#### 2. Setup virtual environment
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+venv/scripts/Activate
+
+# Install dependencies
+pip install openpyxl
+```
+
+#### 3. Installation
+
+1. Clone the repo
+   ```sh
+   git clone https://github.com/eynabdllh/pet-adoption-system.git
+   ```
+2. Install Requirements
+   ```sh
+   pip install -r requirements.txt
+   ```
+3. Migrate database
+    ```sh
+   py manage.py makemigrations
+   py manage.py migrate
+   ```
+4. Run the server
+   ```sh
+    py manage.py runserver
+    ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
@@ -97,14 +151,45 @@ The design and layout of the user interface can be explored via the Figma link b
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
-
-## 👥 Developers
-- Abdullah Anamerah M.
-- Dutosme Jan Raye Edbert L.
-- Gales Chrizza Arnie T.
+## Developers
+<div>
+  <table>
+    <tr>
+      <th>Developers</th>
+      <th>Assigned Apps</th>
+    </tr>
+    <tr>
+      <td align="center">
+        <strong>Anamerah M. Abdullah</strong><br>
+        <a href="https://github.com/eynabdllh"><img src="https://img.shields.io/badge/GitHub-Profile-blueviolet?style=for-the-badge&logo=github&logoColor=white" alt="Anamerah's GitHub"></a>
+      </td>
+      <td>
+        <p>Dashboard, Pet Listing/Management, Profile Management</p>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <strong>Chrizza Arnie T. Gales</strong><br>
+        <a href="https://github.com/Chrizmas20"><img src="https://img.shields.io/badge/GitHub-Profile-blueviolet?style=for-the-badge&logo=github&logoColor=white" alt="Chrizza's GitHub"></a>
+      </td>
+      <td>
+        <p>Adoption Request/Management, Schedule List/Management</p>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <strong>Jan Raye Edbert L. Dutosme</strong><br>
+        <a href="https://github.com/MrCareerBully"><img src="https://img.shields.io/badge/GitHub-Profile-blueviolet?style=for-the-badge&logo=github&logoColor=white" alt="Jan Raye's GitHub"></a>
+      </td>
+      <td>
+        <p>Login/Register, Notification</p>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
-## 🤝 Top Contributors
+## Top Contributors
 <a href="https://github.com/eynabdllh/pet-adoption-system/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=eynabdllh/pet-adoption-system" alt="contrib.rocks image" />
 </a>
@@ -113,6 +198,6 @@ The design and layout of the user interface can be explored via the Figma link b
 
 ---
 
-## 📝 License
+## License
 This project is open-source and licensed under the MIT License.  See `LICENSE.txt` for more information.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
