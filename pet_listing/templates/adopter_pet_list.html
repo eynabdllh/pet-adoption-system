@@ -161,10 +161,12 @@ Adopt a Pet
         padding: 5px 10px 5px 10px;
         border: 1px solid #FF6F61;
         border-radius: 5px;
+        text-decoration: none; 
     }
 
     a:hover{ 
         text-decoration: none; 
+        border: 1px solid #999;
         color: #999;
     }
 
@@ -246,6 +248,12 @@ Adopt a Pet
                 
                 <div class="divider"></div>
                 <form method="GET" action="{% url 'adopter_pet_list' %}">
+                    <!-- Hidden inputs to preserve existing filter values -->
+                    <input type="hidden" name="sort_by_name" value="{{ sort_by_name }}">
+                    <input type="hidden" name="sort_by_age" value="{{ sort_by_age }}">
+                    <input type="hidden" name="sort_by_time_in_shelter" value="{{ sort_by_time_in_shelter }}">
+                    <input type="hidden" name="sort_by_adoption_fee" value="{{ sort_by_adoption_fee }}">
+
                     <!-- Species Filter -->
                     <div class="form-group">
                         <label class="form-group-label" for="pet_type">Species</label>
@@ -310,9 +318,10 @@ Adopt a Pet
                             </div>
                         </div>
                     </div>
+
                     <div class="divider"></div>                   
                     <button type="submit" class="apply-btn">Apply</button>
-                    <a href="{% url 'adopter_pet_list' %}" class="reset-button">Reset</a>
+                    <a href="?reset_filter=true&sort_by_name={{ sort_by_name }}&sort_by_age={{ sort_by_age }}&sort_by_time_in_shelter={{ sort_by_time_in_shelter }}&sort_by_adoption_fee={{ sort_by_adoption_fee }}" class="reset-button">Reset</a>
                 </form>
             </div>
         </div>
@@ -324,6 +333,16 @@ Adopt a Pet
             </a>
             <div class="dropdown-menu p-3">
                 <form method="GET" action="{% url 'adopter_pet_list' %}">
+                    <!-- Hidden inputs to preserve existing filter values -->
+                    <input type="hidden" name="query" value="{{ query }}">
+                    <input type="hidden" name="pet_type" value="{{ pet_type }}">
+                    <input type="hidden" name="gender" value="{{ gender }}">
+                    <input type="hidden" name="age" value="{{ age }}">
+                    <input type="hidden" name="adoption_fee_min" value="{{ adoption_fee_min }}">
+                    <input type="hidden" name="adoption_fee_max" value="{{ adoption_fee_max }}">
+                    <input type="hidden" name="time_in_shelter_min" value="{{ time_in_shelter_min }}">
+                    <input type="hidden" name="time_in_shelter_max" value="{{ time_in_shelter_max }}">
+
                      <!-- Sort Header -->
                     <div class="d-flex align-items-center">
                         <i class="fas fa-sort me-3"></i>
@@ -335,11 +354,11 @@ Adopt a Pet
                     <div class="form-group">
                         <label class="form-group-label" for="sort_by_name">Sort by Name</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_name" value="desc" {% if sort_by_name == 'desc' %}checked{% endif %}>
+                            <input class="form-check-input" type="radio" name="sort_by_name" value="asc" {% if sort_by_name == 'asc' %}checked{% endif %}>
                             <label class="form-check-label" for="sort_by_name">A-Z</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_name" value="asc" {% if sort_by_name == 'asc' %}checked{% endif %}>
+                            <input class="form-check-input" type="radio" name="sort_by_name" value="desc" {% if sort_by_name == 'desc' %}checked{% endif %}>
                             <label class="form-check-label" for="sort_by_name">Z-A</label>
                         </div>
                     </div>
@@ -387,10 +406,8 @@ Adopt a Pet
                     </div>
 
                     <div class="divider"></div>
-
-                    <!-- Apply Button and Reset Button -->
                     <button type="submit" class="apply-btn">Apply</button>
-                    <a href="{% url 'adopter_pet_list' %}" class="reset-button">Reset</a>
+                    <a href="?reset_sort=true&q={{ query }}&pet_type={{ pet_type }}&gender={{ gender }}&age={{ age }}&adoption_fee_min={{ adoption_fee_min }}&adoption_fee_max={{ adoption_fee_max }}&time_in_shelter_min={{ time_in_shelter_min }}&time_in_shelter_max={{ time_in_shelter_max }}" class="reset-button">Reset</a>
                 </form>
             </div>
         </div>
