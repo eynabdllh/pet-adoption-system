@@ -276,6 +276,12 @@ def admin_add_pet(request):
 @admin_required
 def admin_edit_pet(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
+
+    if request.method == 'POST' and 'validation_error' in request.POST:
+        validation_error = request.POST['validation_error']
+        messages.error(request, validation_error)
+        return redirect('admin_pet_list')
+
     if request.method == 'POST':
         pet_form = PetForm(request.POST, request.FILES, instance=pet)
         images = request.FILES.getlist('images')
@@ -287,7 +293,7 @@ def admin_edit_pet(request, pet_id):
         if pet_form.is_valid():
             pet = pet_form.save()
 
-            if pet.is_available == False:
+            if not pet.is_available:
                 pet.is_adopted = True
             else:
                 pet.is_adopted = False
@@ -295,7 +301,17 @@ def admin_edit_pet(request, pet_id):
             for i, image in enumerate(images):
                 if i >= 5: 
                     raise ValidationError(_('You can upload a maximum of 5 images.'))
-                PetImage.objects.create(pet=pet, image=image)
+                pet_image = PetImage.objects.create(pet=pet, image=image)
+
+                if i == 0 and not pet.main_image:
+                    pet.main_image = pet_image.image
+
+            # set the first new one as main_image
+            remaining_images = pet.images.all()
+            if remaining_images.exists():
+                pet.main_image = remaining_images.first().image
+            else:
+                pet.main_image = None
 
             pet.save()
 
@@ -330,6 +346,9 @@ def delete_pet_image(request):
             data = json.loads(request.body)
             image_ids = data.get('image_ids', [])
 
+            if not image_ids:
+                return JsonResponse({'success': False, 'error': 'No image IDs provided.'})
+
             for image_id in image_ids:
                 pet_image = get_object_or_404(PetImage, id=image_id)
                 pet_image.delete()
@@ -337,7 +356,8 @@ def delete_pet_image(request):
             return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
-            
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+       
 @login_required
 @admin_required
 def export_pets_to_excel(request):
