@@ -1,4 +1,5 @@
 import json
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import AdoptionForm
@@ -12,7 +13,6 @@ from django.utils import timezone
 from .models import Adoption
 
 @login_required
-@adopter_required
 def adopt_form(request, pet_id):
     user_id = request.session.get('user_id')
     pet = get_object_or_404(Pet, id=pet_id)
@@ -136,8 +136,8 @@ def review_form(request, pet_id):
                 adoption.status = 'rejected'
                 adoption.reason_choices = reason  # Save the rejection reason
                 adoption.save()
-
-                return JsonResponse({'success': True, 'message': 'The pet request has been rejected with the selected reason.'})
+                messages.success(request, 'Pet is is now rejected')
+                return redirect('/adoption_management/?status=adopted')
 
             else:
                 return JsonResponse({'success': False, 'message': 'Invalid status provided.'})

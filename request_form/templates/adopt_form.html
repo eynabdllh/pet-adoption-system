@@ -227,8 +227,11 @@ Adopt a Pet
     }
 
     function submitForm() {
-        document.getElementById('adoptionForm').submit();
-    }
+    const form = document.getElementById('adoptionForm');
+    const submitButton = document.querySelector('.btn-confirm');
+    submitButton.disabled = true; // Disable the button to prevent double submission
+    form.submit();
+}
 </script>
 
 {% endblock %}

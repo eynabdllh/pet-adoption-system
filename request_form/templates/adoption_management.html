@@ -201,7 +201,7 @@
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
                             {% endfor %}
-                            <td><strong>{{ adoption.get_reason_choices_display }}</td>
+                            <td>{{ adoption.get_reason_choices_display }}</td>
                             <td><span class="badge badge-success" style="background-color: #B3261E">Rejected</span></td>
                         </tr>
                         {% endif %}

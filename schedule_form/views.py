@@ -59,19 +59,6 @@ def schedule(request, pet_id):
                 time=time
             )
 
-            # Finalize the adoption by creating an Adoption instance
-            Adoption.objects.create(
-                adopter=profile,
-                pet=pet,
-                first_name=adoption_form_data['first_name'],
-                last_name=adoption_form_data['last_name'],
-                age=adoption_form_data['age'],
-                address=adoption_form_data['address'],
-                contact_number=adoption_form_data['contact_number'],
-                email=adoption_form_data['email'],
-                date=adoption_form_data['date'],
-            )
-
             # Update the pet's status to requested and unavailable
             pet.is_requested = True
             pet.is_available = False
@@ -80,7 +67,7 @@ def schedule(request, pet_id):
             # Clear the adoption form data from the session
             del request.session['adoption_form_data']
 
-            messages.success(request, "Pick-up scheduled and adoption finalized successfully!")
+            messages.success(request, "Pick-up scheduled successfully!")
             return redirect('my_adoption')
         else:
             messages.error(request, "Please fill in all required fields: month, day, time, and year.")
@@ -96,6 +83,7 @@ def schedule(request, pet_id):
         'afternoon_hours': [f"{hour}:{minute:02d} PM" for hour in range(1, 6) for minute in (0, 30)],
         'years': years,  # Pass the dynamic years
     })
+
 
 @login_required
 @adopter_required
