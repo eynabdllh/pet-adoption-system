@@ -200,8 +200,8 @@
                             {% for adoption in pet.adoption_set.all %}
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
-                            {% endfor %}
-                            <td>{{ adoption.get_reason_choices_display }}</td>
+                            <td>{{ adoption.get_reason_choices_display }}
+                            </td>{% endfor %}
                             <td><span class="badge badge-success" style="background-color: #B3261E">Rejected</span></td>
                         </tr>
                         {% endif %}
