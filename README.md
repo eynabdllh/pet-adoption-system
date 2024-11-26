@@ -67,6 +67,9 @@ adopt-a-pet is a web application designed to make the pet adoption process easie
   <a href="https://html.spec.whatwg.org/multipage/" target="_blank">
       <img src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML" />
   </a>
+  <a href="https://www.javascript.com/" target="_blank">
+      <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="Javascript" />
+  </a>
 </section>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
