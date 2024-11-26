@@ -170,8 +170,11 @@
     <div class="container">
         <!-- Static Image Container -->
         <div class="image-container">
-            <img src="{{ profile.profile_image.url }}" alt="Adopter Profile Image" class="profile-img">
+            <!-- Check if user has a profile image, otherwise use default_profile.jpg -->
+            <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Adopter Profile Image" class="profile-img">
+            
             <img src="{% static 'images/view_heart.png' %}" alt="Heart Icon" class="heart">
+            
             <img src="{{ adoption.pet.main_image.url }}" alt="{{ adoption.pet.name }}" class="pet-image">
         </div>
 
@@ -358,7 +361,7 @@ async function confirmRejection() {
 }
 
 function approveRequest() {
-    updatePetStatus('adopted'); 
+    updatePetStatus('approved'); 
 }
 
 function rejectRequest() {
@@ -367,22 +370,22 @@ function rejectRequest() {
 
 async function updatePetStatus(status) {
     try {
-        const response = await fetch('', { 
+        const response = await fetch('', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}', 
+                'X-CSRFToken': '{{ csrf_token }}',  // CSRF token for Django
             },
-            body: JSON.stringify({ status: status, pet_id: petId }), 
+            body: JSON.stringify({ status: status, pet_id: petId }),
         });
 
         if (response.ok) {
             const result = await response.json();
             if (result.success) {
-                alert(result.message);
+                alert(result.message); 
                 location.reload(); 
             } else {
-                alert(result.message);
+                alert(result.message); 
             }
         } else {
             alert('Failed to update the status. Please try again.');

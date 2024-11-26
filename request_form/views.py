@@ -121,6 +121,10 @@ def adoption_management(request):
         'status': status,  
     })
 
+from django.contrib import messages
+from django.http import JsonResponse
+from django.shortcuts import redirect
+
 @login_required
 @admin_required
 def review_form(request, pet_id):
@@ -129,48 +133,55 @@ def review_form(request, pet_id):
 
     if request.method == 'POST':
         try:
+            # Parse the incoming JSON request data
             data = json.loads(request.body)
             status = data.get('status')
-            reason = data.get('reason')  
+            reason = data.get('reason')
+
+            # Validate status - must be either 'approved' or 'rejected'
+            if status not in ['approved', 'rejected']:
+                messages.error(request, 'Invalid status provided.')
+                return JsonResponse({'success': False, 'message': 'Invalid status provided.'})
 
             pet = adoption.pet
 
             if status == 'approved':
+                # Approve the adoption request
                 pet.is_requested = False
                 pet.is_approved = True
                 pet.is_upcoming = True
                 pet.save()
 
                 adoption.status = 'approved'
-                adoption.reason_choices = None  
                 adoption.save()
 
-                return JsonResponse({'success': True, 'message': 'The pet has been marked as adopted.'})
+                messages.success(request, f"Pet {pet.name} has been approved for adoption.")
+                return JsonResponse({'success': True, 'message': f"Pet {pet.name} has been approved for adoption."})
 
             elif status == 'rejected':
+                # Ensure a reason is provided for rejection
                 if not reason:
-                    return JsonResponse({'success': False, 'message': 'A reason is required for rejection.'})
+                    messages.error(request, "A reason is required for rejection.")
+                    return JsonResponse({'success': False, 'message': "A reason is required for rejection."})
 
+                # Reject the adoption request
                 pet.is_requested = False
                 pet.is_rejected = True
                 pet.save()
 
                 adoption.status = 'rejected'
-                adoption.reason_choices = reason  
+                adoption.reason_choices = reason
                 adoption.save()
-                messages.success(request, 'Pet is now rejected')
-                return redirect('/adoption_management/?status=adopted')
 
-            else:
-                return JsonResponse({'success': False, 'message': 'Invalid status provided.'})
+                messages.success(request, "The pet adoption request has been rejected.")
+                return JsonResponse({'success': True, 'message': "The pet adoption request has been rejected."})
 
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'})
+            return JsonResponse({'success': False, 'message': f"An error occurred: {str(e)}"})
 
-    return render(request, 'review_form.html', {
-        'adoption': adoption,
-        'profile': profile
-    })
+    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
 
 @login_required
 @admin_required
