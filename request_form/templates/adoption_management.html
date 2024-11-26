@@ -63,8 +63,6 @@
 </style>
 
 <div class="container-fluid">
-
-    <!-- Tabs -->
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
             <a class="nav-link {% if status == 'requested' %}active{% endif %}" href="?status=requested">Pending</a>
@@ -79,7 +77,6 @@
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">
-        <!-- Pending Pets -->
         <div id="requested" class="tab-pane fade {% if status == 'requested' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -124,8 +121,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- Approved Pets -->
         <div id="adopted" class="tab-pane fade {% if status == 'adopted' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -181,8 +176,8 @@
                             <th>Species</th>
                             <th>Adopter</th>
                             <th>Request Date</th>
-                            <th>Status</th>
                             <th>Reason</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -206,8 +201,8 @@
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
                             {% endfor %}
+                            <td><strong>{{ adoption.get_reason_choices_display }}</td>
                             <td><span class="badge badge-success" style="background-color: #B3261E">Rejected</span></td>
-                            <td>Reason for rejection.....</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -215,7 +210,6 @@
                 </table>
             </div>
         </div>
-
     </div>
     </div>
 </div>

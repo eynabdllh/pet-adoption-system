@@ -15,16 +15,6 @@ My Adoption
         outline: none;
         font-weight: 700;
     }
-    .tab-button {
-        border-radius: 5px;
-        padding: 8px 20px;
-        margin-bottom: 30px;
-        cursor: pointer;
-        border: 0px solid #5e5e5e;
-        background-color: rgb(177, 177, 177);
-        color: #000;
-        width: 180px;
-    }
     .pickup-list, .adopted-list {
         display: flex;
         flex-direction: column;
@@ -96,7 +86,7 @@ My Adoption
             margin-right: auto; }
     .tab-button.active { background-color: #FF6F61; color: white; outline: none; font-weight: 700;
     }
-    .tab-button { border-radius: 5px; padding: 8px 20px; margin-bottom: 30px; cursor: pointer;
+    .tab-button { border-radius: 0px; padding: 8px 20px; margin-bottom: 30px; cursor: pointer;
         border: 0px solid #5e5e5e; background-color: rgb(177, 177, 177); color: #000; width: 180px;
     }
     .pickup-list, .adopted-list { display: flex; flex-direction: column; gap: 20px;
@@ -211,7 +201,7 @@ My Adoption
 
 <div class="d-flex justify-content-start mb-3">
     <button class="tab-button active" onclick="showTab('adopted')">Adopted</button>
-    <button class="tab-button ms-3" onclick="showTab('requested')">Requested</button>
+    <button class="tab-button" onclick="showTab('requested')">Requested</button>
 </div>
 
 <div id="adopted" class="tab-content adopted-list">
@@ -286,7 +276,7 @@ My Adoption
 <div id="requested" class="tab-content pickup-list" style="display: none;">
     {% for pickup in pickups %}
     {% if pickup.pet.is_requested %}
-        <div class="pickup-card" style="margin-bottom: 10px;">
+    <div class="pickup-card" id="pet-card-{{ pickup.pet.id }}" style="margin-bottom: 10px;">
             <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details">
                 <h2>{{ pickup.pet.name }}</h2>
@@ -295,8 +285,9 @@ My Adoption
             </div>
             <div class="button-container">
                 <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
+                <!-- Add a unique pet name identifier for cancellation -->
                 <a href="javascript:void(0);" class="btn btn-cancel-request" 
-                   onclick="cancelRequest()">Cancel Request</a>
+                onclick="cancelRequest(`{{ pickup.pet.id }}`)"> Cancel Request</a>
             </div>
         </div>
     {% endif %}
@@ -312,7 +303,8 @@ My Adoption
             <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 155px; height: 140px; margin-left: 25px;">
         </div>
         <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 20px;">
-            Are you sure you want to cancel your adoption request?
+            Are you sure you want to cancel your adoption request for 
+            <strong id="adoption-pet-name"></strong>?
         </h2>
         <div style="display: flex; justify-content: space-around; margin-top: 20px;">
             <button type="button" onclick="closeCancelModal()" class="btn btn-cancel" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
@@ -385,42 +377,83 @@ function downloadCertificate() {
     }
 
 
-function cancelRequest(petId) {
-    document.getElementById('cancelModal').style.display = 'flex';  // Open the cancel modal
-    window.currentPetId = petId;  // Store the pet ID globally
-}
-
-// Close cancellation modal
-function closeCancelModal() {
-    document.getElementById('cancelModal').style.display = 'none';  // Close the cancel modal
-}
-
-// Update pet status (used for cancellation or other actions)
-async function updatePetStatus(status) {
-    if (!window.currentPetId) {
-        return;  // If no pet_id is set, do nothing
+    function cancelRequest(petId) {
+    if (!petId) {
+        alert("Pet ID is missing!");
+        return;
     }
 
-    // Send the request to the current URL with the pet_id and status
-    const response = await fetch('', { // Empty URL sends request to the current view
+    // Open the confirmation modal and store the pet ID globally
+    window.currentPetId = petId;  
+    document.getElementById('cancelModal').style.display = 'flex';
+
+    // Optionally display the pet name in the modal
+    const petNameElement = document.querySelector(`#pet-name-${petId}`);
+    if (petNameElement) {
+        const petName = petNameElement.innerText;
+        document.getElementById('adoption-pet-name').innerText = petName;
+    }
+}
+
+
+function closeCancelModal() {
+    document.getElementById('cancelModal').style.display = 'none';  
+}
+
+function confirmCancellation() {
+    if (!window.currentPetId) {
+        alert('Pet ID is missing!');
+        return;
+    }
+
+    fetch('', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token for security
+            'X-CSRFToken': getCSRFToken(),  // Use CSRF protection
         },
-        body: JSON.stringify({ status: status, pet_id: window.currentPetId }),  // Send pet ID and status
+        body: JSON.stringify({ pet_id: window.currentPetId }),  // Send pet ID in the request body
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message || 'Request cancelled successfully!');
+            location.reload();  // Reload the page after success
+        } else {
+            alert(`Error: ${data.error || 'Something went wrong'}`);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
     });
+}
 
-    const result = await response.json();  // Parse JSON response
+async function approveRequest(scheduleId) {
+    try {
+        const response = await fetch('', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ schedule_id: scheduleId }),
+        });
 
-    if (response.ok && result.success) {
-        location.reload();  // Reload the page to reflect changes
+        const data = await response.json();
+        if (data.success) {
+            alert('Request approved successfully!');
+            location.reload();
+        } else {
+            alert(`Error: ${data.error}`);
+        }
+    } catch (error) {
+        alert(`An error occurred: ${error}`);
     }
 }
 
-// Confirm cancellation
-function approveRequest() {
-    updatePetStatus('cancelled');  // Send the 'cancelled' status for this pet
+function getCSRFToken() {
+    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    return csrfToken;
 }
 </script>
 {% endblock %}
