@@ -1,7 +1,8 @@
 import json
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+import openpyxl
 from .forms import AdoptionForm
 from pet_listing.models import Pet
 from schedule_form.models import Schedule
@@ -22,29 +23,25 @@ def adopt_form(request, pet_id):
         return redirect('login')
 
     user = User.objects.get(id=user_id)
-    profile, created = Profile.objects.get_or_create(user=user)  # Ensure profile exists
+    profile, created = Profile.objects.get_or_create(user=user)  
 
     if request.method == 'POST':
-        # Use posted data to initialize the form
         form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
-            # Retrieve form data or fallback to user defaults
             age = form.cleaned_data['age']
             address = form.cleaned_data['address']
             contact_number = form.cleaned_data['contact_number']
 
-            # Update profile if fields are missing
             if not profile.age:
                 profile.age = age
             if not profile.address:
                 profile.address = address
             if not profile.phone_number:
                 profile.phone_number = contact_number
-            profile.save()  # Save updated profile data
+            profile.save()  
 
-            # Save the adoption data
             adoption = Adoption.objects.create(
-                adopter=profile,  # Use the profile for adoption
+                adopter=profile,  
                 pet=pet,
                 first_name=form.cleaned_data.get('first_name', user.first_name),
                 last_name=form.cleaned_data.get('last_name', user.last_name),
@@ -59,7 +56,6 @@ def adopt_form(request, pet_id):
             pet.is_available = False
             pet.save()
 
-            # Store adoption data in session for later use
             request.session['adoption_form_data'] = {
                 'adopter_id': profile.id,
                 'pet_id': pet.id,
@@ -74,7 +70,6 @@ def adopt_form(request, pet_id):
 
             return redirect('schedule', pet_id=pet.id)
     else:
-        # Initialize form data with user and profile details
         initial_data = {
             'adopter_id': user.id,
             'first_name': user.first_name,
@@ -100,14 +95,13 @@ def adopt_form(request, pet_id):
 def adoption_management(request):
     status = request.GET.get('status', 'requested')  
 
-    # Handle form submission
     if request.method == 'POST':
         action = request.POST.get('action')
         pet_id = request.POST.get('pet_id')
 
         if action == 'add_to_list' and pet_id:
             try:
-                pet = Pet.objects.get(id=pet_id, is_rejected=True)  # Ensure it's rejected
+                pet = Pet.objects.get(id=pet_id, is_rejected=True)  
                 pet.is_rejected = False
                 pet.is_available = True
                 pet.save()
@@ -115,7 +109,6 @@ def adoption_management(request):
             except Pet.DoesNotExist:
                 messages.error(request, "Pet not found or already updated.")
 
-    # Fetch pets based on status
     if status == 'approved':
         pets = Pet.objects.filter(is_approved=True).prefetch_related('adoption_set')
     elif status == 'rejected':
@@ -163,7 +156,7 @@ def review_form(request, pet_id):
                 pet.save()
 
                 adoption.status = 'rejected'
-                adoption.reason_choices = reason  # Save the rejection reason
+                adoption.reason_choices = reason  
                 adoption.save()
                 messages.success(request, 'Pet is now rejected')
                 return redirect('/adoption_management/?status=adopted')
@@ -213,3 +206,64 @@ def admin_pickup(request):
         'pets': pets,
         'status': status,
     })
+
+@login_required
+@admin_required
+def export_adoption_to_excel(request):
+    
+    pet_type = request.GET.get('pet_type', '')
+    
+    sort_by = request.GET.get('sort_by', '')
+    status_filter = request.GET.get('status', '')  
+
+    pets = Pet.objects.all()
+    if pet_type:
+        pets = pets.filter(pet_type__iexact=pet_type)
+    
+    if status_filter == 'pending':
+        pets = pets.filter(is_requested=True)
+    elif status_filter == 'approved':
+        pets = pets.filter(is_approved=True)
+    elif status_filter == 'rejected':
+        pets = pets.filter(is_rejected=True)
+    
+    pets = pets.order_by(sort_by or 'id')
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Pet List" 
+
+    if status_filter == 'rejected':
+        ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Request Date', 'Status', 'Reason'])
+    else:
+        ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Request Date', 'Status'])
+
+    for pet in pets:
+        adoption_data = pet.adoption_set.first() 
+        if adoption_data:
+            adopter_name = f"{adoption_data.first_name} {adoption_data.last_name}"
+            request_date = adoption_data.date
+        else:
+            adopter_name = 'N/A'
+            request_date = 'N/A'
+
+        if pet.is_requested:
+            status = 'Pending'
+        elif pet.is_approved:
+            status = 'Approved'
+        elif pet.is_rejected:
+            status = 'Rejected'
+        else:
+            status = 'Unknown'
+
+        if status_filter == 'rejected':
+            reason = adoption_data.get_reason_choices_display() if adoption_data else 'N/A'
+            ws.append([pet.id, pet.name, pet.pet_type, adopter_name, request_date, status, reason])
+        else:
+            ws.append([pet.id, pet.name, pet.pet_type, adopter_name, request_date, status])
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="pet_list.xlsx"'
+    wb.save(response)
+
+    return response

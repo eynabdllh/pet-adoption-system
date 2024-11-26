@@ -52,16 +52,45 @@
     }
     a {
         color: #FF6F61;
-        text-decoration: none; /* Removes underline */
+        text-decoration: none; 
     }
 
     a:hover {
-        color: #df2588; /* Changes color on hover */
-        text-decoration: none; /* Ensures no underline on hover */
+        color: #df2588; 
+        text-decoration: none; 
+    }
+     /*Search Styling*/
+     .search-bar .input-group-text {
+        background-color: transparent;
+        border-right: none;
+        cursor: pointer;
+    }
+
+    .search-bar .input-group-text i {
+        color: #FF6F61; 
+    }
+
+    .container-fluid {
+        padding-top: 20px;
     }
 
 </style>
-
+<div class="d-flex mb-0" style="justify-content: flex-end;">
+    <form method="GET" action="{% url 'adoption_management' %}" class="form-inline search-bar">
+        <div class="input-group w-80">
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
+        </div>
+    </form>
+    <div style="margin-left: 5px;">
+    <!-- Export to Excel Button -->
+    <a href="{% url 'export_adoption_to_excel' %}" class="btn btn-success" title="Export to Excel">
+        <i class="fas fa-download"></i>
+    </a>
+    </div>
+</div>
 <div class="container-fluid">
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
@@ -77,6 +106,8 @@
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">
+
+        <!-- Pending Pets -->
         <div id="requested" class="tab-pane fade {% if status == 'requested' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -122,6 +153,7 @@
             </div>
         </div>
 
+        <!-- Approved Pets -->
         <div id="approved" class="tab-pane fade {% if status == 'approved' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">

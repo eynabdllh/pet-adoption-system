@@ -134,9 +134,9 @@
         background-color: rgba(0, 0, 0, 0.5); 
         width: 100%; 
         height: 100%; 
-        display: flex; /* Use flexbox */
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
     }
 
     .modal-content {
@@ -344,7 +344,7 @@ async function confirmRejection() {
             const result = await response.json();
             if (result.success) {
                 alert(result.message);
-                location.reload(); // Reload to reflect changes
+                location.reload(); 
             } else {
                 alert(result.message);
             }
@@ -362,25 +362,25 @@ function approveRequest() {
 }
 
 function rejectRequest() {
-    showRejectModal(); // Show rejection modal instead of rejecting directly
+    showRejectModal(); 
 }
 
 async function updatePetStatus(status) {
     try {
-        const response = await fetch('', { // Empty URL sends request to the current view
+        const response = await fetch('', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token for security
+                'X-CSRFToken': '{{ csrf_token }}', 
             },
-            body: JSON.stringify({ status: status, pet_id: petId }), // Send pet ID and status
+            body: JSON.stringify({ status: status, pet_id: petId }), 
         });
 
         if (response.ok) {
             const result = await response.json();
             if (result.success) {
                 alert(result.message);
-                location.reload(); // Reload to reflect changes
+                location.reload(); 
             } else {
                 alert(result.message);
             }

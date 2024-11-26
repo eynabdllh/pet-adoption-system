@@ -1,6 +1,6 @@
 import calendar
 import json
-from django.http import HttpResponseBadRequest, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from pet_listing.models import Pet
 from .models import Schedule  
@@ -25,7 +25,6 @@ def schedule(request, pet_id):
     user = get_object_or_404(User, id=user_id)
     profile = get_object_or_404(Profile, user=user)
 
-    # Retrieve the adoption form data from the session
     adoption_form_data = request.session.get('adoption_form_data')
     if not adoption_form_data or adoption_form_data.get('pet_id') != pet.id:
         messages.error(request, "Please complete the adoption request form first.")
@@ -38,10 +37,9 @@ def schedule(request, pet_id):
         year = request.POST.get('year')
 
         if month and day and time and year:
-            # Check if the day is valid for the selected month and year
             try:
                 month_num = datetime.strptime(month, "%B").month
-                num_days = calendar.monthrange(int(year), month_num)[1]  # Get number of days in the month
+                num_days = calendar.monthrange(int(year), month_num)[1] 
                 if int(day) > num_days:
                     messages.error(request, f"Invalid day for {month} {year}. This month only has {num_days} days.")
                     return redirect('schedule', pet_id=pet.id)
@@ -49,7 +47,6 @@ def schedule(request, pet_id):
                 messages.error(request, "Invalid month or year. Please try again.")
                 return redirect('schedule', pet_id=pet.id)
 
-            # Create the Schedule record
             Schedule.objects.create(
                 pet=pet,
                 adopter=user,
@@ -59,12 +56,10 @@ def schedule(request, pet_id):
                 time=time
             )
 
-            # Update the pet's status to requested and unavailable
             pet.is_requested = True
             pet.is_available = False
             pet.save()
 
-            # Clear the adoption form data from the session
             del request.session['adoption_form_data']
 
             messages.success(request, "Pick-up scheduled successfully!")
@@ -81,7 +76,7 @@ def schedule(request, pet_id):
         'days': range(1, 32), 
         'morning_hours': [f"{hour}:{minute:02d} AM" for hour in range(9, 12) for minute in (0, 30)],
         'afternoon_hours': [f"{hour}:{minute:02d} PM" for hour in range(1, 6) for minute in (0, 30)],
-        'years': years,  # Pass the dynamic years
+        'years': years,  
     })
 
 
@@ -95,7 +90,7 @@ def pickup_list(request):
     return render(request, 'pickup_list.html', {'pickups': pickups})
 
 
-@csrf_exempt  # Temporarily exempt CSRF for testing (should remove in production)
+@csrf_exempt  
 @login_required
 @adopter_required
 def my_adoption(request):
@@ -104,13 +99,11 @@ def my_adoption(request):
         return JsonResponse({'success': False, 'error': 'User not logged in'}, status=400)
 
     try:
-        # Ensure the user exists
         user = get_object_or_404(User, id=user_id)
     except Exception as e:
         return JsonResponse({'success': False, 'error': f"Invalid user: {e}"}, status=400)
 
     try:
-        # Fetch all schedules for the current user
         pickups = Schedule.objects.filter(adopter=user).select_related('pet')
     except Exception as e:
         return JsonResponse({'success': False, 'error': f"Query error: {e}"}, status=500)
