@@ -86,21 +86,18 @@ def adopt_form(request, pet_id):
 @login_required
 @admin_required
 def adoption_management(request):
-    # Get the status from the GET parameters, default to 'requested'
     status = request.GET.get('status', 'requested')  
 
-    # Filter pets based on the status passed via GET parameter
     if status == 'adopted':
         pets = Pet.objects.filter(is_adopted=True).prefetch_related('adoption_set')
     elif status == 'rejected':
         pets = Pet.objects.filter(is_rejected=True).prefetch_related('adoption_set')
-    else:  # Default to 'requested'
+    else: 
         pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
 
-    # Pass the pets and status to the template
     return render(request, 'adoption_management.html', {
         'pets': pets,
-        'status': status,  # Pass the current status to highlight the correct tab in the template
+        'status': status,  
     })
 
 @login_required
@@ -111,23 +108,36 @@ def review_form(request, pet_id):
 
     if request.method == 'POST':
         try:
-           
             data = json.loads(request.body)
             status = data.get('status')
+            reason = data.get('reason')  
 
-            pet = adoption.pet 
+            pet = adoption.pet
 
             if status == 'adopted':
                 pet.is_requested = False
                 pet.is_adopted = True
                 pet.save()
+
+                adoption.status = 'approved'
+                adoption.reason_choices = None  
+                adoption.save()
+
                 return JsonResponse({'success': True, 'message': 'The pet has been marked as adopted.'})
 
             elif status == 'rejected':
+                if not reason:
+                    return JsonResponse({'success': False, 'message': 'A reason is required for rejection.'})
+
                 pet.is_requested = False
                 pet.is_rejected = True
                 pet.save()
-                return JsonResponse({'success': True, 'message': 'The pet request has been cancelled and marked as available.'})
+
+                adoption.status = 'rejected'
+                adoption.reason_choices = reason  # Save the rejection reason
+                adoption.save()
+
+                return JsonResponse({'success': True, 'message': 'The pet request has been rejected with the selected reason.'})
 
             else:
                 return JsonResponse({'success': False, 'message': 'Invalid status provided.'})

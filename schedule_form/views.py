@@ -1,7 +1,6 @@
 import calendar
 import json
-import logging
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from pet_listing.models import Pet
 from .models import Schedule  
@@ -12,7 +11,7 @@ from profile_management.models import Profile
 from datetime import datetime
 from django.contrib import messages
 from request_form.models import Adoption  
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 
 @login_required
 @adopter_required
@@ -98,6 +97,8 @@ def schedule(request, pet_id):
         'years': years,  # Pass the dynamic years
     })
 
+@login_required
+@adopter_required
 def pickup_list(request):
     user_id = request.session.get('user_id')
     user = get_object_or_404(User, id=user_id) 
@@ -105,52 +106,62 @@ def pickup_list(request):
 
     return render(request, 'pickup_list.html', {'pickups': pickups})
 
+
+@csrf_exempt  # Temporarily exempt CSRF for testing (should remove in production)
+@login_required
+@adopter_required
 def my_adoption(request):
     user_id = request.session.get('user_id')
-    user = get_object_or_404(User, id=user_id)
-    pickups = Schedule.objects.filter(adopter=user)
+    if not user_id:
+        return JsonResponse({'success': False, 'error': 'User not logged in'}, status=400)
 
-    # Prepare the certificate details for each adoption
+    try:
+        # Ensure the user exists
+        user = get_object_or_404(User, id=user_id)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f"Invalid user: {e}"}, status=400)
+
+    try:
+        # Fetch all schedules for the current user
+        pickups = Schedule.objects.filter(adopter=user).select_related('pet')
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f"Query error: {e}"}, status=500)
+
     certificate_data = []
     for pickup in pickups:
-        if pickup.pet.is_adopted:
+        if pickup.pet.is_adopted:  
             certificate_data.append({
-                'adopter_name': f"{pickup.adopter.first_name} {pickup.adopter.last_name}",
-                'pet_name': pickup.pet.name,
-                'adoption_date': f"{pickup.month} {pickup.day} {pickup.year}",
+                'adopter_name': f"{user.first_name} {user.last_name}",  
+                'pet_name': pickup.pet.name,  
+                'adoption_date': f"{pickup.month} {pickup.day}, {pickup.year}",  
             })
 
     if request.method == 'POST':
-        # Get the POST data (we are expecting a JSON body)
         try:
             data = json.loads(request.body)
-            status = data.get('status')
             pet_id = data.get('pet_id')
 
-            if status == 'cancelled':  # Only handle cancellation requests here
-                # Get the pet and update its status
-                pet = get_object_or_404(Pet, id=pet_id)
+            if not pet_id:
+                return JsonResponse({'success': False, 'error': 'Pet ID is missing'}, status=400)
 
-                # Make sure the pet is in a requested state before cancelling
-                if pet.is_requested:
-                    pet.is_requested = False  # Cancel the adoption request
-                    pet.is_available = True  # Make the pet available for adoption again
-                    pet.save()
+            pet = get_object_or_404(Pet, id=pet_id)
+            schedule = get_object_or_404(Schedule, pet=pet, adopter=user)
 
-                    return JsonResponse({"success": True}, status=200)
-                else:
-                    return JsonResponse({"error": "Pet is not in a requested state"}, status=400)
+            schedule.cancelled = True
+            schedule.save()
 
-            else:
-                return JsonResponse({"error": "Invalid status"}, status=400)
-
+            return JsonResponse({'success': True, 'message': 'Schedule cancelled successfully'})
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            print(f"Error occurred: {e}")
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
-    # If it's a GET request, render the page as usual with certificate data
-    return render(request, 'my_adoption.html', {'pickups': pickups, 'certificate_data': certificate_data})
+    return render(request, 'my_adoption.html', {
+        'pickups': pickups, 
+        'certificate_data': certificate_data,
+    })
 
 @login_required
+@adopter_required
 def view_details(request, user_id, pet_id):
     user_id = request.session.get('user_id')
     try:
