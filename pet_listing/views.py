@@ -30,6 +30,25 @@ def adopter_pet_list(request):
     sort_by_time_in_shelter = request.GET.get('sort_by_time_in_shelter', '')
     sort_by_adoption_fee = request.GET.get('sort_by_adoption_fee', '')
 
+    reset_filter = request.GET.get('reset_filter', False)
+    reset_sort = request.GET.get('reset_sort', False)
+
+    # reset logic
+    if reset_filter:
+        query = ''
+        pet_type = ''
+        gender = ''
+        age = ''
+        adoption_fee_min = ''
+        adoption_fee_max = ''
+        time_in_shelter_min = ''
+        time_in_shelter_max = ''
+    if reset_sort:
+        sort_by_name = ''
+        sort_by_age = ''
+        sort_by_time_in_shelter = ''
+        sort_by_adoption_fee = '' 
+
     pets = Pet.objects.filter(is_available=True)
 
     # filters
@@ -61,28 +80,13 @@ def adopter_pet_list(request):
 
     # sorting
     if sort_by_name:
-        if sort_by_name == 'asc':
-            pets = pets.order_by('name')
-        elif sort_by_name == 'desc':
-            pets = pets.order_by('-name')
-
+        pets = pets.order_by('name' if sort_by_name == 'asc' else '-name')
     if sort_by_age:
-        if sort_by_age == 'asc':
-            pets = pets.order_by('age')
-        elif sort_by_age == 'desc':
-            pets = pets.order_by('-age')
-
+        pets = pets.order_by('age' if sort_by_age == 'asc' else '-age')
     if sort_by_time_in_shelter:
-        if sort_by_time_in_shelter == 'asc':
-            pets = pets.order_by('time_in_shelter')
-        elif sort_by_time_in_shelter == 'desc':
-            pets = pets.order_by('-time_in_shelter')
-
+        pets = pets.order_by('time_in_shelter' if sort_by_time_in_shelter == 'asc' else '-time_in_shelter')
     if sort_by_adoption_fee:
-        if sort_by_adoption_fee == 'asc':
-            pets = pets.order_by('adoption_fee')
-        elif sort_by_adoption_fee == 'desc':
-            pets = pets.order_by('-adoption_fee')
+        pets = pets.order_by('adoption_fee' if sort_by_adoption_fee == 'asc' else '-adoption_fee')
 
     return render(request, 'adopter_pet_list.html', {
         'pets': pets,
@@ -126,6 +130,26 @@ def admin_pet_list(request):
     sort_by_age = request.GET.get('sort_by_age', '')
     sort_by_time_in_shelter = request.GET.get('sort_by_time_in_shelter', '')
     sort_by_adoption_fee = request.GET.get('sort_by_adoption_fee', '')
+
+    reset_filter = request.GET.get('reset_filter', False)
+    reset_sort = request.GET.get('reset_sort', False)
+
+    # reset logic
+    if reset_filter:
+        query = ''
+        pet_type = ''
+        gender = ''
+        age = ''
+        adoption_fee_min = ''
+        adoption_fee_max = ''
+        time_in_shelter_min = ''
+        time_in_shelter_max = ''
+    if reset_sort:
+        sort_by_id = ''
+        sort_by_name = ''
+        sort_by_age = ''
+        sort_by_time_in_shelter = ''
+        sort_by_adoption_fee = '' 
 
     pet_type_choices = Pet.PET_TYPE_CHOICES
 
