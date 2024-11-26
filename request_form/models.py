@@ -31,7 +31,7 @@ class Adoption(models.Model):
     date = models.DateField(default=timezone.now)
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    reason_choices = models.CharField(max_length=50, choices=REASON_CHOICES, default='other')
+    reason_choices = models.CharField(max_length=50, choices=REASON_CHOICES, default='other', null=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} wants to adopt {self.pet.name}"

@@ -12,7 +12,7 @@ class Schedule(models.Model):
         ('ethical_safety_concerns', 'Ethical or Safety Concerns'),
         ('inability_to_meet_needs', 'Inability to Meet Pet’s Needs')
     ]
-    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, null=True)
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, null=True, related_name='schedule_set')
     adopter = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  
     month = models.CharField(max_length=20)
     day = models.IntegerField()

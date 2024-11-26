@@ -4,75 +4,150 @@
 {% block content %}
 {% load static %}
 <style>
-    .tab-bar { display: flex; gap: 40px; margin-bottom: 20px; position: relative;
-        border-bottom: 2px solid #e0e0e0; justify-content: center ;
+    .tab-bar { 
+        display: flex; 
+        gap: 40px; 
+        margin-bottom: 20px; 
+        position: relative;
+        border-bottom: 2px solid #e0e0e0; 
+        justify-content: center ;
     }
-    .tab-button { position: relative; font-size: 25px; color: #555;
-        cursor: pointer; padding-bottom: 8px;
+    .tab-button { 
+        position: relative; 
+        font-size: 25px; 
+        color: #555;
+        cursor: pointer; 
+        padding-bottom: 8px;
     }
-    .tab-button.active { color: #FF6F61; font-weight: bold; 
+    .tab-button.active { 
+        color: #FF6F61; 
+        font-weight: bold; 
     }
-    .tab-button.active::after { content: ''; position: absolute; bottom: -2px;
-        left: 0; width: 100%; height: 4px; background-color: #FF6F61;
+    .tab-button.active::after { 
+        content: ''; 
+        position: absolute; 
+        bottom: -2px;
+        left: 0; 
+        width: 100%; 
+        height: 4px; 
+        background-color: #FF6F61;
         border-radius: 2px;
     }
-    .content-section { display: none; 
+    .content-section { 
+        display: none; 
     }
-    .content-section.active { display: block; 
+    .content-section.active { 
+        display: block; 
     }
-    .container { display: flex; gap: 20px; align-items: flex-start; 
+    .container { 
+        display: flex; 
+        gap: 20px; 
+        align-items: 
+        flex-start; 
     }
-    .image-container { display: flex; flex-direction: column; align-items: center; margin-right: 20px; 
+    .image-container { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        margin-right: 20px; 
     }
-    .profile-img, .pet-image { width: 200px; height: 200px; object-fit: cover; margin: 10px 0px 0px 40px; 
+    .profile-img, .pet-image { 
+        width: 200px; 
+        height: 200px; 
+        object-fit: cover; 
+        margin: 10px 0px 0px 40px; 
         border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    .details-container { flex: 1; margin-left: 40px; 
+    .details-container { 
+        flex: 1; 
+        margin-left: 40px; 
     }
-    h4{ margin-left: 50px; color: #4A4A4A; font-size: 30px;
+    h4 { 
+        margin-left: 50px; 
+        color: #4A4A4A; 
+        font-size: 30px;
     }
-    p strong{ color:#4A4A4A; 
+    p strong{ 
+        color:#4A4A4A; 
     }
-    p{ color:#757575; font-weight: bold; font-size: 18px; 
+    p{ 
+        color:#757575; 
+        font-weight: bold; 
+        font-size: 18px; 
     }
-    .heart{ width: 80px;  height: 80px; z-index: 10; margin-top: -30px; margin-bottom: -40px; margin-left: 40px; 
+    .heart{ 
+        width: 80px;  
+        height: 80px; 
+        z-index: 10; 
+        margin-top: -30px; 
+        margin-bottom: -40px; 
+        margin-left: 40px; 
     }
-    .btn-back { background-color: #FF6F61; border: none; color: #fff;
-        padding: 10px 20px; font-size: 16px; border-radius: 8px; width: 130px;
+    .btn-back { 
+        background-color: #FF6F61; 
+        border: none; color: #fff;
+        padding: 10px 20px; 
+        font-size: 16px;
+        border-radius: 8px; 
+        width: 130px;
     }
-    .btn-approve { background-color: #1EBE91; border: none; color: #fff;
-        padding: 10px 20px; font-size: 16px; border-radius: 8px; width: 180px;
+    .btn-approve { 
+        background-color: #1EBE91; 
+        border: none; color: #fff;
+        padding: 10px 20px; 
+        font-size: 16px; 
+        border-radius: 8px; 
+        width: 180px; 
+        font-weight: 700;
     }
-    .btn-reject { background-color: #B3261E; border: none; color: #fff;
-        padding: 10px 20px; font-size: 16px; border-radius: 8px; width: 180px;
+    .btn-reject { 
+        background-color: #B3261E; 
+        border: none; color: #fff;
+        padding: 10px 20px; 
+        font-size: 16px; 
+        border-radius: 8px; 
+        width: 180px;
+        font-weight: 700;
     }
-    .btn-back:hover { background-color: #e65c51; 
+    .btn-back:hover { 
+        background-color: #e65c51; 
     }
-    .btn-approve:hover { background-color: #e65c51; font-weight: 600;
+    .btn-approve:hover {
+         background-color: #e65c51; 
+         font-weight: 600;
      }
-    .btn-reject:hover { background-color: #e65c51; font-weight: 600;
+    .btn-reject:hover { 
+        background-color: #e65c51; 
+        font-weight: 600;
     }
-    .btnContainer{ justify-content: center; display: flex; gap: 30px; margin-top:auto 
+    .btnContainer{ 
+        justify-content: center; 
+        display: flex; gap: 30px; 
+        margin-top:auto 
     }
     .modal {
         position: fixed;
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%); 
+        top: 0; 
+        left: 0; 
         z-index: 1000; 
         display: none; 
         background-color: rgba(0, 0, 0, 0.5); 
         width: 100%; 
         height: 100%; 
-        overflow: auto; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
     }
 
     .modal-content {
-        width: 700px; 
+        max-width: 1000px; 
         background-color: #f0f0f0;
         padding: 40px;
         border-radius: 20px;
         text-align: center;
+        margin: auto;
+        margin-top: 90px;
+        margin-bottom: 90px;
     }
 
     .modal::after {
@@ -95,8 +170,11 @@
     <div class="container">
         <!-- Static Image Container -->
         <div class="image-container">
-            <img src="{{ profile.profile_image.url }}" alt="Adopter Profile Image" class="profile-img">
+            <!-- Check if user has a profile image, otherwise use default_profile.jpg -->
+            <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Adopter Profile Image" class="profile-img">
+            
             <img src="{% static 'images/view_heart.png' %}" alt="Heart Icon" class="heart">
+            
             <img src="{{ adoption.pet.main_image.url }}" alt="{{ adoption.pet.name }}" class="pet-image">
         </div>
 
@@ -169,7 +247,7 @@
 
 <!-- Approve Modal -->
 <div id="approveModal" class="modal" style="display: none;">
-    <div class="modal-content" style="width: 700px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
+    <div class="modal-content" style="width: 800px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 155px; height: 140px; margin-left: 40px;">
         </div>
@@ -189,7 +267,7 @@
 
 <!-- Cancel Modal -->
 <div id="cancelModal" class="modal" style="display: none;">
-    <div class="modal-content" style="width: 700px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
+    <div class="modal-content" style="width: 800px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
         <div style="display: flex; justify-content: center; margin-bottom: 20px;">
             <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 155px; height: 140px; margin-left: 40px;">
         </div>
@@ -199,7 +277,7 @@
         <p style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 26px; margin-bottom: 20px;">
             <strong>Select a reason for rejection:</strong>
         </p>
-        <select id="rejection-reason" style="width: 80%; padding: 10px; font-size: 16px; margin-bottom: 20px;">
+        <select id="rejection-reason" style="width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px;">
             <option value="" disabled selected>Choose a reason</option>
             <option value="duplicate_request">Duplicate Request</option>
             <option value="not_picking_up">Not Picking Up Pet on Time</option>
@@ -269,7 +347,7 @@ async function confirmRejection() {
             const result = await response.json();
             if (result.success) {
                 alert(result.message);
-                location.reload(); // Reload to reflect changes
+                location.reload(); 
             } else {
                 alert(result.message);
             }
@@ -283,31 +361,31 @@ async function confirmRejection() {
 }
 
 function approveRequest() {
-    updatePetStatus('adopted'); 
+    updatePetStatus('approved'); 
 }
 
 function rejectRequest() {
-    showRejectModal(); // Show rejection modal instead of rejecting directly
+    showRejectModal(); 
 }
 
 async function updatePetStatus(status) {
     try {
-        const response = await fetch('', { // Empty URL sends request to the current view
+        const response = await fetch('', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}', // Include CSRF token for security
+                'X-CSRFToken': '{{ csrf_token }}',  // CSRF token for Django
             },
-            body: JSON.stringify({ status: status, pet_id: petId }), // Send pet ID and status
+            body: JSON.stringify({ status: status, pet_id: petId }),
         });
 
         if (response.ok) {
             const result = await response.json();
             if (result.success) {
-                alert(result.message);
-                location.reload(); // Reload to reflect changes
+                alert(result.message); 
+                location.reload(); 
             } else {
-                alert(result.message);
+                alert(result.message); 
             }
         } else {
             alert('Failed to update the status. Please try again.');

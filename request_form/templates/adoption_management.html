@@ -52,23 +52,52 @@
     }
     a {
         color: #FF6F61;
-        text-decoration: none; /* Removes underline */
+        text-decoration: none; 
     }
 
     a:hover {
-        color: #df2588; /* Changes color on hover */
-        text-decoration: none; /* Ensures no underline on hover */
+        color: #df2588; 
+        text-decoration: none; 
+    }
+     /*Search Styling*/
+     .search-bar .input-group-text {
+        background-color: transparent;
+        border-right: none;
+        cursor: pointer;
+    }
+
+    .search-bar .input-group-text i {
+        color: #FF6F61; 
+    }
+
+    .container-fluid {
+        padding-top: 20px;
     }
 
 </style>
-
+<div class="d-flex mb-0" style="justify-content: flex-end;">
+    <form method="GET" action="{% url 'adoption_management' %}" class="form-inline search-bar">
+        <div class="input-group w-80">
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
+        </div>
+    </form>
+    <div style="margin-left: 5px;">
+    <!-- Export to Excel Button -->
+    <a href="{% url 'export_adoption_to_excel' %}" class="btn btn-success" title="Export to Excel">
+        <i class="fas fa-download"></i>
+    </a>
+    </div>
+</div>
 <div class="container-fluid">
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
             <a class="nav-link {% if status == 'requested' %}active{% endif %}" href="?status=requested">Pending</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'adopted' %}active{% endif %}" href="?status=adopted">Approved</a>
+            <a class="nav-link {% if status == 'approved' %}active{% endif %}" href="?status=approved">Approved</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if status == 'rejected' %}active{% endif %}" href="?status=rejected">Rejected</a>
@@ -77,6 +106,8 @@
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">
+
+        <!-- Pending Pets -->
         <div id="requested" class="tab-pane fade {% if status == 'requested' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -121,7 +152,9 @@
                 </table>
             </div>
         </div>
-        <div id="adopted" class="tab-pane fade {% if status == 'adopted' %}show active{% endif %}">
+
+        <!-- Approved Pets -->
+        <div id="approved" class="tab-pane fade {% if status == 'approved' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -132,12 +165,12 @@
                             <th>Adopter</th>
                             <th>Request Date</th>
                             <th>Status</th>
-                            <th> </th>
+                           
                         </tr>
                     </thead>
                     <tbody>
                         {% for pet in pets %}
-                        {% if pet.is_adopted %}
+                        {% if pet.is_approved %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>
@@ -156,7 +189,7 @@
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
                             {% endfor %}
-                            <td><span class="badge badge-success" style="background-color: #1EBE91">Adopted</span></td>
+                            <td><span class="badge badge-success" style="background-color: #1EBE91">Approved</span></td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -178,6 +211,7 @@
                             <th>Request Date</th>
                             <th>Reason</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -203,6 +237,15 @@
                             <td>{{ adoption.get_reason_choices_display }}
                             </td>{% endfor %}
                             <td><span class="badge badge-success" style="background-color: #B3261E">Rejected</span></td>
+                            <td>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="add_to_list">
+                                    <input type="hidden" name="pet_id" value="{{ pet.id }}">
+                                    <button type="submit" class="btn btn-sm" style="font-weight: 500; color:white; background-color: #ff5733; border-radius: 6px;">
+                                        Add to List</button>
+                                </form>
+                            </td>
                         </tr>
                         {% endif %}
                         {% endfor %}
