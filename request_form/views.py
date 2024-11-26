@@ -27,38 +27,42 @@ def adopt_form(request, pet_id):
         profile = None
 
     if request.method == 'POST':
+        # Use posted data to initialize the form
         form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
+            # Save the adoption data
             adoption = Adoption.objects.create(
-                adopter=user.profile,
+                adopter=user.profile if hasattr(user, 'profile') else None,  # Profile might not exist
                 pet=pet,
-                first_name=user.first_name,
-                last_name=user.last_name,
+                first_name=form.cleaned_data.get('first_name', user.first_name),
+                last_name=form.cleaned_data.get('last_name', user.last_name),
                 age=form.cleaned_data['age'],
                 address=form.cleaned_data['address'],
                 contact_number=form.cleaned_data['contact_number'],
-                email=user.email,
+                email=form.cleaned_data.get('email', user.email),
                 date=form.cleaned_data['date'],
             )
             
             pet.is_requested = True
             pet.is_available = False
             pet.save()
-           
+
+            # Store adoption data in session for later use
             request.session['adoption_form_data'] = {
-                'adopter_id': user.profile.id,
+                'adopter_id': user.profile.id if profile else user.id,
                 'pet_id': pet.id,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'age': form.cleaned_data['age'],
-                'address': form.cleaned_data['address'],
-                'contact_number': form.cleaned_data['contact_number'],
-                'email': user.email,
-                'date': form.cleaned_data['date'].isoformat(),  
+                'first_name': adoption.first_name,
+                'last_name': adoption.last_name,
+                'age': adoption.age,
+                'address': adoption.address,
+                'contact_number': adoption.contact_number,
+                'email': adoption.email,
+                'date': adoption.date.isoformat(),
             }
 
             return redirect('schedule', pet_id=pet.id)
     else:
+        # Initialize form data with user details if available
         initial_data = {
             'adopter_id': user.id,
             'first_name': user.first_name,
@@ -68,9 +72,9 @@ def adopt_form(request, pet_id):
 
         if profile:
             initial_data.update({
-                'age': profile.age,
-                'address': profile.address,
-                'contact_number': profile.phone_number,
+                'age': profile.age if profile.age else '',
+                'address': profile.address if profile.address else '',
+                'contact_number': profile.phone_number if profile.phone_number else '',
             })
 
         form = AdoptionForm(initial=initial_data, user=user)
@@ -94,10 +98,12 @@ def adoption_management(request):
         pets = Pet.objects.filter(is_rejected=True).prefetch_related('adoption_set')
     else: 
         pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
-
+        
+    adoptions = Adoption.objects.all()
     return render(request, 'adoption_management.html', {
         'pets': pets,
-        'status': status,  
+        'status': status, 
+        'adoptions': adoptions,
     })
 
 @login_required
@@ -136,7 +142,7 @@ def review_form(request, pet_id):
                 adoption.status = 'rejected'
                 adoption.reason_choices = reason  # Save the rejection reason
                 adoption.save()
-                messages.success(request, 'Pet is is now rejected')
+                messages.success(request, 'Pet is now rejected')
                 return redirect('/adoption_management/?status=adopted')
 
             else:
@@ -147,7 +153,7 @@ def review_form(request, pet_id):
 
     return render(request, 'review_form.html', {
         'adoption': adoption,
-        'profile': profile,
+        'profile': profile
     })
 
 @login_required

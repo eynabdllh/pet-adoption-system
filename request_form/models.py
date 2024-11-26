@@ -17,7 +17,8 @@ class Adoption(models.Model):
         ('not_picking_up', 'Not Picking Up Pet on Time'),
         ('overwhelmed_adopter', 'Overwhelmed Adopter'),
         ('ethical_safety_concerns', 'Ethical or Safety Concerns'),
-        ('inability_to_meet_needs', 'Inability to Meet Pet’s Needs')
+        ('inability_to_meet_needs', 'Inability to Meet Pet’s Needs'),
+        ('other', 'Other')
     ]
 
     adopter = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True, blank=True) 
@@ -30,7 +31,7 @@ class Adoption(models.Model):
     date = models.DateField(default=timezone.now)
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
-    reason_choices = models.CharField(max_length=50, choices=REASON_CHOICES, null=True)
+    reason_choices = models.CharField(max_length=50, choices=REASON_CHOICES, default='other')
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} wants to adopt {self.pet.name}"
