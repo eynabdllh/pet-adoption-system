@@ -325,6 +325,8 @@
                         <form action="{% url 'admin_edit_pet' pet.id %}" method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
 
+                            <input type="hidden" name="delete_image_ids" id="delete_image_ids_{{ pet.id }}" value="">
+
                             <div class="form-group">
                                 <label for="pet_name">Pet Name</label>
                                 <input type="text" name="name" class="form-control" id="pet_name_{{ pet.id }}" value="{{ pet.name }}" required>
@@ -753,83 +755,85 @@
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const removeButtons = document.querySelectorAll('.remove-image-btn');
-        const updateButtons = document.querySelectorAll('.btn-update'); 
-        const cancelButtons = document.querySelectorAll('.btn-cancel'); 
+document.addEventListener('DOMContentLoaded', () => {
+    const deleteQueue = new Map();
 
-        const deleteQueue = new Map();
+    // Handle image removal
+    document.querySelectorAll('.remove-image-btn').forEach(button =>
+        button.addEventListener('click', () => {
+            const modal = button.closest('.modal');
+            const petId = modal.dataset.petId;
+            const imageId = button.dataset.imageId;
+            const imageContainer = button.closest('.image-container');
+            const uploadButton = modal.querySelector('#pet_images');
+            const existingImages = modal.querySelector('#existing-images');
 
-        // remove 
-        removeButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const imageId = this.dataset.imageId;
-                const petId = this.closest('.modal').dataset.petId; 
-                const imageContainer = this.closest('.image-container');
-                const uploadButton = this.closest('.modal').querySelector('#pet_images');
+            deleteQueue.set(petId, (deleteQueue.get(petId) || new Set()).add(imageId));
+            imageContainer.remove();
 
-                if (!deleteQueue.has(petId)) {
-                    deleteQueue.set(petId, new Set());
-                }
-                deleteQueue.get(petId).add(imageId);
+            if (existingImages.children.length < 5) uploadButton.disabled = false;
+        })
+    );
 
-                imageContainer.remove();
+    // Handle update
+    document.querySelectorAll('.btn-update').forEach(button =>
+        button.addEventListener('click', (e) => {
+            const modal = button.closest('.modal');
+            const petId = modal.dataset.petId;
+            const existingImages = modal.querySelector('#existing-images');
+            const imagesToDelete = Array.from(deleteQueue.get(petId) || []);
 
-                const remainingImages = this.closest('#existing-images').children.length;
-                if (remainingImages < 5) {
-                    uploadButton.disabled = false; 
-                }
-            });
-        });
+            if (existingImages.children.length < 1) {
+                e.preventDefault();
+                modal.querySelector('form').append(createHiddenInput('validation_error', 'At least one image must remain.'));
+                modal.querySelector('form').submit();
+                return;
+            }
 
-        // update
-        updateButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const modal = this.closest('.modal');
-                const petId = modal.dataset.petId;
+            if (imagesToDelete.length) {
+                fetch("{% url 'delete_pet_image' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                    body: JSON.stringify({ image_ids: imagesToDelete })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        deleteQueue.delete(petId);
+                        console.log("Images deleted successfully.");
+                    } else {
+                        throw new Error(data.error || 'Unknown error.');
+                    }
+                })
+                .catch(error => {
+                    modal.querySelector('form').append(createHiddenInput('validation_error', `Error deleting images: ${error.message}`));
+                    modal.querySelector('form').submit();
+                });
+            }
+        })
+    );
 
-                if (deleteQueue.has(petId)) {
-                    const imagesToDelete = Array.from(deleteQueue.get(petId));
+    // Handle cancel
+    document.querySelectorAll('.btn-cancel').forEach(button =>
+        button.addEventListener('click', () => {
+            const petId = button.closest('.modal').dataset.petId;
+            deleteQueue.delete(petId);
+            location.reload();
+        })
+    );
 
-                    // deletion of pet
-                    fetch("{% url 'delete_pet_image' %}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        },
-                        body: JSON.stringify({ image_ids: imagesToDelete })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            deleteQueue.delete(petId);
-                        } else {
-                            alert("Error deleting images: " + (data.error || "Unknown error."));
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        alert("An unexpected error occurred while deleting the images.");
-                    });
-                }
-            });
-        });
-
-        cancelButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const modal = this.closest('.modal');
-                const petId = modal.dataset.petId;
-
-                // clear the delete queue for this pet (cancel the staged deletions)
-                if (deleteQueue.has(petId)) {
-                    deleteQueue.delete(petId);
-                }
-
-                location.reload();
-            });
-        });
-    });
+    // Helper function to create hidden input
+    function createHiddenInput(name, value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        return input;
+    }
+});
 </script>
 
 {% endblock %}
