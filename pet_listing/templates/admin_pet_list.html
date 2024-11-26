@@ -175,6 +175,41 @@
         background-color: #FF6F61;
         border-color: #f8f9fa;
     }
+
+    /* Style for Image Display and Deletion */
+    .image-container {
+        display: inline-block;
+        position: relative;
+        margin-right: 10px;
+    }
+
+    .image-container img {
+        border-radius: 10px;
+        max-height: 100px;
+        margin-bottom: 5px;
+    }
+
+    .remove-image-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 0 6px;
+        border: 1px solid white;
+        cursor: pointer;
+    }
+
+    .remove-image-btn:hover {
+        background-color: darkred;
+    }
+
+    #pet_images:disabled {
+        background-color: #e0e0e0;
+        cursor: not-allowed;
+    }
+
 </style>
 
 <div class="container-fluid">
@@ -243,19 +278,24 @@
                                 <input type="number" name="adoption_fee" class="form-control" id="adoption_fee" step="0.01" required>
                             </div>
 
-                            <div class="form-group form-check">
-                                <label class="form-check-label" for="is_available">Is Available</label>
-                                <input type="checkbox" name="is_available" class="form-check-available" id="is_available">
+                            <div class="form-group">
+                                <label for="is_available">Status</label>
+                                <select name="is_available" class="form-select form-select-sm" id="is_available" required>
+                                    <option value="">Select Status</option>
+                                    <option value="True">Available</option>
+                                    <option value="False">Adopted</option>
+                                </select>
                             </div>
- 
+
                             <div class="form-group">
                                 <label for="time_in_shelter">Time in Shelter</label>
-                                <input type="date" name="time_in_shelter" class="form-control" id="time_in_shelter" required>
+                                <input type="date" name="time_in_shelter" class="form-control" id="time_in_shelter" required max="{{ today }}">
                             </div>
-    
+                            
                             <div class="form-group">
                                 <label for="pet_images">Upload Images</label>
-                                <input type="file" name="images" id="pet_images" class="form-control" accept="image/*" multiple required>
+                                <input type="file" name="images" id="pet_images" class="form-control" accept="image/*" multiple>
+                                <small class="form-text text-muted">Maximum of 5 images allowed.</small>
                             </div>
         
                             <div class="modal-footer">
@@ -268,6 +308,110 @@
             </div>
         </div>
         
+        <!-- Update Pet Modal -->
+        {% for pet in pets %}   
+        <div class="modal fade" id="updatePetModal{{ pet.id }}" tabindex="-1" role="dialog" aria-labelledby="updatePetModalLabel{{ pet.id }}" aria-hidden="true " data-pet-id="{{ pet.id }}">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updatePetModalLabel{{ pet.id }}">Update Pet</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'admin_edit_pet' pet.id %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label for="pet_name">Pet Name</label>
+                                <input type="text" name="name" class="form-control" id="pet_name_{{ pet.id }}" value="{{ pet.name }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_age">Age</label>
+                                <input type="number" name="age" class="form-control" id="pet_age_{{ pet.id }}" value="{{ pet.age }}" min="0" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_gender">Gender</label>
+                                <select name="gender" class="form-select form-select-sm" id="pet_gender_{{ pet.id }}" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="male" {% if pet.gender == 'male' %} selected {% endif %}>Male</option>
+                                    <option value="female" {% if pet.gender == 'female' %} selected {% endif %}>Female</option>
+                                    <option value="none" {% if pet.gender == 'none' %} selected {% endif %}>None</option>
+                                </select>                        
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_breed">Breed</label>
+                                <input type="text" name="breed" class="form-control" id="pet_breed_{{ pet.id }}" value="{{ pet.breed }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pet_type">Type of Species</label>
+                                <select name="pet_type" class="form-select form-select-sm" id="pet_type_{{ pet.id }}" required>
+                                    <option value="">Select Species</option>
+                                    {% for type, label in pet.PET_TYPE_CHOICES %}
+                                        <option value="{{ type }}" {% if pet.pet_type == type %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea name="description" class="form-control" id="description" rows="3">{{ pet.description }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="adoption_fee">Adoption Fee (₱)</label>
+                                <input type="number" name="adoption_fee" class="form-control" id="adoption_fee" value="{{ pet.adoption_fee }}" step="0.01" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="is_available">Status</label>
+                                <select name="is_available" class="form-select form-select-sm" id="is_available" value="{{ pet.is_available }}" required>
+                                    <option value="">Select Status</option>
+                                    <option value="True" {% if pet.is_available %}selected{% endif %}>Available</option>
+                                    <option value="False" {% if not pet.is_available %}selected{% endif %}>Adopted</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="time_in_shelter">Time in Shelter</label>
+                                <input type="date" name="time_in_shelter" class="form-control" id="time_in_shelter" value="{{ pet.time_in_shelter|date:'Y-m-d' }}" required max="{{ today }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="pet_images">Upload Images</label>
+                                <input type="file" name="images" id="pet_images" class="form-control" accept="image/*" multiple 
+                                       {% if pet.images.count >= 5 %} disabled {% endif %}>
+                                <small class="form-text text-muted">Maximum of 5 images allowed.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Existing Images:</label>
+                                <div id="existing-images">
+                                    {% for image in pet.images.all|slice:":5" %}
+                                        <div class="image-container" data-image-id="{{ image.id }}">
+                                            <img src="{{ image.image.url }}" alt="Pet Image" class="img-thumbnail" style="max-width: 100px;">
+                                            <button type="button" class="remove-image-btn" data-image-id="{{ image.id }}">X</button>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div> 
+        
+                            <div class="modal-footer">
+                                <a href="#" class="btn btn-secondary btn-cancel" data-dismiss="modal" aria-label="Close">Cancel</a>
+                                <button type="submit" class="btn btn-color btn-update">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
         <div class="d-flex mb-0">
             <form method="GET" action="{% url 'admin_pet_list' %}" class="form-inline search-bar">
                 <div class="input-group w-80">
@@ -548,12 +692,14 @@
                     </thead>
                     <tbody>
                         {% for pet in pets %}
-                        {% if pet.is_adopted %}
+                        {% if not pet.is_available %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>
                                 {% if pet.main_image %}
                                     <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
+                                {% else %}
+                                    <img src="{% static 'images/default_image.jpg' %}" alt="No Image Available" class="img-pet">
                                 {% endif %}
                                 {{ pet.name }}
                             </td>
@@ -579,89 +725,92 @@
                 </table>
             </div>
         </div>
-
-        <!-- Update Pet Modal -->
-        {% for pet in pets %}   
-        <div class="modal fade" id="updatePetModal{{ pet.id }}" tabindex="-1" role="dialog" aria-labelledby="updatePetModalLabel{{ pet.id }}" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="updatePetModalLabel{{ pet.id }}">Update Pet</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{% url 'admin_edit_pet' pet.id %}" method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-
-                            <div class="form-group">
-                                <label for="pet_name">Pet Name</label>
-                                <input type="text" name="name" class="form-control" id="pet_name_{{ pet.id }}" value="{{ pet.name }}" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="pet_age">Age</label>
-                                <input type="number" name="age" class="form-control" id="pet_age_{{ pet.id }}" value="{{ pet.age }}" min="0" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="pet_gender">Gender</label>
-                                <select name="gender" class="form-select form-select-sm" id="pet_gender_{{ pet.id }}" required>
-                                    <option value="">Select Gender</option>
-                                    <option value="male" {% if pet.gender == 'male' %} selected {% endif %}>Male</option>
-                                    <option value="female" {% if pet.gender == 'female' %} selected {% endif %}>Female</option>
-                                    <option value="none" {% if pet.gender == 'none' %} selected {% endif %}>None</option>
-                                </select>                        
-                            </div>
-
-                            <div class="form-group">
-                                <label for="pet_breed">Breed</label>
-                                <input type="text" name="breed" class="form-control" id="pet_breed_{{ pet.id }}" value="{{ pet.breed }}" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="pet_type">Type of Species</label>
-                                <select name="pet_type" class="form-select form-select-sm" id="pet_type_{{ pet.id }}" required>
-                                    <option value="">Select Species</option>
-                                    {% for type, label in pet.PET_TYPE_CHOICES %}
-                                        <option value="{{ type }}" {% if pet.pet_type == type %}selected{% endif %}>{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea name="description" class="form-control" id="description" rows="3">{{ pet.description }}</textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="adoption_fee">Adoption Fee (₱)</label>
-                                <input type="number" name="adoption_fee" class="form-control" id="adoption_fee" value="{{ pet.adoption_fee }}" step="0.01" required>
-                            </div>
-
-                            <div class="form-group form-check">
-                                <label class="form-check-label" for="is_available">Is Available</label>
-                                <input type="checkbox" name="is_available" class="form-check-available" id="is_available" {% if pet.is_available %} checked {% endif %}>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="time_in_shelter">Time in Shelter</label>
-                                <input type="date" name="time_in_shelter" class="form-control" id="time_in_shelter" value="{{ pet.time_in_shelter|date:'Y-m-d' }}" required>
-                            </div>
-        
-                            <div class="modal-footer">
-                                <a href="{% url 'admin_pet_list' %}" class="btn btn-secondary">Cancel</a>
-                                <button type="submit" class="btn btn-color">Update</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
     </div>
     </div>
 </div>
+<script>
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('time_in_shelter').setAttribute('max', today);
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const removeButtons = document.querySelectorAll('.remove-image-btn');
+        const updateButtons = document.querySelectorAll('.btn-update'); 
+        const cancelButtons = document.querySelectorAll('.btn-cancel'); 
+
+        const deleteQueue = new Map();
+
+        // remove 
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const imageId = this.dataset.imageId;
+                const petId = this.closest('.modal').dataset.petId; 
+                const imageContainer = this.closest('.image-container');
+                const uploadButton = this.closest('.modal').querySelector('#pet_images');
+
+                if (!deleteQueue.has(petId)) {
+                    deleteQueue.set(petId, new Set());
+                }
+                deleteQueue.get(petId).add(imageId);
+
+                imageContainer.remove();
+
+                const remainingImages = this.closest('#existing-images').children.length;
+                if (remainingImages < 5) {
+                    uploadButton.disabled = false; 
+                }
+            });
+        });
+
+        // update
+        updateButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const modal = this.closest('.modal');
+                const petId = modal.dataset.petId;
+
+                if (deleteQueue.has(petId)) {
+                    const imagesToDelete = Array.from(deleteQueue.get(petId));
+
+                    // deletion of pet
+                    fetch("{% url 'delete_pet_image' %}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        },
+                        body: JSON.stringify({ image_ids: imagesToDelete })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            deleteQueue.delete(petId);
+                        } else {
+                            alert("Error deleting images: " + (data.error || "Unknown error."));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An unexpected error occurred while deleting the images.");
+                    });
+                }
+            });
+        });
+
+        cancelButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const modal = this.closest('.modal');
+                const petId = modal.dataset.petId;
+
+                // clear the delete queue for this pet (cancel the staged deletions)
+                if (deleteQueue.has(petId)) {
+                    deleteQueue.delete(petId);
+                }
+
+                location.reload();
+            });
+        });
+    });
+</script>
 
 {% endblock %}

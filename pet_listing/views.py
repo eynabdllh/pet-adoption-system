@@ -1,5 +1,5 @@
-import openpyxl
-from django.http import HttpResponse
+import openpyxl, json
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Pet, PetImage
@@ -8,6 +8,8 @@ from login_register.decorators import admin_required, adopter_required
 from django.contrib import messages
 from django.db.models import Q
 from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 @login_required
 @adopter_required
@@ -105,8 +107,6 @@ def view_pet_detail(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     return render(request, 'view_pet.html', {'pet': pet})
 
-from django.utils import timezone
-
 @login_required
 @admin_required
 def admin_pet_list(request):
@@ -158,6 +158,11 @@ def admin_pet_list(request):
     if time_in_shelter_max:
         pets = pets.filter(time_in_shelter__lte=time_in_shelter_max)
 
+    if status == 'adopted':
+        pets = pets.filter(is_adopted=True)
+    elif status == 'available':
+        pets = pets.filter(is_available=True)
+
     # Sorting
     if sort_by_id:
         if sort_by_id == 'asc':
@@ -208,15 +213,25 @@ def admin_pet_list(request):
         'sort_by_adoption_fee': sort_by_adoption_fee,
     })
 
-
 @login_required
 @admin_required
 def admin_add_pet(request):
     if request.method == 'POST':
         pet_form = PetForm(request.POST, request.FILES)
         images = request.FILES.getlist('images')
+
+        if len(images) > 5:
+            messages.error(request, "You can only upload a maximum of 5 images.")
+            return redirect('admin_pet_list')
+        
         if pet_form.is_valid():
             pet = pet_form.save()
+
+            if pet.is_available == False:
+                pet.is_adopted = True
+            else:
+                pet.is_adopted = False
+
             for i, image in enumerate(images):
                 pet_image = PetImage(pet=pet, image=image)
                 pet_image.save()
@@ -237,11 +252,26 @@ def admin_edit_pet(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
     if request.method == 'POST':
         pet_form = PetForm(request.POST, request.FILES, instance=pet)
+        images = request.FILES.getlist('images')
+
+        if len(images) > 5:
+            messages.error(request, "You can only upload a maximum of 5 images.")
+            return redirect('admin_pet_list')
 
         if pet_form.is_valid():
             pet = pet_form.save()
-            for image in request.FILES.getlist('images'):
+
+            if pet.is_available == False:
+                pet.is_adopted = True
+            else:
+                pet.is_adopted = False
+
+            for i, image in enumerate(images):
+                if i >= 5: 
+                    raise ValidationError(_('You can upload a maximum of 5 images.'))
                 PetImage.objects.create(pet=pet, image=image)
+
+            pet.save()
 
             messages.success(request, 'Pet updated successfully.')
             return redirect('admin_pet_list')
@@ -250,10 +280,7 @@ def admin_edit_pet(request, pet_id):
     else:
         pet_form = PetForm(instance=pet)
 
-    return render(request, 'admin_pet_list.html', {
-        'pet_form': pet_form,
-        'pet': pet,
-    })
+    return render(request, 'admin_pet_list.html', {'pet_form': pet_form, 'pet': pet})
 
 @login_required
 @admin_required
@@ -269,6 +296,22 @@ def admin_delete_pet(request, pet_id):
     messages.success(request, 'Pet successfully deleted!')
     return redirect('admin_pet_list')
 
+@login_required
+@admin_required
+def delete_pet_image(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            image_ids = data.get('image_ids', [])
+
+            for image_id in image_ids:
+                pet_image = get_object_or_404(PetImage, id=image_id)
+                pet_image.delete()
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+            
 @login_required
 @admin_required
 def export_pets_to_excel(request):
