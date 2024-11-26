@@ -13,6 +13,7 @@ from django.utils import timezone
 from .models import Adoption
 
 @login_required
+@adopter_required
 def adopt_form(request, pet_id):
     user_id = request.session.get('user_id')
     pet = get_object_or_404(Pet, id=pet_id)
@@ -21,35 +22,46 @@ def adopt_form(request, pet_id):
         return redirect('login')
 
     user = User.objects.get(id=user_id)
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        profile = None
+    profile, created = Profile.objects.get_or_create(user=user)  # Ensure profile exists
 
     if request.method == 'POST':
         # Use posted data to initialize the form
         form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
+            # Retrieve form data or fallback to user defaults
+            age = form.cleaned_data['age']
+            address = form.cleaned_data['address']
+            contact_number = form.cleaned_data['contact_number']
+
+            # Update profile if fields are missing
+            if not profile.age:
+                profile.age = age
+            if not profile.address:
+                profile.address = address
+            if not profile.phone_number:
+                profile.phone_number = contact_number
+            profile.save()  # Save updated profile data
+
             # Save the adoption data
             adoption = Adoption.objects.create(
-                adopter=user.profile if hasattr(user, 'profile') else None,  # Profile might not exist
+                adopter=profile,  # Use the profile for adoption
                 pet=pet,
                 first_name=form.cleaned_data.get('first_name', user.first_name),
                 last_name=form.cleaned_data.get('last_name', user.last_name),
-                age=form.cleaned_data['age'],
-                address=form.cleaned_data['address'],
-                contact_number=form.cleaned_data['contact_number'],
+                age=age,
+                address=address,
+                contact_number=contact_number,
                 email=form.cleaned_data.get('email', user.email),
                 date=form.cleaned_data['date'],
             )
-            
+
             pet.is_requested = True
             pet.is_available = False
             pet.save()
 
             # Store adoption data in session for later use
             request.session['adoption_form_data'] = {
-                'adopter_id': user.profile.id if profile else user.id,
+                'adopter_id': profile.id,
                 'pet_id': pet.id,
                 'first_name': adoption.first_name,
                 'last_name': adoption.last_name,
@@ -62,20 +74,16 @@ def adopt_form(request, pet_id):
 
             return redirect('schedule', pet_id=pet.id)
     else:
-        # Initialize form data with user details if available
+        # Initialize form data with user and profile details
         initial_data = {
             'adopter_id': user.id,
             'first_name': user.first_name,
             'last_name': user.last_name,
             'email': user.email,
+            'age': profile.age if profile.age else '',
+            'address': profile.address if profile.address else '',
+            'contact_number': profile.phone_number if profile.phone_number else '',
         }
-
-        if profile:
-            initial_data.update({
-                'age': profile.age if profile.age else '',
-                'address': profile.address if profile.address else '',
-                'contact_number': profile.phone_number if profile.phone_number else '',
-            })
 
         form = AdoptionForm(initial=initial_data, user=user)
 
@@ -92,18 +100,32 @@ def adopt_form(request, pet_id):
 def adoption_management(request):
     status = request.GET.get('status', 'requested')  
 
-    if status == 'adopted':
-        pets = Pet.objects.filter(is_adopted=True).prefetch_related('adoption_set')
+    # Handle form submission
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        pet_id = request.POST.get('pet_id')
+
+        if action == 'add_to_list' and pet_id:
+            try:
+                pet = Pet.objects.get(id=pet_id, is_rejected=True)  # Ensure it's rejected
+                pet.is_rejected = False
+                pet.is_available = True
+                pet.save()
+                messages.success(request, f"Pet {pet.name} is now available for adoption.")
+            except Pet.DoesNotExist:
+                messages.error(request, "Pet not found or already updated.")
+
+    # Fetch pets based on status
+    if status == 'approved':
+        pets = Pet.objects.filter(is_approved=True).prefetch_related('adoption_set')
     elif status == 'rejected':
         pets = Pet.objects.filter(is_rejected=True).prefetch_related('adoption_set')
     else: 
         pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
-        
-    adoptions = Adoption.objects.all()
+
     return render(request, 'adoption_management.html', {
         'pets': pets,
-        'status': status, 
-        'adoptions': adoptions,
+        'status': status,  
     })
 
 @login_required
@@ -120,9 +142,10 @@ def review_form(request, pet_id):
 
             pet = adoption.pet
 
-            if status == 'adopted':
+            if status == 'approved':
                 pet.is_requested = False
-                pet.is_adopted = True
+                pet.is_approved = True
+                pet.is_upcoming = True
                 pet.save()
 
                 adoption.status = 'approved'
@@ -159,16 +182,34 @@ def review_form(request, pet_id):
 @login_required
 @admin_required
 def admin_pickup(request):
-    status = request.GET.get('status', 'upcoming')  # Default to 'requested'
+
+    if request.method == 'POST':
+        pet_id = request.POST.get('pet_id')
+        action = request.POST.get('action')
+
+        if action == 'mark_completed' and pet_id:
+            try:
+                pet = Pet.objects.get(id=pet_id)
+                pet.is_approved = False
+                pet.is_upcoming = False
+                pet.is_adopted = True
+                pet.save()
+                messages.success(request, f"Pet {pet.name} marked as completed.")
+            except Pet.DoesNotExist:
+                messages.error(request, "Pet not found.")
+            except Exception as e:
+                messages.error(request, f"An error occurred: {e}")
+
+    status = request.GET.get('status', 'upcoming')
 
     if status == 'completed':
-        schedules = Schedule.objects.filter(completed=True).prefetch_related('adoption_set')
+        pets = Pet.objects.filter(is_adopted=True, is_upcoming=False, is_approved=False).prefetch_related('schedule_set')
     elif status == 'cancelled':
-        schedules = Schedule.objects.filter(cancelled=True).prefetch_related('adoption_set')
-    else:  
-        schedules = Schedule.objects.filter(upcoming=True).prefetch_related('adoption_set')
+        pets = Pet.objects.filter(is_cancelled=True).prefetch_related('schedule_set')
+    else: 
+        pets = Pet.objects.filter(is_upcoming=True, is_approved=True).prefetch_related('schedule_set')
 
     return render(request, 'admin_pickup.html', {
-        'schedules': schedules,
-        'status': status,  
+        'pets': pets,
+        'status': status,
     })
