@@ -159,9 +159,11 @@ def admin_pet_list(request):
         pets = pets.filter(time_in_shelter__lte=time_in_shelter_max)
 
     if status == 'adopted':
-        pets = pets.filter(is_adopted=True)
+        pets = pets.filter(is_adopted=True, is_requested=False)
     elif status == 'available':
-        pets = pets.filter(is_available=True)
+        pets = pets.filter(is_available=True, is_requested=False)
+    else:
+        pets = pets.filter(is_requested=False)
 
     # Sorting
     if sort_by_id:
