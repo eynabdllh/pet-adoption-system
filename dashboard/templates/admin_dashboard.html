@@ -16,7 +16,7 @@ Dashboard
         font-family: Arial, sans-serif;
     }
     .card {
-        border-radius: 10px;
+        border-radius: 30px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-bottom: 20px;
     }
@@ -27,7 +27,7 @@ Dashboard
     .status-card {
         text-align: center;
         padding: 20px;
-        color: #333;
+        color: #4A4A4A;
     }
     .status-card h5 {
         margin: 0 10px;
@@ -37,13 +37,13 @@ Dashboard
         font-size: 2.5rem;
     }
     .status-card.adopted {
-        background-color: #f8d7da;
+        background-color: #FECCA4;
     }
     .status-card.available {
-        background-color: #f8d7da;
+        background-color: #FFD8DE;
     }
     .status-card.total {
-        background-color: #d4edda;
+        background-color: #8BF8D9;
     }
     .table th, .table td {
         vertical-align: middle;
@@ -148,7 +148,7 @@ Dashboard
               {% for request in pending_requests %}
                 <tr>
                   <td>
-                    <img src="{{ request.adopter.profile_image.url }}" alt="{{ request.adopter.first_name }}" style="height: 30px; width: 30px; border-radius: 50%;">
+                    <img src="{{ request.user.profile_image.url }}" alt="{{ request.adopter.first_name }}" style="height: 30px; width: 30px; border-radius: 50%;">
                     {{ request.adopter.first_name }} {{ request.adopter.last_name }}
                   </td>
                   <td>
