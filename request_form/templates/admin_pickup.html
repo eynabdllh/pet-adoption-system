@@ -163,10 +163,8 @@
                             <td>
                                 {{ adoption.first_name }} {{ adoption.last_name }}
                             </td>
-                            <!-- Loop through the schedule set to get the schedule date -->
                             {% for schedule in pet.schedule_set.all %}
                             <td>
-                                <!-- Extract the month, day, and year from schedule.date -->
                                 {{ schedule.month }} {{ schedule.day }}, {{ schedule.year }}
                             </td>
                             {% endfor %}
