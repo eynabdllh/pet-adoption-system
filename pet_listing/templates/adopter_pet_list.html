@@ -420,7 +420,7 @@ Adopt a Pet
                 {% if pet.main_image %}
                     <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="card-img-top pet-image">
                 {% else %}
-                    <img src="{% static 'images/default_image.jpg' %}" alt="No Image Available" class="card-img-top pet-image">
+                    <img src="{% static 'images/default_profile.jpg' %}" alt="No Image Available" class="card-img-top pet-image">
                 {% endif %}
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
