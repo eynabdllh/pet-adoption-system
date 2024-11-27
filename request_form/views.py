@@ -128,10 +128,6 @@ def adoption_management(request):
         'status': status,  
     })
 
-from django.contrib import messages
-from django.http import JsonResponse
-from django.shortcuts import redirect
-
 @login_required
 @admin_required
 def review_form(request, pet_id):
@@ -229,9 +225,7 @@ def admin_pickup(request):
 @login_required
 @admin_required
 def export_adoption_to_excel(request):
-    
     pet_type = request.GET.get('pet_type', '')
-    
     sort_by = request.GET.get('sort_by', '')
     status_filter = request.GET.get('status', '')  
 
@@ -250,18 +244,18 @@ def export_adoption_to_excel(request):
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Pet List" 
+    ws.title = "Pet Adoption List"
 
+    headers = ['ID', 'Pet Name', 'Species', 'Adopter', 'Request Date', 'Status']
     if status_filter == 'rejected':
-        ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Request Date', 'Status', 'Reason'])
-    else:
-        ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Request Date', 'Status'])
+        headers.append('Reason')
+    ws.append(headers)
 
     for pet in pets:
-        adoption_data = pet.adoption_set.first() 
+        adoption_data = pet.adoption_set.first()
         if adoption_data:
             adopter_name = f"{adoption_data.first_name} {adoption_data.last_name}"
-            request_date = adoption_data.date
+            request_date = adoption_data.date.strftime('%Y-%m-%d') if adoption_data.date else 'N/A'
         else:
             adopter_name = 'N/A'
             request_date = 'N/A'
@@ -275,14 +269,100 @@ def export_adoption_to_excel(request):
         else:
             status = 'Unknown'
 
+        row = [pet.id, pet.name, pet.pet_type, adopter_name, request_date, status]
         if status_filter == 'rejected':
             reason = adoption_data.get_reason_choices_display() if adoption_data else 'N/A'
-            ws.append([pet.id, pet.name, pet.pet_type, adopter_name, request_date, status, reason])
-        else:
-            ws.append([pet.id, pet.name, pet.pet_type, adopter_name, request_date, status])
+            row.append(reason)
+        ws.append(row)
+
+    for cell in ws[1]:
+        cell.font = openpyxl.styles.Font(bold=True)
+        cell.fill = openpyxl.styles.PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="pet_list.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="adoption_list_{status_filter}.xlsx"'
     wb.save(response)
+    return response
 
+@login_required
+@admin_required
+def export_pickup_to_excel(request):
+    pet_type = request.GET.get('pet_type', '')
+    status_filter = request.GET.get('status', '')
+    sort_by = request.GET.get('sort_by', 'id')  
+
+    valid_sort_fields = [
+        'id', 'name', 'pet_type', 'age', 'adoption_fee', 'time_in_shelter',
+        'gender', 'is_adopted', 'is_available', 'is_cancelled', 'is_requested'
+    ]
+    if sort_by not in valid_sort_fields:
+        sort_by = 'id' 
+
+    pets = Pet.objects.all()
+    if pet_type:
+        pets = pets.filter(pet_type__iexact=pet_type)
+    
+    if status_filter == 'upcoming':
+        pets = pets.filter(is_upcoming=True, is_approved=True)
+    elif status_filter == 'completed':
+        pets = pets.filter(is_adopted=True, is_upcoming=False, is_approved=False)
+    elif status_filter == 'cancelled':
+        pets = pets.filter(is_cancelled=True)
+    else:
+        pets = pets.filter(is_upcoming=True) 
+
+    pets = pets.order_by(sort_by)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Pet List"
+
+    if status_filter == 'cancelled':
+        ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Adoption Date', 'Status', 'Cancellation Reason'])
+    else:
+        ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Adoption Date', 'Status'])
+
+    for pet in pets:
+        adoption_data = pet.adoption_set.first()  
+        if adoption_data:
+            adopter_name = f"{adoption_data.first_name} {adoption_data.last_name}"
+            adoption_date = adoption_data.date
+        else:
+            adopter_name = 'N/A'
+            adoption_date = 'N/A'
+
+        if pet.is_upcoming and pet.is_approved:
+            status = 'Upcoming'
+        elif pet.is_adopted:
+            status = 'Completed'
+        elif pet.is_cancelled:
+            status = 'Cancelled'
+        else:
+            status = 'Unknown'
+
+        if status_filter == 'cancelled':
+            ws.append([
+                pet.id,
+                pet.name,
+                pet.pet_type.capitalize(),
+                adopter_name,
+                adoption_date,
+                status,
+                pet.cancellation_reason or 'N/A'
+            ])
+        else:
+            ws.append([
+                pet.id,
+                pet.name,
+                pet.pet_type.capitalize(),
+                adopter_name,
+                adoption_date,
+                status
+            ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{status_filter}_pickup_list.xlsx"'
+    wb.save(response)
     return response
