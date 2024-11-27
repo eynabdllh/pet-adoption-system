@@ -4,20 +4,30 @@ from datetime import datetime, timedelta
 from pet_listing.models import Pet
 from request_form.models import Adoption
 from schedule_form.models import Schedule
+from profile_management.models import Profile
 from django.http import JsonResponse
+from django.db.models import Prefetch
 
 def admin_dashboard(request):
     adopted_count = Pet.objects.filter(is_adopted=True).count()
     available_count = Pet.objects.filter(is_available=True).count()
     total_pet_count = Pet.objects.count()
 
-    pending_requests = Adoption.objects.filter(status="pending")
+    # Prefetch the profile via the adopter relationship
+    profile_prefetch = Prefetch('adopter', queryset=Profile.objects.select_related('user'))
+
+    pending_requests = Adoption.objects.filter(status="pending").select_related('pet').prefetch_related(profile_prefetch)
 
     selected_date_str = request.GET.get('date', timezone.now().strftime('%Y-%m-%d'))
     selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
 
     calendar_weeks = get_calendar_data(selected_date)
-    scheduled_pickups = Schedule.objects.filter(day=selected_date.day, month=selected_date.strftime('%B'), year=selected_date.year, completed=False)
+    scheduled_pickups = Schedule.objects.filter(
+        day=selected_date.day,
+        month=selected_date.strftime('%B'),
+        year=selected_date.year,
+        completed=False
+    )
 
     context = {
         'adopted_pets_count': adopted_count,

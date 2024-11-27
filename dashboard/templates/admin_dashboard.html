@@ -148,7 +148,12 @@ Dashboard
               {% for request in pending_requests %}
                 <tr>
                   <td>
-                    <img src="{{ request.user.profile_image.url }}" alt="{{ request.adopter.first_name }}" style="height: 30px; width: 30px; border-radius: 50%;">
+                    {% if request.adopter.profile.profile_image %}
+                      <img src="{{ request.adopter.profile.profile_image.url }}" alt="{{ request.adopter.first_name }}" style="height: 30px; width: 30px; border-radius: 50%;">
+                    {% else %}
+                      <img src="{% static 'images/default_profile.png' %}" alt="Default Profile Image" style="height: 30px; width: 30px; border-radius: 50%;">
+                    {% endif %}
+
                     {{ request.adopter.first_name }} {{ request.adopter.last_name }}
                   </td>
                   <td>
