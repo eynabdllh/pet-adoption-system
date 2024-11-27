@@ -192,6 +192,10 @@ Adopt a Pet
         width: 45%;
     }
 
+    .form-group input[type="radio"]{
+        cursor: pointer;
+    }
+
     .form-group-label {
         color:#999;
     }
@@ -199,10 +203,18 @@ Adopt a Pet
     .form-check-label {
         margin-bottom: 10px;    
         font-weight: 500;
+        cursor: pointer;
     }
 
     .form-check {
-        margin-left: 10%;
+        padding-left: 20%;
+        padding-top: 2%;
+        cursor: pointer;
+    }
+
+    .form-check:hover{
+        background-color: #e4dfdc;
+        border-radius: 5px;
     }
 
     .field-group {
@@ -354,56 +366,54 @@ Adopt a Pet
                     <div class="form-group">
                         <label class="form-group-label" for="sort_by_name">Sort by Name</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_name" value="asc" {% if sort_by_name == 'asc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_name">A-Z</label>
+                            <input class="form-check-input" type="radio" name="sort_by_name" value="asc" id="sort_by_name_asc" {% if sort_by_name == 'asc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_name_asc">A-Z</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_name" value="desc" {% if sort_by_name == 'desc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_name">Z-A</label>
+                            <input class="form-check-input" type="radio" name="sort_by_name" value="desc" id="sort_by_name_desc" {% if sort_by_name == 'desc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_name_desc">Z-A</label>
                         </div>
                     </div>
-                    <div class="divider"></div>
 
                     <!-- Age Sort -->
                     <div class="form-group">
                         <label class="form-group-label" for="sort_by_age">Sort by Age</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_age" value="asc" {% if sort_by_age == 'asc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_age">Ascending</label>
+                            <input class="form-check-input" type="radio" name="sort_by_age" value="asc" id="sort_by_age_asc" {% if sort_by_age == 'asc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_age_asc">Ascending</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_age" value="desc" {% if sort_by_age == 'desc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_age">Descending</label>
+                            <input class="form-check-input" type="radio" name="sort_by_age" value="desc" id="sort_by_age_desc" {% if sort_by_age == 'desc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_age_desc">Descending</label>
                         </div>
                     </div>
-                    <div class="divider"></div>
 
                     <!-- Time in Shelter Sort -->
                     <div class="form-group">
                         <label class="form-group-label" for="sort_by_time_in_shelter">Sort by Time in Shelter</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_time_in_shelter" value="asc" {% if sort_by_time_in_shelter == 'asc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_time_in_shelter">Ascending</label>
+                            <input class="form-check-input" type="radio" name="sort_by_time_in_shelter" value="asc" id="sort_by_time_in_shelter_asc" {% if sort_by_time_in_shelter == 'asc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_time_in_shelter_asc">Ascending</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_time_in_shelter" value="desc" {% if sort_by_time_in_shelter == 'desc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_time_in_shelter">Descending</label>
+                            <input class="form-check-input" type="radio" name="sort_by_time_in_shelter" value="desc" id="sort_by_time_in_shelter_desc" {% if sort_by_time_in_shelter == 'desc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_time_in_shelter_desc">Descending</label>
                         </div>
                     </div>
-                    <div class="divider"></div>
 
                     <!-- Adoption Fee Sort -->
                     <div class="form-group">
                         <label class="form-group-label" for="sort_by_adoption_fee">Sort by Adoption Fee</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_adoption_fee" value="asc" {% if sort_by_adoption_fee == 'asc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_adoption_fee">Ascending</label>
+                            <input class="form-check-input" type="radio" name="sort_by_adoption_fee" value="asc" id="sort_by_adoption_fee_asc" {% if sort_by_adoption_fee == 'asc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_adoption_fee_asc">Ascending</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="sort_by_adoption_fee" value="desc" {% if sort_by_adoption_fee == 'desc' %}checked{% endif %}>
-                            <label class="form-check-label" for="sort_by_adoption_fee">Descending</label>
+                            <input class="form-check-input" type="radio" name="sort_by_adoption_fee" value="desc" id="sort_by_adoption_fee_desc" {% if sort_by_adoption_fee == 'desc' %}checked{% endif %}>
+                            <label class="form-check-label" for="sort_by_adoption_fee_desc">Descending</label>
                         </div>
                     </div>
+
 
                     <div class="divider"></div>
                     <button type="submit" class="apply-btn">Apply</button>
