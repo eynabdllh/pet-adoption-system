@@ -190,7 +190,6 @@ def review_form(request, pet_id):
 @login_required
 @admin_required
 def admin_pickup(request):
-
     if request.method == 'POST':
         pet_id = request.POST.get('pet_id')
         action = request.POST.get('action')
@@ -208,19 +207,51 @@ def admin_pickup(request):
             except Exception as e:
                 messages.error(request, f"An error occurred: {e}")
 
+        if action == 'add_to_list' and pet_id:
+            try:
+                # Fetch the pet by ID
+                pet = Pet.objects.get(id=pet_id)
+
+                # Delete related adoption and schedule records
+                pet.adoption_set.all().delete()  # Deletes all Adoption records linked to this pet
+                Schedule.objects.filter(pet=pet).delete()  # Deletes all Schedule records linked to this pet
+
+                # Update pet status
+                pet.is_rejected = False
+                pet.is_adopted = False
+                pet.is_requested = False
+                pet.is_cancelled = False  # Reset cancellation flag
+                pet.is_available = True  # Make pet available for adoption
+                pet.save()
+
+                messages.success(request, f"Pet {pet.name} is now available for adoption, and related records were deleted.")
+            except Pet.DoesNotExist:
+                messages.error(request, "Pet not found.")
+            except Exception as e:
+                messages.error(request, f"An error occurred: {e}")
+
+    # Retrieve pets based on status filter
     status = request.GET.get('status', 'upcoming')
 
     if status == 'completed':
         pets = Pet.objects.filter(is_adopted=True, is_upcoming=False, is_approved=False).prefetch_related('schedule_set')
     elif status == 'cancelled':
-        pets = Pet.objects.filter(is_cancelled=True).prefetch_related('schedule_set')
+        pets = Pet.objects.filter(is_cancelled=True).prefetch_related('schedule_set', 'adoption_set')
     else: 
         pets = Pet.objects.filter(is_upcoming=True, is_approved=True).prefetch_related('schedule_set')
+
+    # Add cancellation reasons to the context for cancelled pets
+    for pet in pets:
+        if status == 'cancelled':
+            schedules = pet.schedule_set.filter(cancelled=True)
+            for schedule in schedules:
+                pet.cancellation_reason = schedule.get_reason_choices_display()
 
     return render(request, 'admin_pickup.html', {
         'pets': pets,
         'status': status,
     })
+
 
 @login_required
 @admin_required

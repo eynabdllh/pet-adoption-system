@@ -1,5 +1,5 @@
 {% extends 'base_admin.html' %}
-{% block page_title %}Adoption Management{% endblock %}
+{% block page_title %}Pick Up Schedule{% endblock %}
 
 {% block content %}
 {% load static %}
@@ -73,6 +73,17 @@
     .container-fluid {
         padding-top: 20px;
     }
+   /*Sort and Filter Styling*/
+   .form-check-available {
+        width: 6.25rem; 
+        height: 1.25rem;
+        margin-top: 0.2rem; 
+    }
+
+    .container-fluid {
+        padding-top: 20px;
+    }
+
     .filter-sort-buttons {
         display: flex;
         gap: 20px;
@@ -92,9 +103,113 @@
         left: 0;
         width: 350px;
         z-index: 1050;
-        height: 200px;
+        height: 250px;
         overflow-y: auto;
         overflow-x: hidden;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .divider {
+        border-bottom: 1px solid #e0e0e0;
+        margin: 10px 0;
+    }
+
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .radio-group label {
+        margin-bottom: 5px;
+    }
+
+    .form-control-sm {
+        font-size: 0.9rem;
+    }
+
+    .reset-button {
+        color: #FF6F61;
+        width: 100px;
+        padding: 5px 10px 5px 10px;
+        border: 1px solid #FF6F61;
+        border-radius: 5px;
+        text-decoration: none; 
+    }
+
+    a:hover{ 
+        text-decoration: none; 
+        border: 1px solid #999;
+        color: #999;
+    }
+
+    .apply-btn {
+        background-color: #FF6F61;
+        color: white;
+        width: 80px;
+        padding: 5px;
+        border: 0px;
+        border-radius: 5px;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields {
+        display: flex;
+        gap: 10px;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .form-group input[type="radio"]{
+        cursor: pointer;
+    }
+
+    .form-group-label {
+        color:#999;
+    }
+
+    .form-check-label {
+        margin-bottom: 10px;    
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .form-check {
+        padding-left: 20%;
+        padding-top: 2%;
+        cursor: pointer;
+    }
+
+    .form-check:hover{
+        background-color: #e4dfdc;
+        border-radius: 5px;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column; 
+    }
+
+    .field-group label{
+       font-size: small;
+       font-weight: 500;
+       margin-bottom: 1px;
+    }
+
+    .radio-group input[type="radio"]:checked {
+        background-color: #FF6F61;
+        border-color: #f8f9fa;
     }
 
 </style>
@@ -211,7 +326,11 @@
                             <td>
                                 {{ adoption.first_name }} {{ adoption.last_name }}
                             </td>
-                            <td>{{ adoption.date }}</td>
+                            {% for schedule in pet.schedule_set.all %}
+                            <td>
+                                {{ schedule.month }} {{ schedule.day }}, {{ schedule.year }}
+                            </td>
+                            {% endfor %}
                             <td><span class="badge badge-success">Upcoming</span></td>
                             <td>
                                 <form method="post" style="display:inline;">
@@ -219,10 +338,10 @@
                                     <input type="hidden" name="pet_id" value="{{ pet.id }}">
                                     <input type="hidden" name="action" value="mark_completed">
                                     <button type="submit" class="btn btn-success btn-sm">
-                                        Completed
+                                        Pick-Up Complete
                                     </button>
                                 </form>
-                        </td>
+                            </td>
                         </tr>
                         {% endfor %}
                         {% endfor %}
@@ -289,6 +408,7 @@
                             <th>Date</th>
                             <th>Status</th>
                             <th>Reason</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -305,15 +425,33 @@
                             </td>
                             <td>{{ pet.pet_type|capfirst }}</td>
                             <td>
-                                {% if pet.adopter %}
-                                    {{ pet.adopter.first_name }} {{ pet.adopter.last_name }}
+                                {% for adoption in pet.adoption_set.all %}
+                                    {{ adoption.first_name }} {{ adoption.last_name }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for schedule in pet.schedule_set.all %}
+                                    {{ schedule.month }} {{ schedule.day }}, {{ schedule.year }}
+                                {% endfor %}
+                            </td>
+                            <td><span class="badge badge-danger" style="background-color: #B3261E">Cancelled</span></td>
+                            <td>
+                                {% if pet.cancellation_reason %}
+                                    {{ pet.cancellation_reason }}
                                 {% else %}
-                                    Not assigned
+                                    N/A
                                 {% endif %}
                             </td>
-                            <td>{{ pet.adoption_date }}</td>
-                            <td><span class="badge badge-danger">Cancelled</span></td>
-                            <td>{{ pet.cancellation_reason }}</td>
+                            <td>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="add_to_list">
+                                    <input type="hidden" name="pet_id" value="{{ pet.id }}">
+                                    <button type="submit" class="btn btn-sm" style="font-weight: 500; color:white; background-color: #FF6F61; border-radius: 6px;">
+                                        Add to List
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

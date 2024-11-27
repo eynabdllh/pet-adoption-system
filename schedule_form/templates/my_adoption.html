@@ -335,9 +335,11 @@ My Adoption
             </div>
             <div class="button-container">
                 <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
-                <!-- Add a unique pet name identifier for cancellation -->
-                <a href="javascript:void(0);" class="btn btn-cancel-request" 
-                onclick="cancelRequest(`{{ pickup.pet.id }}`)"> Cancel Request</a>
+                <a href="javascript:void(0);" 
+                    class="btn btn-cancel-request" 
+                    onclick="cancelRequest('{{ pickup.pet.id }}')">
+                    Cancel Request
+                </a>
             </div>
         </div>
     {% endif %}
@@ -356,11 +358,23 @@ My Adoption
             Are you sure you want to cancel your adoption request for 
             <strong id="adoption-pet-name"></strong>?
         </h2>
+        <div style="margin-bottom: 20px;">
+            <label for="cancelReason" style="font-family: 'Fredoka', sans-serif; font-size: 18px; color: #333;">
+                Select a reason for cancellation:
+            </label>
+            <select id="cancelReason" style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 5px;">
+                <option value="">-- Please choose a reason --</option>
+                <option value="change_of_mind">Change of Mind</option>
+                <option value="financial_constraints">Financial Constraints</option>
+                <option value="found_other_pet_stores">Found Other Pet Stores</option>
+                <option value="others">Others</option>
+            </select>
+        </div>
         <div style="display: flex; justify-content: space-around; margin-top: 20px;">
             <button type="button" onclick="closeCancelModal()" class="btn btn-cancel" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                 Back
             </button>
-            <button type="button" onclick="approveRequest()" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+            <button type="button" onclick="confirmCancellation()" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                 Confirm
             </button>
         </div>
@@ -433,16 +447,8 @@ function downloadCertificate() {
         return;
     }
 
-    // Open the confirmation modal and store the pet ID globally
-    window.currentPetId = petId;  
+    window.currentPetId = petId;
     document.getElementById('cancelModal').style.display = 'flex';
-
-    // Optionally display the pet name in the modal
-    const petNameElement = document.querySelector(`#pet-name-${petId}`);
-    if (petNameElement) {
-        const petName = petNameElement.innerText;
-        document.getElementById('adoption-pet-name').innerText = petName;
-    }
 }
 
 
@@ -452,7 +458,13 @@ function closeCancelModal() {
 
 function confirmCancellation() {
     if (!window.currentPetId) {
-        alert('Pet ID is missing!');
+        alert("Pet ID is missing!");
+        return;
+    }
+
+    const reason = document.getElementById('cancelReason').value;
+    if (!reason) {
+        alert("Please select a reason for cancellation.");
         return;
     }
 
@@ -460,15 +472,18 @@ function confirmCancellation() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken(),  // Use CSRF protection
+            'X-CSRFToken': getCSRFToken(),  
         },
-        body: JSON.stringify({ pet_id: window.currentPetId }),  // Send pet ID in the request body
+        body: JSON.stringify({ 
+            pet_id: window.currentPetId,  
+            reason: reason  // Send the selected reason
+        }),
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             alert(data.message || 'Request cancelled successfully!');
-            location.reload();  // Reload the page after success
+            location.reload();  
         } else {
             alert(`Error: ${data.error || 'Something went wrong'}`);
         }
@@ -477,6 +492,8 @@ function confirmCancellation() {
         console.error('Error:', error);
         alert('An error occurred. Please try again.');
     });
+
+    closeCancelModal();
 }
 
 async function approveRequest(scheduleId) {

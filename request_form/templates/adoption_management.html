@@ -73,6 +73,17 @@
     .container-fluid {
         padding-top: 20px;
     }
+    /*Sort and Filter Styling*/
+    .form-check-available {
+        width: 6.25rem; 
+        height: 1.25rem;
+        margin-top: 0.2rem; 
+    }
+
+    .container-fluid {
+        padding-top: 20px;
+    }
+
     .filter-sort-buttons {
         display: flex;
         gap: 20px;
@@ -92,9 +103,113 @@
         left: 0;
         width: 350px;
         z-index: 1050;
-        height: 200px;
+        height: 250px;
         overflow-y: auto;
         overflow-x: hidden;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .divider {
+        border-bottom: 1px solid #e0e0e0;
+        margin: 10px 0;
+    }
+
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .radio-group label {
+        margin-bottom: 5px;
+    }
+
+    .form-control-sm {
+        font-size: 0.9rem;
+    }
+
+    .reset-button {
+        color: #FF6F61;
+        width: 100px;
+        padding: 5px 10px 5px 10px;
+        border: 1px solid #FF6F61;
+        border-radius: 5px;
+        text-decoration: none; 
+    }
+
+    a:hover{ 
+        text-decoration: none; 
+        border: 1px solid #999;
+        color: #999;
+    }
+
+    .apply-btn {
+        background-color: #FF6F61;
+        color: white;
+        width: 80px;
+        padding: 5px;
+        border: 0px;
+        border-radius: 5px;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields {
+        display: flex;
+        gap: 10px;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .form-group input[type="radio"]{
+        cursor: pointer;
+    }
+
+    .form-group-label {
+        color:#999;
+    }
+
+    .form-check-label {
+        margin-bottom: 10px;    
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .form-check {
+        padding-left: 20%;
+        padding-top: 2%;
+        cursor: pointer;
+    }
+
+    .form-check:hover{
+        background-color: #e4dfdc;
+        border-radius: 5px;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column; 
+    }
+
+    .field-group label{
+       font-size: small;
+       font-weight: 500;
+       margin-bottom: 1px;
+    }
+
+    .radio-group input[type="radio"]:checked {
+        background-color: #FF6F61;
+        border-color: #f8f9fa;
     }
 
 </style>
@@ -311,7 +426,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="action" value="add_to_list">
                                     <input type="hidden" name="pet_id" value="{{ pet.id }}">
-                                    <button type="submit" class="btn btn-sm" style="font-weight: 500; color:white; background-color: #ff5733; border-radius: 6px;">
+                                    <button type="submit" class="btn btn-sm" style="font-weight: 500; color:white; background-color: #FF6F61; border-radius: 6px;">
                                         Add to List</button>
                                 </form>
                             </td>

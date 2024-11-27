@@ -6,11 +6,10 @@ from login_register.models import User
 
 class Schedule(models.Model):
     REASON_CHOICES = [
-        ('duplicate_request', 'Duplicate Request'),
-        ('not_picking_up', 'Not Picking Up Pet on Time'),
-        ('overwhelmed_adopter', 'Overwhelmed Adopter'),
-        ('ethical_safety_concerns', 'Ethical or Safety Concerns'),
-        ('inability_to_meet_needs', 'Inability to Meet Pet’s Needs')
+        ('change_of_mind', 'Change of Mind'),
+        ('financial_constraints', 'Financial Constraints'),
+        ('found_other_pet_stores', 'Found other Pet Stores'),
+        ('others', 'Others')
     ]
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, null=True, related_name='schedule_set')
     adopter = models.ForeignKey(User, on_delete=models.CASCADE, null=True)  
