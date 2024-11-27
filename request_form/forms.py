@@ -35,8 +35,14 @@ class AdoptionForm(forms.ModelForm):
             self.fields['date'].initial = timezone.now().date()
         self.fields['date'].widget.attrs['value'] = timezone.now().date().strftime('%Y-%m-%d')
 
+    def clean_contact_number(self):
+        contact_number = self.cleaned_data['contact_number']
+        if not contact_number.isdigit() or len(contact_number) != 11:
+            raise forms.ValidationError("Contact number must be exactly 11 digits.")
+        return contact_number
+
     def clean_age(self):
-        age = self.cleaned_data.get('age')
-        if age is not None and (not isinstance(age, int) or age < 0):
-            raise forms.ValidationError("Please enter a valid non-negative integer for age.")
+        age = self.cleaned_data['age']
+        if age < 18 or age > 99:
+            raise forms.ValidationError("Age must be between 18 and 99.")
         return age
