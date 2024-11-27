@@ -213,6 +213,7 @@
     }
 
 </style>
+<div class="container-fluid">
 <div class="d-flex mb-0" style="justify-content: flex-end;">
     <form method="GET" action="{% url 'adoption_management' %}" class="form-inline search-bar">
         <div class="input-group w-80">
@@ -275,7 +276,6 @@
     </div>
 </div>
 
-<div class="container-fluid">
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
             <a class="nav-link {% if status == 'requested' %}active{% endif %}" href="?status=requested">Pending</a>

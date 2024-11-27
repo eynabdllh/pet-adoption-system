@@ -214,7 +214,9 @@
 
 </style>
 
+<div class="container-fluid">
 <div class="d-flex mb-0" style="justify-content: flex-end;">
+    <!-- Search Form -->
     <form method="GET" action="{% url 'admin_pickup' %}" class="form-inline search-bar">
         <div class="input-group w-80">
             <div class="input-group-append">
@@ -224,6 +226,7 @@
         </div>
     </form>
 
+    <!-- Filter & Sort Dropdown -->
     <div class="filter-sort-dropdown mr-1 radio-group">
         <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="fas fa-sort"></i> Sort
@@ -231,22 +234,14 @@
         <div class="dropdown-menu p-3">
             <form method="GET" action="{% url 'admin_pickup' %}">
                 <!-- Hidden inputs to preserve existing filter values -->
-                <input type="hidden" name="query" value="{{ query }}">
-                <input type="hidden" name="pet_type" value="{{ pet_type }}">
-                <input type="hidden" name="gender" value="{{ gender }}">
-                <input type="hidden" name="age" value="{{ age }}">
-                <input type="hidden" name="adoption_fee_min" value="{{ adoption_fee_min }}">
-                <input type="hidden" name="adoption_fee_max" value="{{ adoption_fee_max }}">
-                <input type="hidden" name="time_in_shelter_min" value="{{ time_in_shelter_min }}">
-                <input type="hidden" name="time_in_shelter_max" value="{{ time_in_shelter_max }}">
-
-                 <!-- Sort Header -->
+                <input type="hidden" name="q" value="{{ query }}">
+                <!-- Sort Header -->
                 <div class="d-flex align-items-center">
                     <i class="fas fa-sort me-3"></i>
                     <h5 class="mb-0">Sort</h5>
                 </div>
                 <div class="divider"></div>
-                <!-- ID Sort -->
+                <!-- Sort by ID -->
                 <div class="form-group">
                     <label class="form-group-label" for="sort_by_id">Sort by ID</label>
                     <div class="form-check">
@@ -275,9 +270,6 @@
     </a>
     </div>
 </div>
-
-<div class="container-fluid">
-
     <!-- Tabs -->
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
