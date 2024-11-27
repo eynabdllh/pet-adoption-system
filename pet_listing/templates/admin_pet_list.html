@@ -725,7 +725,7 @@
                     </thead>
                     <tbody>
                         {% for pet in pets %}
-                        {% if not pet.is_available %}
+                        {% if pet.is_adopted %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>
