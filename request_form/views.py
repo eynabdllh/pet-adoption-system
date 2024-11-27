@@ -102,10 +102,17 @@ def adoption_management(request):
         if action == 'add_to_list' and pet_id:
             try:
                 pet = Pet.objects.get(id=pet_id, is_rejected=True)  
+                
+                pet.adoption_set.all().delete() 
+                Schedule.objects.filter(pet=pet).delete()  
+                
                 pet.is_rejected = False
+                pet.is_adopted = False
+                pet.is_requested = False
                 pet.is_available = True
                 pet.save()
-                messages.success(request, f"Pet {pet.name} is now available for adoption.")
+                
+                messages.success(request, f"Pet {pet.name} is now available for adoption, and related records were deleted.")
             except Pet.DoesNotExist:
                 messages.error(request, "Pet not found or already updated.")
 
