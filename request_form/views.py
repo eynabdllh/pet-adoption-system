@@ -167,6 +167,7 @@ def review_form(request, pet_id):
                 # Reject the adoption request
                 pet.is_requested = False
                 pet.is_rejected = True
+                pet.is_adopted = False
                 pet.save()
 
                 adoption.status = 'rejected'
