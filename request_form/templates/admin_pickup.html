@@ -288,7 +288,7 @@
 
         <!-- Upcoming Pets -->
         <div id="upcoming" class="tab-pane fade {% if status == 'upcoming' %}show active{% endif %}">
-            <div class="table-responsive">
+            <div class="table-responsive" >
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -297,6 +297,7 @@
                             <th>Species</th>
                             <th>Adopter</th>
                             <th>Date</th>
+                            <th>Time</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -321,6 +322,9 @@
                             {% for schedule in pet.schedule_set.all %}
                             <td>
                                 {{ schedule.month }} {{ schedule.day }}, {{ schedule.year }}
+                            </td>
+                            <td>
+                                {{ schedule.time }}
                             </td>
                             {% endfor %}
                             <td><span class="badge badge-success">Upcoming</span></td>
@@ -353,6 +357,7 @@
                             <th>Species</th>
                             <th>Adopter</th>
                             <th>Date</th>
+                            <th>Time</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -377,6 +382,9 @@
                             <td>
                                 {{ schedule.month }} {{ schedule.day }}, {{ schedule.year }}
                             </td>
+                            <td>
+                                {{ schedule.time }}
+                            </td>
                             {% endfor %}
                             <td><span class="badge badge-success" style="background-color: #1EBE91;">Adopted</span></td>
                         </tr>
@@ -398,6 +406,7 @@
                             <th>Species</th>
                             <th>Adopter</th>
                             <th>Date</th>
+                            <th>Time</th>
                             <th>Status</th>
                             <th>Reason</th>
                             <th>Actions</th>
@@ -424,8 +433,11 @@
                             <td>
                                 {% for schedule in pet.schedule_set.all %}
                                     {{ schedule.month }} {{ schedule.day }}, {{ schedule.year }}
-                                {% endfor %}
                             </td>
+                            <td>
+                                {{ schedule.time }}
+                            </td>
+                            {% endfor %}
                             <td><span class="badge badge-danger" style="background-color: #B3261E">Cancelled</span></td>
                             <td>
                                 {% if pet.cancellation_reason %}
