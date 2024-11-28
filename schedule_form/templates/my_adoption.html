@@ -469,59 +469,37 @@ function confirmCancellation() {
         return;
     }
 
-    fetch('', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken(),  
-        },
-        body: JSON.stringify({ 
-            pet_id: window.currentPetId,  
-            reason: reason  // Send the selected reason
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message || 'Request cancelled successfully!');
-            location.reload();  
-        } else {
-            alert(`Error: ${data.error || 'Something went wrong'}`);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-    });
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = ''; 
 
-    closeCancelModal();
-}
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = getCSRFToken();  
+    form.appendChild(csrfInput);
 
-async function approveRequest(scheduleId) {
-    try {
-        const response = await fetch('', { 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ schedule_id: scheduleId }),
-        });
+    const petInput = document.createElement('input');
+    petInput.type = 'hidden';
+    petInput.name = 'pet_id';
+    petInput.value = window.currentPetId;
+    form.appendChild(petInput);
 
-        const data = await response.json();
-        if (data.success) {
-            alert('Request approved successfully!');
-            location.reload();
-        } else {
-            alert(`Error: ${data.error}`);
-        }
-    } catch (error) {
-        alert(`An error occurred: ${error}`);
-    }
+    const reasonInput = document.createElement('input');
+    reasonInput.type = 'hidden';
+    reasonInput.name = 'reason';
+    reasonInput.value = reason;
+    form.appendChild(reasonInput);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    closeCancelModal(); 
 }
 
 function getCSRFToken() {
-    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    return csrfToken;
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;  
 }
+
 </script>
 {% endblock %}

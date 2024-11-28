@@ -91,42 +91,45 @@ def pickup_list(request):
 
 @csrf_exempt  
 @login_required
-@adopter_required
 def my_adoption(request):
     user_id = request.session.get('user_id')
     if not user_id:
-        return JsonResponse({'success': False, 'error': 'User not logged in'}, status=400)
+        messages.error(request, "User not logged in.")
+        return redirect('my_adoption')  # Redirect to the same page or another page
 
     try:
         user = get_object_or_404(User, id=user_id)
     except Exception as e:
-        return JsonResponse({'success': False, 'error': f"Invalid user: {e}"}, status=400)
+        messages.error(request, f"Invalid user: {e}")
+        return redirect('my_adoption')
 
     try:
         pickups = Schedule.objects.filter(adopter=user).select_related('pet')
     except Exception as e:
-        return JsonResponse({'success': False, 'error': f"Query error: {e}"}, status=500)
+        messages.error(request, f"Query error: {e}")
+        return redirect('my_adoption')
 
     certificate_data = []
     for pickup in pickups:
         if pickup.pet.is_adopted:  
             certificate_data.append({
-                'adopter_name': f"{user.first_name} {user.last_name}",  
-                'pet_name': pickup.pet.name,  
-                'adoption_date': f"{pickup.month} {pickup.day}, {pickup.year}",  
+                'adopter_name': f"{user.first_name} {user.last_name}",
+                'pet_name': pickup.pet.name,
+                'adoption_date': f"{pickup.month} {pickup.day}, {pickup.year}",
             })
 
     if request.method == 'POST':
+        pet_id = request.POST.get('pet_id')  # Get form data
+        reason = request.POST.get('reason')
+
+        if not pet_id:
+            messages.error(request, "Pet ID is missing.")
+            return redirect('my_adoption')
+        if not reason:
+            messages.error(request, "Cancellation reason is missing.")
+            return redirect('my_adoption')
+
         try:
-            data = json.loads(request.body) 
-            pet_id = data.get('pet_id') 
-            reason = data.get('reason')  
-
-            if not pet_id:
-                return JsonResponse({'success': False, 'error': 'Pet ID is missing'}, status=400)
-            if not reason:
-                return JsonResponse({'success': False, 'error': 'Cancellation reason is missing'}, status=400)
-
             pet = get_object_or_404(Pet, id=pet_id)
             schedule = get_object_or_404(Schedule, pet=pet, adopter=user)
 
@@ -135,18 +138,20 @@ def my_adoption(request):
             pet.save()
 
             schedule.cancelled = True
-            schedule.reason_choices = reason 
+            schedule.reason_choices = reason
             schedule.save()
 
             messages.success(request, f"Pet {pet.name} is now cancelled.")
-            return JsonResponse({'success': True, 'message': 'Request cancelled successfully'})
+            return redirect('my_adoption')
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+            messages.error(request, f"An error occurred: {e}")
+            return redirect('my_adoption')
 
     return render(request, 'my_adoption.html', {
-        'pickups': pickups, 
+        'pickups': pickups,
         'certificate_data': certificate_data,
     })
+
 
 @login_required
 @adopter_required
