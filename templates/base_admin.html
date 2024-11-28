@@ -303,7 +303,7 @@
             <div class="text-center mb-4">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
             </div>
-            <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard'%} active {% endif %}">  
+            <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' or request.resolver_match.url_name == 'review_form_detail'%} active {% endif %}">  
                 <img src="{% static 'images/dashboard.png' %}" alt="Dashboard" class="icon-img">
                 Dashboard
             </a>
