@@ -52,12 +52,12 @@
     }
     a {
         color: #FF6F61;
-        text-decoration: none; /* Removes underline */
+        text-decoration: none; 
     }
 
     a:hover {
-        color: #df2588; /* Changes color on hover */
-        text-decoration: none; /* Ensures no underline on hover */
+        color: #df2588; 
+        text-decoration: none; 
     }
     .btn-color:hover{
         background-color: #eb8077;
@@ -65,7 +65,6 @@
         border-color: transparent;
     }
 
-    /*Search Styling*/
     .search-bar .input-group-text {
         background-color: transparent;
         border-right: none;
@@ -76,7 +75,6 @@
         color: #FF6F61; 
     }
 
-    /*Sort and Filter Styling*/
     .form-check-available {
         width: 6.25rem; 
         height: 1.25rem;
@@ -226,14 +224,13 @@
         </div>
     </form>
 
-    <!-- Filter & Sort Dropdown -->
+    <!-- Sort Dropdown -->
     <div class="filter-sort-dropdown mr-1 radio-group">
         <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="fas fa-sort"></i> Sort
         </a>
         <div class="dropdown-menu p-3">
             <form method="GET" action="{% url 'admin_pickup' %}">
-                <!-- Hidden inputs to preserve existing filter values -->
                 <input type="hidden" name="q" value="{{ query }}">
                 <!-- Sort Header -->
                 <div class="d-flex align-items-center">
@@ -255,7 +252,6 @@
                 </div>
                 <div class="divider"></div>
 
-                <!-- Apply Button and Reset Button -->
                 <button type="submit" class="apply-btn">Apply</button>
                 <a href="?reset_sort=true&q={{ query }}" class="reset-button">Reset</a>
             </form>
@@ -263,7 +259,6 @@
     </div>
     
     <div style="margin-left: 5px;">
-    <!-- Export to Excel Button -->
     <a href="{% url 'export_pickup_to_excel' %}?status={{ status }}&pet_type={{ pet_type }}&sort_by={{ sort_by }}" 
         class="btn btn-success" title="Export to Excel">
         <i class="fas fa-download"></i> 
