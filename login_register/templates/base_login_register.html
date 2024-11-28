@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{% static 'login.css' %}">
     <link rel="icon" type="image/png" href="{% static 'favicon/Logo_2.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
 </head>
 <body>
     <div>
@@ -22,4 +23,24 @@
         {% endblock %}
     </div>
 </body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".toggle-password").forEach(function(element) {
+            element.addEventListener("click", function() {
+                const passwordField = element.previousElementSibling;
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    element.classList.remove("fa-eye");
+                    element.classList.add("fa-eye-slash");
+                } else {
+                    passwordField.type = "password";
+                    element.classList.remove("fa-eye-slash");
+                    element.classList.add("fa-eye");
+                }
+            });
+        });
+    });
+</script>
+
 </html>

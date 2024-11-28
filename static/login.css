@@ -153,3 +153,73 @@ form .submit:hover {
     cursor: pointer;
     color: #888;
 }
+
+/* Toast styles */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.toast {
+    padding: 5px 15px;
+    min-width: 300px;
+    max-width: 500px;
+    height: fit-content;
+    border-radius: 8px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.toast-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.toast .close {
+    color: white;
+    opacity: 0.7;
+    margin: 0px 0px 5px 20px;
+    cursor: pointer;
+}
+
+.toast-icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+}
+
+.bg-success {
+    background-color: #FF6F61 !important;
+}
+
+.bg-danger {
+    background-color: #DC3545 !important;
+}
+
+.bg-info {
+    background-color: #17A2B8 !important;
+}
+
+.bg-warning {
+    background-color: #FFC107 !important;
+}
+
+.toast-success .toast-icon {
+    content: "\f00c";
+}
+
+.toast-error .toast-icon {
+    content: "\f00d";
+}
+
+.toast-warning .toast-icon {
+    content: "\f071";
+}
+
+.toast-info .toast-icon {
+    content: "\f05a";
+}
