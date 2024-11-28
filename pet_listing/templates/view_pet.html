@@ -141,6 +141,8 @@ Adopt a Pet
             <a href="{% url 'adopter_pet_list' %}" class="btn btn-back">Back</a>
         {% elif request.path == '/dashboard/' %}
             <a href="{% url 'adopter_dashboard' %}" class="btn btn-back">Back</a>
+        {% elif request.session.prev_url %}
+            <a href="{{ request.session.prev_url }}" class="btn btn-back">Back</a>
         {% else %}
             <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-back">Back</a>
         {% endif %}

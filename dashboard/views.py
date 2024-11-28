@@ -111,6 +111,8 @@ def get_calendar_data(date):
 @adopter_required
 def view_pet_detail(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
+
+    request.session['prev_url'] = request.META.get('HTTP_REFERER', '/')
     return render(request, 'view_pet.html', {'pet': pet})
 
 @login_required
