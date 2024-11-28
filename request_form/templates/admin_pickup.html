@@ -228,6 +228,58 @@
         </div>
     </form>
 
+       <!-- Filter Dropdown -->
+<div class="filter-sort-dropdown mr-1 radio-group">
+    <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <i class="fas fa-filter"></i> Filter
+    </a>
+    <div class="dropdown-menu p-3">
+        <!-- Filter Header -->
+        <div class="d-flex align-items-center">
+            <i class="fas fa-filter me-3"></i>
+            <h5 class="mb-0">Filter</h5>
+        </div>
+        
+        <div class="divider"></div>
+        <form method="GET" action="{% url 'admin_pickup' %}">
+            <!-- Hidden inputs to preserve existing filter values -->
+            <input type="hidden" name="sort_by_id" value="{{ sort_by_id }}">
+            <input type="hidden" name="status" value="{{ status }}">
+
+            <!-- Species Filter -->
+            <div class="form-group">
+                <label class="form-group-label" for="pet_type">Species</label>
+                <select name="pet_type" id="pet_type" class="form-select form-select-sm">
+                    <option value="">Select Species</option>
+                    <option value="dog" {% if pet_type == 'dog' %}selected{% endif %}>Dog</option>
+                    <option value="cat" {% if pet_type == 'cat' %}selected{% endif %}>Cat</option>
+                    <option value="fish" {% if pet_type == 'fish' %}selected{% endif %}>Fish</option>
+                    <option value="bird" {% if pet_type == 'bird' %}selected{% endif %}>Bird</option>
+                    <option value="hamster" {% if pet_type == 'hamster' %}selected{% endif %}>Hamster</option>
+                    <option value="rabbit" {% if pet_type == 'rabbit' %}selected{% endif %}>Rabbit</option>
+                    <option value="guinea_pig" {% if pet_type == 'guinea_pig' %}selected{% endif %}>Guinea Pig</option>
+                    <option value="turtle" {% if pet_type == 'turtle' %}selected{% endif %}>Turtle</option>
+                    <option value="lizard" {% if pet_type == 'lizard' %}selected{% endif %}>Lizard</option>
+                    <option value="snake" {% if pet_type == 'snake' %}selected{% endif %}>Snake</option>
+                    <option value="frog" {% if pet_type == 'frog' %}selected{% endif %}>Frog</option>
+                    <option value="parrot" {% if pet_type == 'parrot' %}selected{% endif %}>Parrot</option>
+                    <option value="chinchilla" {% if pet_type == 'chinchilla' %}selected{% endif %}>Chinchilla</option>
+                    <option value="ferret" {% if pet_type == 'ferret' %}selected{% endif %}>Ferret</option>
+                    <option value="hedgehog" {% if pet_type == 'hedgehog' %}selected{% endif %}>Hedgehog</option>
+                    <option value="horse" {% if pet_type == 'horse' %}selected{% endif %}>Horse</option>
+                    <option value="goat" {% if pet_type == 'goat' %}selected{% endif %}>Goat</option>
+                </select>
+            </div>
+
+            <div class="divider"></div>                   
+            <button type="submit" class="apply-btn">Apply</button>
+            <a href="?reset_filter=true&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}" class="reset-button">Reset</a>
+        </form>
+    </div>
+</div>
+
+
+    <!-- Sort Filter -->
     <div class="filter-sort-dropdown mr-1 radio-group">
         <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="fas fa-sort"></i> Sort
@@ -270,23 +322,24 @@
     </div>
 </div>
     <!-- Tabs -->
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a class="nav-link {% if status == 'upcoming' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=upcoming&sort_by_id={{ sort_by_id }}">
-                Upcoming
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if status == 'completed' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=completed&sort_by_id={{ sort_by_id }}">
-                Completed
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=cancelled&sort_by_id={{ sort_by_id }}">
-                Cancelled
-            </a>
-        </li>
-    </ul>    
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {% if status == 'upcoming' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=upcoming&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+            Upcoming
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if status == 'completed' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=completed&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+            Completed
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=cancelled&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+            Cancelled
+        </a>
+    </li>
+</ul>
+ 
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">

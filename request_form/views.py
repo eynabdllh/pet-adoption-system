@@ -12,6 +12,8 @@ from login_register.models import User
 from profile_management.models import Profile  
 from django.utils import timezone
 from .models import Adoption
+from django.core.paginator import Paginator
+from django.db.models import Q
 
 @login_required
 @adopter_required
@@ -94,7 +96,12 @@ def adopt_form(request, pet_id):
 @admin_required
 def adoption_management(request):
     status = request.GET.get('status', 'requested')
-    sort_by_id = request.GET.get('sort_by_id', '') 
+    sort_by_id = request.GET.get('sort_by_id', '')
+    pet_type = request.GET.get('pet_type', '')
+
+    reset_filter = request.GET.get('reset_filter', False)
+    if reset_filter:
+        pet_type = ''
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -103,26 +110,28 @@ def adoption_management(request):
         if action == 'add_to_list' and pet_id:
             try:
                 pet = Pet.objects.get(id=pet_id, is_rejected=True)
-                
                 pet.adoption_set.all().delete()
                 Schedule.objects.filter(pet=pet).delete()
-                
+
                 pet.is_rejected = False
                 pet.is_adopted = False
                 pet.is_requested = False
                 pet.is_available = True
                 pet.save()
-                
+
                 messages.success(request, f"Pet {pet.name} is now available for adoption, and related records were deleted.")
             except Pet.DoesNotExist:
                 messages.error(request, "Pet not found or already updated.")
 
     if status == 'approved':
-        pets = Pet.objects.filter(is_approved=True).prefetch_related('adoption_set')
+        pets = Pet.objects.filter(is_approved=True).prefetch_related('schedule_set')
     elif status == 'rejected':
-        pets = Pet.objects.filter(is_rejected=True).prefetch_related('adoption_set')
-    else: 
-        pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
+        pets = Pet.objects.filter(is_rejected=True).prefetch_related('schedule_set')
+    else:
+        pets = Pet.objects.filter(is_requested=True).prefetch_related('schedule_set')
+
+    if pet_type:
+        pets = pets.filter(pet_type=pet_type)
 
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
@@ -132,7 +141,8 @@ def adoption_management(request):
     return render(request, 'adoption_management.html', {
         'pets': pets,
         'status': status,
-        'sort_by_id': sort_by_id,  
+        'sort_by_id': sort_by_id,
+        'pet_type': pet_type,
     })
 
 @login_required
@@ -211,10 +221,8 @@ def admin_pickup(request):
 
         if action == 'add_to_list' and pet_id:
             try:
-                pet = Pet.objects.get(id=pet_id)
                 pet.adoption_set.all().delete()  
                 Schedule.objects.filter(pet=pet).delete()  
-
                 pet.is_rejected = False
                 pet.is_adopted = False
                 pet.is_requested = False
@@ -230,6 +238,11 @@ def admin_pickup(request):
 
     status = request.GET.get('status', 'upcoming')
     sort_by_id = request.GET.get('sort_by_id', '') 
+    pet_type = request.GET.get('pet_type', '')
+
+    reset_filter = request.GET.get('reset_filter', False)
+    if reset_filter:
+        pet_type = ''
 
     if status == 'completed':
         pets = Pet.objects.filter(is_adopted=True, is_upcoming=False, is_approved=False).prefetch_related('schedule_set')
@@ -237,6 +250,9 @@ def admin_pickup(request):
         pets = Pet.objects.filter(is_cancelled=True).prefetch_related('schedule_set', 'adoption_set')
     else: 
         pets = Pet.objects.filter(is_upcoming=True, is_approved=True).prefetch_related('schedule_set')
+
+    if pet_type:
+        pets = pets.filter(pet_type=pet_type)
 
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
@@ -253,6 +269,7 @@ def admin_pickup(request):
         'pets': pets,
         'status': status,
         'sort_by_id': sort_by_id,  
+        'pet_type': pet_type,
     })
 
 
