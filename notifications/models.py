@@ -6,7 +6,7 @@ from django.utils import timezone
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=30, default="Unnamed Title")
-    message = models.CharField(max_length=400, default="No message attached")
+    message = models.CharField(max_length=999, default="No message attached")
     date_sent = models.DateTimeField(default=timezone.now)
 
     isRead = models.BooleanField(default=False)
