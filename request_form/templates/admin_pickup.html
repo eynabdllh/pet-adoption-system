@@ -194,6 +194,10 @@
     .form-check-input {
        width: 20px;
     }
+    .radio-group input[type="radio"]:checked {
+        background-color: #FF6F61;
+        border-color: #f8f9fa;
+    }
 
     .form-check:hover{
         background-color: #e4dfdc;
@@ -224,13 +228,13 @@
         </div>
     </form>
 
-    <!-- Sort Dropdown -->
     <div class="filter-sort-dropdown mr-1 radio-group">
         <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="fas fa-sort"></i> Sort
         </a>
         <div class="dropdown-menu p-3">
             <form method="GET" action="{% url 'admin_pickup' %}">
+                <input type="hidden" name="status" value="{{ status }}">
                 <input type="hidden" name="q" value="{{ query }}">
                 <!-- Sort Header -->
                 <div class="d-flex align-items-center">
@@ -251,12 +255,12 @@
                     </div>
                 </div>
                 <div class="divider"></div>
-
+                <!-- Apply and Reset Buttons -->
                 <button type="submit" class="apply-btn">Apply</button>
-                <a href="?reset_sort=true&q={{ query }}" class="reset-button">Reset</a>
+                <a href="{% url 'admin_pickup' %}?status={{ status }}&reset_sort=true&q={{ query }}" class="reset-button">Reset</a>
             </form>
         </div>
-    </div>
+    </div>    
     
     <div style="margin-left: 5px;">
     <a href="{% url 'export_pickup_to_excel' %}?status={{ status }}&pet_type={{ pet_type }}&sort_by={{ sort_by }}" 
@@ -266,17 +270,23 @@
     </div>
 </div>
     <!-- Tabs -->
-    <ul class="nav nav-tabs navtab">
+    <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link {% if status == 'upcoming' %}active{% endif %}" href="?status=upcoming">Upcoming</a>
+            <a class="nav-link {% if status == 'upcoming' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=upcoming&sort_by_id={{ sort_by_id }}">
+                Upcoming
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'completed' %}active{% endif %}" href="?status=completed">Completed</a>
+            <a class="nav-link {% if status == 'completed' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=completed&sort_by_id={{ sort_by_id }}">
+                Completed
+            </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="?status=cancelled">Cancelled</a>
+            <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=cancelled&sort_by_id={{ sort_by_id }}">
+                Cancelled
+            </a>
         </li>
-    </ul>
+    </ul>    
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">

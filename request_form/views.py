@@ -93,7 +93,8 @@ def adopt_form(request, pet_id):
 @login_required
 @admin_required
 def adoption_management(request):
-    status = request.GET.get('status', 'requested')  
+    status = request.GET.get('status', 'requested')
+    sort_by_id = request.GET.get('sort_by_id', '') 
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -101,10 +102,10 @@ def adoption_management(request):
 
         if action == 'add_to_list' and pet_id:
             try:
-                pet = Pet.objects.get(id=pet_id, is_rejected=True)  
+                pet = Pet.objects.get(id=pet_id, is_rejected=True)
                 
-                pet.adoption_set.all().delete() 
-                Schedule.objects.filter(pet=pet).delete()  
+                pet.adoption_set.all().delete()
+                Schedule.objects.filter(pet=pet).delete()
                 
                 pet.is_rejected = False
                 pet.is_adopted = False
@@ -123,9 +124,15 @@ def adoption_management(request):
     else: 
         pets = Pet.objects.filter(is_requested=True).prefetch_related('adoption_set')
 
+    if sort_by_id == 'asc':
+        pets = pets.order_by('id')
+    elif sort_by_id == 'desc':
+        pets = pets.order_by('-id')
+
     return render(request, 'adoption_management.html', {
         'pets': pets,
-        'status': status,  
+        'status': status,
+        'sort_by_id': sort_by_id,  
     })
 
 @login_required
@@ -136,12 +143,10 @@ def review_form(request, pet_id):
 
     if request.method == 'POST':
         try:
-            # Parse the incoming JSON request data
             data = json.loads(request.body)
             status = data.get('status')
             reason = data.get('reason')
 
-            # Validate status - must be either 'approved' or 'rejected'
             if status not in ['approved', 'rejected']:
                 messages.error(request, 'Invalid status provided.')
                 return JsonResponse({'success': False, 'message': 'Invalid status provided.'})
@@ -149,7 +154,6 @@ def review_form(request, pet_id):
             pet = adoption.pet
 
             if status == 'approved':
-                # Approve the adoption request
                 pet.is_requested = False
                 pet.is_approved = True
                 pet.is_upcoming = True
@@ -162,12 +166,10 @@ def review_form(request, pet_id):
                 return JsonResponse({'success': True, 'message': f"Pet {pet.name} has been approved for adoption."})
 
             elif status == 'rejected':
-                # Ensure a reason is provided for rejection
                 if not reason:
                     messages.error(request, "A reason is required for rejection.")
                     return JsonResponse({'success': False, 'message': "A reason is required for rejection."})
 
-                # Reject the adoption request
                 pet.is_requested = False
                 pet.is_rejected = True
                 pet.is_adopted = False
@@ -209,19 +211,15 @@ def admin_pickup(request):
 
         if action == 'add_to_list' and pet_id:
             try:
-                # Fetch the pet by ID
                 pet = Pet.objects.get(id=pet_id)
+                pet.adoption_set.all().delete()  
+                Schedule.objects.filter(pet=pet).delete()  
 
-                # Delete related adoption and schedule records
-                pet.adoption_set.all().delete()  # Deletes all Adoption records linked to this pet
-                Schedule.objects.filter(pet=pet).delete()  # Deletes all Schedule records linked to this pet
-
-                # Update pet status
                 pet.is_rejected = False
                 pet.is_adopted = False
                 pet.is_requested = False
-                pet.is_cancelled = False  # Reset cancellation flag
-                pet.is_available = True  # Make pet available for adoption
+                pet.is_cancelled = False
+                pet.is_available = True
                 pet.save()
 
                 messages.success(request, f"Pet {pet.name} is now available for adoption, and related records were deleted.")
@@ -230,8 +228,8 @@ def admin_pickup(request):
             except Exception as e:
                 messages.error(request, f"An error occurred: {e}")
 
-    # Retrieve pets based on status filter
     status = request.GET.get('status', 'upcoming')
+    sort_by_id = request.GET.get('sort_by_id', '') 
 
     if status == 'completed':
         pets = Pet.objects.filter(is_adopted=True, is_upcoming=False, is_approved=False).prefetch_related('schedule_set')
@@ -240,9 +238,13 @@ def admin_pickup(request):
     else: 
         pets = Pet.objects.filter(is_upcoming=True, is_approved=True).prefetch_related('schedule_set')
 
-    # Add cancellation reasons to the context for cancelled pets
-    for pet in pets:
-        if status == 'cancelled':
+    if sort_by_id == 'asc':
+        pets = pets.order_by('id')
+    elif sort_by_id == 'desc':
+        pets = pets.order_by('-id')
+
+    if status == 'cancelled':
+        for pet in pets:
             schedules = pet.schedule_set.filter(cancelled=True)
             for schedule in schedules:
                 pet.cancellation_reason = schedule.get_reason_choices_display()
@@ -250,6 +252,7 @@ def admin_pickup(request):
     return render(request, 'admin_pickup.html', {
         'pets': pets,
         'status': status,
+        'sort_by_id': sort_by_id,  
     })
 
 

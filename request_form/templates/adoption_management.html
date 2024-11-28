@@ -234,7 +234,8 @@
             </a>
             <div class="dropdown-menu p-3">
                 <form method="GET" action="{% url 'adoption_management' %}">
-                    <input type="hidden" name="q" value="{{ query }}">
+                    <!-- Preserve the current status -->
+                    <input type="hidden" name="status" value="{{ status }}">
                     <!-- Sort Header -->
                     <div class="d-flex align-items-center">
                         <i class="fas fa-sort me-3"></i>
@@ -243,7 +244,7 @@
                     <div class="divider"></div>
                     <!-- Sort by ID -->
                     <div class="form-group">
-                        <label class="form-group-label" for="sort_by_id">Sort by ID</label>
+                        <label class="form-group-label mb-2">Sort by ID</label>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" id="sort_by_id_asc" name="sort_by_id" value="asc" {% if sort_by_id == 'asc' %}checked{% endif %}>
                             <label class="form-check-label" for="sort_by_id_asc">Ascending</label>
@@ -253,10 +254,9 @@
                             <label class="form-check-label" for="sort_by_id_desc">Descending</label>
                         </div>
                     </div>
-                    <div class="divider"></div>
-    
-                    <button type="submit" class="apply-btn">Apply</button>
-                    <a href="?reset_sort=true&q={{ query }}" class="reset-button">Reset</a>
+                    <!-- Apply and Reset Buttons -->
+                        <button type="submit" class="apply-btn">Apply</button>
+                        <a href="{% url 'adoption_management' %}?status={{ status }}" class="reset-button">Reset</a>
                 </form>
             </div>
         </div>
@@ -271,13 +271,16 @@
 
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
-            <a class="nav-link {% if status == 'requested' %}active{% endif %}" href="?status=requested">Pending</a>
+            <a class="nav-link {% if status == 'requested' %}active{% endif %}" 
+            href="?status=requested&sort_by_id={{ sort_by_id }}">Pending</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'approved' %}active{% endif %}" href="?status=approved">Approved</a>
+            <a class="nav-link {% if status == 'approved' %}active{% endif %}" 
+            href="?status=approved&sort_by_id={{ sort_by_id }}">Approved</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'rejected' %}active{% endif %}" href="?status=rejected">Rejected</a>
+            <a class="nav-link {% if status == 'rejected' %}active{% endif %}" 
+            href="?status=rejected&sort_by_id={{ sort_by_id }}">Rejected</a>
         </li>
     </ul>
 
