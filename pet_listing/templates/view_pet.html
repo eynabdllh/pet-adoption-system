@@ -137,7 +137,13 @@ Adopt a Pet
 
 <div class="container-fluid mt-0">
     <div class="mb-3">
-        <a href="{% url 'adopter_pet_list' %}" class="btn btn-back">Back</a>
+        {% if request.path == '/pets/' %}
+            <a href="{% url 'adopter_pet_list' %}" class="btn btn-back">Back</a>
+        {% elif request.path == '/dashboard/' %}
+            <a href="{% url 'adopter_dashboard' %}" class="btn btn-back">Back</a>
+        {% else %}
+            <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-back">Back</a>
+        {% endif %}
     </div>
 
     <!-- Main Card -->
