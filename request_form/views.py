@@ -120,7 +120,7 @@ def adoption_management(request):
                 pet.is_available = True
                 pet.save()
 
-                messages.success(request, f"Pet {pet.name} is now available for adoption, and related records were deleted.")
+                messages.success(request, f"Pet {pet.name} is now available for adoption")
             except Pet.DoesNotExist:
                 messages.error(request, "Pet not found or already updated.")
 
@@ -204,6 +204,7 @@ def review_form(request, pet_id):
 
     return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
 
+
 @login_required
 @admin_required
 def admin_pickup(request):
@@ -211,36 +212,42 @@ def admin_pickup(request):
         pet_id = request.POST.get('pet_id')
         action = request.POST.get('action')
 
-        if action == 'mark_completed' and pet_id:
+        # Check if pet_id is provided
+        if not pet_id:
+            messages.error(request, "Pet ID is required.")
+        else:
             try:
-                pet = Pet.objects.get(id=pet_id)
-                pet.is_approved = False
-                pet.is_upcoming = False
-                pet.is_adopted = True
-                pet.save()
-                messages.success(request, f"Pet {pet.name} marked as completed.")
+                pet = Pet.objects.get(id=pet_id)  # Fetch the pet once for any action
             except Pet.DoesNotExist:
                 messages.error(request, "Pet not found.")
-            except Exception as e:
-                messages.error(request, f"An error occurred: {e}")
+                pet = None  # Explicitly set pet to None to avoid further issues
 
-        if action == 'add_to_list' and pet_id:
-            try:
-                pet.adoption_set.all().delete()  
-                Schedule.objects.filter(pet=pet).delete()  
-                pet.is_rejected = False
-                pet.is_adopted = False
-                pet.is_requested = False
-                pet.is_cancelled = False
-                pet.is_available = True
-                pet.save()
+            if pet and action == 'mark_completed':  # Mark as completed
+                try:
+                    pet.is_approved = False
+                    pet.is_upcoming = False
+                    pet.is_adopted = True
+                    pet.save()
+                    messages.success(request, f"Pet {pet.name} marked as completed.")
+                except Exception as e:
+                    messages.error(request, f"An error occurred while marking as completed: {e}")
 
-                messages.success(request, f"Pet {pet.name} is now available for adoption.")
-            except Pet.DoesNotExist:
-                messages.error(request, "Pet not found.")
-            except Exception as e:
-                messages.error(request, f"An error occurred: {e}")
+            if pet and action == 'add_to_list':  # Add to adoption list
+                try:
+                    pet.adoption_set.all().delete()  # Clear existing adoptions
+                    Schedule.objects.filter(pet=pet).delete()  # Clear schedules
+                    pet.is_rejected = False
+                    pet.is_adopted = False
+                    pet.is_requested = False
+                    pet.is_cancelled = False
+                    pet.is_available = True
+                    pet.save()
 
+                    messages.success(request, f"Pet {pet.name} is now available for adoption.")
+                except Exception as e:
+                    messages.error(request, f"An error occurred while adding to the list: {e}")
+
+    # Filters and sorting logic
     status = request.GET.get('status', 'upcoming')
     sort_by_id = request.GET.get('sort_by_id', '') 
     pet_type = request.GET.get('pet_type', '')
@@ -250,24 +257,28 @@ def admin_pickup(request):
     if reset_filter:
         pet_type = ''
 
+    # Fetch pets based on status
     if status == 'completed':
         pets = Pet.objects.filter(is_adopted=True, is_upcoming=False, is_approved=False).prefetch_related('schedule_set')
     elif status == 'cancelled':
         pets = Pet.objects.filter(is_cancelled=True).prefetch_related('schedule_set', 'adoption_set')
-    else: 
+    else:
         pets = Pet.objects.filter(is_upcoming=True, is_approved=True).prefetch_related('schedule_set')
 
+    # Additional filters
     if pet_type:
         pets = pets.filter(pet_type=pet_type)
 
     if query:
         pets = pets.filter(name__icontains=query)
 
+    # Sorting logic
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
     elif sort_by_id == 'desc':
         pets = pets.order_by('-id')
 
+    # Add cancellation reason if status is 'cancelled'
     if status == 'cancelled':
         for pet in pets:
             schedules = pet.schedule_set.filter(cancelled=True)
@@ -279,7 +290,7 @@ def admin_pickup(request):
         'status': status,
         'sort_by_id': sort_by_id,  
         'pet_type': pet_type,
-        'query' : query
+        'query': query
     })
 
 
