@@ -162,7 +162,13 @@
     }
 </style>
 <div class="mb-3">
-   <a href="{% url 'adoption_management' %}" class="btn btn-back">Back</a>
+    {% if request.path == '/adoption-management/' %}
+    <a href="{% url 'adoption_management' %}" class="btn btn-back">Back</a>
+{% elif request.path == '/dashboard/' %}
+    <a href="{% url 'dashboard' %}" class="btn btn-back">Back</a>
+{% else %}
+    <a href="{{ request.META.HTTP_REFERER }}" class="btn btn-back">Back</a>
+{% endif %}
 </div>
 
 <div class="card pet-card shadow-lg p-4">
