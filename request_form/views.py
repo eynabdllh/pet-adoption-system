@@ -98,6 +98,7 @@ def adoption_management(request):
     status = request.GET.get('status', 'requested')
     sort_by_id = request.GET.get('sort_by_id', '')
     pet_type = request.GET.get('pet_type', '')
+    query = request.GET.get('q', '')
 
     reset_filter = request.GET.get('reset_filter', False)
     if reset_filter:
@@ -133,6 +134,9 @@ def adoption_management(request):
     if pet_type:
         pets = pets.filter(pet_type=pet_type)
 
+    if query:
+        pets = pets.filter(name__icontains=query)
+
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
     elif sort_by_id == 'desc':
@@ -143,6 +147,7 @@ def adoption_management(request):
         'status': status,
         'sort_by_id': sort_by_id,
         'pet_type': pet_type,
+        'query': query
     })
 
 @login_required
@@ -239,6 +244,7 @@ def admin_pickup(request):
     status = request.GET.get('status', 'upcoming')
     sort_by_id = request.GET.get('sort_by_id', '') 
     pet_type = request.GET.get('pet_type', '')
+    query = request.GET.get('q', '')
 
     reset_filter = request.GET.get('reset_filter', False)
     if reset_filter:
@@ -253,6 +259,9 @@ def admin_pickup(request):
 
     if pet_type:
         pets = pets.filter(pet_type=pet_type)
+
+    if query:
+        pets = pets.filter(name__icontains=query)
 
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
@@ -270,6 +279,7 @@ def admin_pickup(request):
         'status': status,
         'sort_by_id': sort_by_id,  
         'pet_type': pet_type,
+        'query' : query
     })
 
 

@@ -322,17 +322,17 @@
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
             <a class="nav-link {% if status == 'requested' %}active{% endif %}" 
-            href="?status=requested&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+            href="?status=requested&q={{ query }}&pet_type={{ pet_type }}&sort_by_id={{ sort_by_id }}">
             Pending</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if status == 'approved' %}active{% endif %}" 
-            href="?status=approved&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+            href="?status=approved&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
             Approved</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if status == 'rejected' %}active{% endif %}" 
-            href="?status=rejected&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+            href="?status=rejected&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
             Rejected</a>
         </li>
     </ul>
