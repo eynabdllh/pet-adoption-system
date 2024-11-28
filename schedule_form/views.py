@@ -97,19 +97,16 @@ def my_adoption(request):
     if not user_id:
         return JsonResponse({'success': False, 'error': 'User not logged in'}, status=400)
 
-    # Get the user object
     try:
         user = get_object_or_404(User, id=user_id)
     except Exception as e:
         return JsonResponse({'success': False, 'error': f"Invalid user: {e}"}, status=400)
 
-    # Retrieve the scheduled pickups
     try:
         pickups = Schedule.objects.filter(adopter=user).select_related('pet')
     except Exception as e:
         return JsonResponse({'success': False, 'error': f"Query error: {e}"}, status=500)
 
-    # Prepare certificate data for adopted pets
     certificate_data = []
     for pickup in pickups:
         if pickup.pet.is_adopted:  
@@ -119,29 +116,26 @@ def my_adoption(request):
                 'adoption_date': f"{pickup.month} {pickup.day}, {pickup.year}",  
             })
 
-    # Handle POST requests to cancel an adoption
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)  # Parse the request body
-            pet_id = data.get('pet_id')  # Get pet_id from the request body
-            reason = data.get('reason')  # Get reason from the request body
+            data = json.loads(request.body) 
+            pet_id = data.get('pet_id') 
+            reason = data.get('reason')  
 
             if not pet_id:
                 return JsonResponse({'success': False, 'error': 'Pet ID is missing'}, status=400)
             if not reason:
                 return JsonResponse({'success': False, 'error': 'Cancellation reason is missing'}, status=400)
 
-            # Retrieve the pet and associated schedule
             pet = get_object_or_404(Pet, id=pet_id)
             schedule = get_object_or_404(Schedule, pet=pet, adopter=user)
 
-            # Update the pet and schedule status
             pet.is_requested = False
             pet.is_cancelled = True
             pet.save()
 
             schedule.cancelled = True
-            schedule.reason_choices = reason  # Save the cancellation reason
+            schedule.reason_choices = reason 
             schedule.save()
 
             messages.success(request, f"Pet {pet.name} is now cancelled.")
@@ -149,7 +143,6 @@ def my_adoption(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
-    # Render the adoption page for GET requests
     return render(request, 'my_adoption.html', {
         'pickups': pickups, 
         'certificate_data': certificate_data,

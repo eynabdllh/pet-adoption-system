@@ -222,7 +222,7 @@ def admin_pickup(request):
                 pet.is_available = True
                 pet.save()
 
-                messages.success(request, f"Pet {pet.name} is now available for adoption, and related records were deleted.")
+                messages.success(request, f"Pet {pet.name} is now available for adoption.")
             except Pet.DoesNotExist:
                 messages.error(request, "Pet not found.")
             except Exception as e:
