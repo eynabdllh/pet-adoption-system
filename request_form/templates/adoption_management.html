@@ -52,25 +52,238 @@
     }
     a {
         color: #FF6F61;
-        text-decoration: none; /* Removes underline */
+        text-decoration: none; 
     }
 
     a:hover {
-        color: #df2588; /* Changes color on hover */
-        text-decoration: none; /* Ensures no underline on hover */
+        color: #df2588; 
+        text-decoration: none; 
+    }
+     /*Search Styling*/
+     .search-bar .input-group-text {
+        background-color: transparent;
+        border-right: none;
+        cursor: pointer;
+    }
+
+    .search-bar .input-group-text i {
+        color: #FF6F61; 
+    }
+
+    .container-fluid {
+        padding-top: 20px;
+    }
+    /*Sort and Filter Styling*/
+    .form-check-available {
+        width: 6.25rem; 
+        height: 1.25rem;
+        margin-top: 0.2rem; 
+    }
+
+    .container-fluid {
+        padding-top: 20px;
+    }
+
+    .filter-sort-buttons {
+        display: flex;
+        gap: 20px;
+    }
+
+    .filter-sort-buttons a {
+        cursor: pointer;
+    }
+
+    .filter-sort-dropdown {
+        position: relative;
+    }
+
+    .filter-sort-dropdown .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 350px;
+        z-index: 1050;
+        height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .divider {
+        border-bottom: 1px solid #e0e0e0;
+        margin: 10px 0;
+    }
+
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .radio-group label {
+        margin-bottom: 5px;
+    }
+
+    .form-control-sm {
+        font-size: 0.9rem;
+    }
+
+    .reset-button {
+        color: #FF6F61;
+        width: 100px;
+        padding: 5px 10px 5px 10px;
+        border: 1px solid #FF6F61;
+        border-radius: 5px;
+        text-decoration: none; 
+    }
+
+    a:hover{ 
+        text-decoration: none; 
+        border: 1px solid #999;
+        color: #999;
+    }
+
+    .apply-btn {
+        background-color: #FF6F61;
+        color: white;
+        width: 80px;
+        padding: 5px;
+        border: 0px;
+        border-radius: 5px;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .inline-fields {
+        display: flex;
+        gap: 10px;
+    }
+
+    .inline-fields input {
+        width: 45%;
+    }
+
+    .form-group input[type="radio"]{
+        cursor: pointer;
+    }
+
+    .form-group-label {
+        color:#999;
+    }
+
+    .form-check-label {
+        margin-bottom: 10px;    
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .form-check {
+        padding-left: 20%;
+        padding-top: 2%;
+        cursor: pointer;
+    }
+    .form-check-input {
+       width: 20px;
+    }
+    .form-check:hover{
+        background-color: #e4dfdc;
+        border-radius: 5px;
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column; 
+    }
+
+    .field-group label{
+       font-size: small;
+       font-weight: 500;
+       margin-bottom: 1px;
+    }
+
+    .radio-group input[type="radio"]:checked {
+        background-color: #FF6F61;
+        border-color: #f8f9fa;
     }
 
 </style>
-
 <div class="container-fluid">
+<div class="d-flex mb-0" style="justify-content: flex-end;">
+    <form method="GET" action="{% url 'adoption_management' %}" class="form-inline search-bar">
+        <div class="input-group w-80">
+            <div class="input-group-append">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+            </div>
+            <input type="text" name="q" class="form-control form-control-sm" placeholder="Search a pet" value="{{ query }}">
+        </div>
+    </form>
 
-    <!-- Tabs -->
+    <div class="filter-sort-dropdown mr-1 radio-group">
+        <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            <i class="fas fa-sort"></i> Sort
+        </a>
+        <div class="dropdown-menu p-3">
+            <form method="GET" action="{% url 'adoption_management' %}">
+                <!-- Hidden inputs to preserve existing filter values -->
+                <input type="hidden" name="query" value="{{ query }}">
+                <input type="hidden" name="pet_type" value="{{ pet_type }}">
+                <input type="hidden" name="gender" value="{{ gender }}">
+                <input type="hidden" name="age" value="{{ age }}">
+                <input type="hidden" name="adoption_fee_min" value="{{ adoption_fee_min }}">
+                <input type="hidden" name="adoption_fee_max" value="{{ adoption_fee_max }}">
+                <input type="hidden" name="time_in_shelter_min" value="{{ time_in_shelter_min }}">
+                <input type="hidden" name="time_in_shelter_max" value="{{ time_in_shelter_max }}">
+
+                 <!-- Sort Header -->
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-sort me-3"></i>
+                    <h5 class="mb-0">Sort</h5>
+                </div>
+                <div class="divider"></div>
+                <!-- ID Sort -->
+                <div class="form-group">
+                    <label class="form-group-label" for="sort_by_id">Sort by ID</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="sort_by_id_asc" name="sort_by_id" value="asc" {% if sort_by_id == 'asc' %}checked{% endif %}>
+                        <label class="form-check-label" for="sort_by_id_asc">Ascending</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="sort_by_id_desc" name="sort_by_id" value="desc" {% if sort_by_id == 'desc' %}checked{% endif %}>
+                        <label class="form-check-label" for="sort_by_id_desc">Descending</label>
+                    </div>
+                </div>
+                <div class="divider"></div>
+
+                <!-- Apply Button and Reset Button -->
+                <button type="submit" class="apply-btn">Apply</button>
+                <a href="?reset_sort=true&q={{ query }}" class="reset-button">Reset</a>
+            </form>
+        </div>
+    </div>
+
+    <div style="margin-left: 5px;">
+    <!-- Export to Excel Button -->
+    <a href="{% url 'export_adoption_to_excel' %}?status={{ status }}&pet_type={{ pet_type }}&sort_by={{ sort_by }}" 
+   class="btn btn-success" title="Export to Excel">
+   <i class="fas fa-download"></i> 
+    </a>
+    </div>
+</div>
+
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
             <a class="nav-link {% if status == 'requested' %}active{% endif %}" href="?status=requested">Pending</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link {% if status == 'adopted' %}active{% endif %}" href="?status=adopted">Approved</a>
+            <a class="nav-link {% if status == 'approved' %}active{% endif %}" href="?status=approved">Approved</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {% if status == 'rejected' %}active{% endif %}" href="?status=rejected">Rejected</a>
@@ -79,6 +292,7 @@
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">
+
         <!-- Pending Pets -->
         <div id="requested" class="tab-pane fade {% if status == 'requested' %}show active{% endif %}">
             <div class="table-responsive">
@@ -126,7 +340,7 @@
         </div>
 
         <!-- Approved Pets -->
-        <div id="adopted" class="tab-pane fade {% if status == 'adopted' %}show active{% endif %}">
+        <div id="approved" class="tab-pane fade {% if status == 'approved' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -137,12 +351,12 @@
                             <th>Adopter</th>
                             <th>Request Date</th>
                             <th>Status</th>
-                            <th> </th>
+                           
                         </tr>
                     </thead>
                     <tbody>
                         {% for pet in pets %}
-                        {% if pet.is_adopted %}
+                        {% if pet.is_approved %}
                         <tr>
                             <td>{{ pet.id }}</td>
                             <td>
@@ -161,7 +375,7 @@
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
                             {% endfor %}
-                            <td><span class="badge badge-success" style="background-color: #1EBE91">Adopted</span></td>
+                            <td><span class="badge badge-success" style="background-color: #1EBE91">Approved</span></td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -181,8 +395,9 @@
                             <th>Species</th>
                             <th>Adopter</th>
                             <th>Request Date</th>
-                            <th>Status</th>
                             <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -205,9 +420,18 @@
                             {% for adoption in pet.adoption_set.all %}
                                 <td>{{ adoption.first_name }} {{ adoption.last_name }}</td>
                                 <td>{{ adoption.date }}</td>
-                            {% endfor %}
+                            <td>{{ adoption.get_reason_choices_display }}
+                            </td>{% endfor %}
                             <td><span class="badge badge-success" style="background-color: #B3261E">Rejected</span></td>
-                            <td>Reason for rejection.....</td>
+                            <td>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="add_to_list">
+                                    <input type="hidden" name="pet_id" value="{{ pet.id }}">
+                                    <button type="submit" class="btn btn-sm" style="font-weight: 500; color:white; background-color: #FF6F61; border-radius: 6px;">
+                                        Add to List</button>
+                                </form>
+                            </td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -215,7 +439,6 @@
                 </table>
             </div>
         </div>
-
     </div>
     </div>
 </div>

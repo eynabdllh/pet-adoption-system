@@ -37,31 +37,67 @@ Adopt a Pet
         font-size: 16px;
         border-radius: 10px;
         margin-right: 50px;
-        width: 180px;
+        margin-left: 35%;
+        width: 200px;
     }
 
     .btn-adopt:hover {
         background-color: #16a379;
     }
 
+    .image-container {
+        background-color: #f8f9fa; 
+        border-radius: 10px; 
+        padding: 10px 10px 10px 5px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); 
+    }
+
     .main-image {
-        height: 340px;
+        height: 350px;
         width: 100%;
         object-fit: cover;
         border-radius: 10px;
     }
 
-    .image-collage {
-        display: flex;
+    .grid-collage {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-        flex-wrap: wrap;
     }
 
     .collage-image {
-        height: 165px;
-        width: calc(50% - 5px);
+        height: calc(340px / 2);
+        width: 100%;
         object-fit: cover;
         border-radius: 10px;
+    }
+
+    .full-width-image {
+        margin-top: 10px;
+    }
+
+    .wide-image {
+        height: 165px; 
+        width: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .main-image,
+    .collage-image,
+    .wide-image {
+        border-radius: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .grid-collage {
+            grid-template-columns: 1fr;
+        }
+
+        .wide-image {
+            height: 120px;
+        }
     }
 
     .pet-name {
@@ -106,21 +142,102 @@ Adopt a Pet
 
     <!-- Main Card -->
     <div class="card pet-card shadow-lg p-4">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="main-image">
+        <div class="image-container">
+            <div class="row mb-1">
+                {% if pet.images.count == 1 %}
+                    <!-- 1 Image -->
+                    <div class="col-md-12">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                            <img src="{{ pet.images.first.image.url }}" alt="{{ pet.name }}" class="main-image">    
+                        </a>
+                    </div>
+                {% elif pet.images.count == 2 %}
+                    <!-- 2 Images -->
+                    <div class="col-md-6">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                            <img src="{{ pet.images.first.image.url }}" alt="{{ pet.name }}" class="main-image">
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                            <img src="{{ pet.images.all.1.image.url }}" alt="{{ pet.name }}" class="main-image">
+                        </a>
+                    </div>
+                {% elif pet.images.count == 3 %}
+                    <!-- 3 Images -->
+                    <div class="col-md-6">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                            <img src="{{ pet.images.first.image.url }}" alt="{{ pet.name }}" class="main-image">
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="vertical-collage">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.1.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.2.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                        </div>
+                    </div>
+                {% elif pet.images.count == 4 %}
+                    <!-- 4 Images -->
+                    <div class="col-md-6">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                            <img src="{{ pet.images.first.image.url }}" alt="{{ pet.name }}" class="main-image">
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="grid-collage">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.1.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.2.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                        </div>
+                        <div class="full-width-image">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.3.image.url }}" alt="{{ pet.name }}" class="wide-image">
+                            </a>
+                        </div>
+                    </div>
+                {% elif pet.images.count == 5 %}
+                    <!-- 5 Images -->
+                    <div class="col-md-6">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                            <img src="{{ pet.images.first.image.url }}" alt="{{ pet.name }}" class="main-image">
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="grid-collage">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.1.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.2.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.3.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                                <img src="{{ pet.images.all.4.image.url }}" alt="{{ pet.name }}" class="collage-image">
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-            <!-- Collage of Images -->
-            <div class="col-md-6">
-                <div class="image-collage">
-                    {% for image in pet.images.all|slice:"1:5" %}
-                        <img src="{{ image.image.url }}" alt="{{ pet.name }}" class="img-fluid rounded collage-image">
-                    {% endfor %}
+        </div>
+ 
+        <!-- Modal for displaying the full image -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+                <div class="modal-body d-flex align-items-center justify-content-center p-0" style="background: transparent;">
+                    <img src="" id="modal-image" class="img-fluid" style="max-height: 90vh; object-fit: contain; border-radius: 5px;" alt="Full Image">
                 </div>
             </div>
         </div>
 
-        
         <!-- Pet Name and Adopt Button -->
         <div class="row align-items-center mb-4">
             <div class="col-md-8">
@@ -149,4 +266,18 @@ Adopt a Pet
         </div>
     </div>
 </div>
+
+<script>
+    const modalImage = document.getElementById('modal-image');
+    const modalLinks = document.querySelectorAll('[data-bs-target="#imageModal"]');
+
+    modalLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const imageUrl = this.querySelector('img').src;
+            modalImage.src = imageUrl; 
+        });
+    });
+</script>
+
 {% endblock %}

@@ -171,11 +171,19 @@ Adopt a Pet
         <div class="form-row">
             <div class="form-group">
                 <label for="age">Age:</label>
-                <input type="text" id="age" name="age" value="{{ form.age.value }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+                <input type="number" id="age" name="age" value="{{ form.age.value }}" 
+                    min="18" max="99" 
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
             </div>
             <div class="form-group">
                 <label for="contact_number">Contact Number:</label>
-                <input type="text" id="contact_number" name="contact_number" value="{{ form.contact_number.value }}" style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+                <input type="text" id="contact_number" name="contact_number" value="{{ form.contact_number.value }}" 
+                    maxlength="11" 
+                    pattern="\d{11}" 
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)"
+                    style="background-color: #ffffff; border: 1px solid #ccc; color: #3f3f3f;">
+    <small>Must be exactly 11 digits.</small>
             </div>
         </div>
         
@@ -227,8 +235,11 @@ Adopt a Pet
     }
 
     function submitForm() {
-        document.getElementById('adoptionForm').submit();
-    }
+    const form = document.getElementById('adoptionForm');
+    const submitButton = document.querySelector('.btn-confirm');
+    submitButton.disabled = true; 
+    form.submit();
+}
 </script>
 
 {% endblock %}
