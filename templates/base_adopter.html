@@ -303,6 +303,10 @@
             <div class="text-center mb-4">
                 <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo-img">
             </div>
+            <a href="{% url 'adopter_dashboard' %}" class="{% if request.resolver_match.url_name == 'adopter_dashboard' or request.resolver_match.url_name == 'view_pet_detail'%} active {% endif %}">  
+                <img src="{% static 'images/dashboard.png' %}" alt="Home" class="icon-img">
+                Home
+            </a>
             <a href="{% url 'adopter_pet_list' %}" class="{% if request.resolver_match.url_name == 'adopter_pet_list' or request.resolver_match.url_name == 'view_pet' or request.resolver_match.url_name == 'adopt_form' or request.resolver_match.url_name == 'schedule' %} active {% endif %}">
                 <img src="{% static 'images/adoption.png' %}" alt="Adopt" class="icon-img">
                 Adopt a Pet

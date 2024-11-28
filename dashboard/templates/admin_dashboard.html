@@ -9,7 +9,6 @@ Dashboard
 <style>
   body {
       background-color: #f8f9fa;
-      font-family: Arial, sans-serif;
   }
 
   .card.adoption-list{
@@ -248,7 +247,7 @@ Dashboard
                 {{ request.pet.name }}
               </td>
               <td>
-                <a href="{% url 'review_form' pet_id=request.pet.id %}" class="btn btn-view">View</a>
+                <a href="{% url 'review_form_detail' pet_id=request.pet.id %}" class="btn btn-view">View</a>
               </td>
             </tr>
           {% empty %}
@@ -325,25 +324,21 @@ Dashboard
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
   
-        // Update the calendar's inner content
         const newCalendar = doc.querySelector('.calendar .card-body')?.innerHTML;
         if (newCalendar) {
           document.querySelector('.calendar .card-body').innerHTML = newCalendar;
         }
   
-        // Update the schedule's inner content
         const newSchedule = doc.querySelector('.schedule')?.innerHTML;
         if (newSchedule) {
           document.querySelector('.schedule').innerHTML = newSchedule;
         }
   
-        // Update the month and year display
         const newMonthYear = doc.querySelector('.month-year')?.innerHTML;
         if (newMonthYear) {
           document.querySelector('.month-year').innerHTML = newMonthYear;
         }
   
-        // Reinitialize day click events
         reinitializeDayEvents();
       })
       .catch(err => console.error('Error fetching calendar and schedule:', err));
@@ -353,13 +348,11 @@ Dashboard
     document.querySelectorAll('.day').forEach(day => {
       day.addEventListener('click', function () {
         const selectedDate = this.getAttribute('data-date');
-        
-        // Update the URL without reloading
+ 
         const url = new URL(window.location.href);
         url.searchParams.set('date', selectedDate);
         history.pushState({}, '', url);
   
-        // Update content dynamically
         updateCalendarAndSchedule(selectedDate);
       });
     });
@@ -368,13 +361,11 @@ Dashboard
   document.querySelectorAll('.day').forEach(day => {
     day.addEventListener('click', function () {
       const selectedDate = this.getAttribute('data-date');
-      
-      // Update the URL without reloading
+  
       const url = new URL(window.location.href);
       url.searchParams.set('date', selectedDate);
       history.pushState({}, '', url);
   
-      // Update content dynamically
       updateCalendarAndSchedule(selectedDate);
     });
   });
@@ -387,10 +378,8 @@ Dashboard
     const newDate = currentDate.toISOString().slice(0, 10);
     urlParams.set('date', newDate);
   
-    // Update the URL without reloading
     history.pushState({}, '', `?${urlParams.toString()}`);
   
-    // Fetch and update content
     updateCalendarAndSchedule(newDate);
   }
   

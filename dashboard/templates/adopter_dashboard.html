@@ -1,0 +1,395 @@
+{% extends 'base_adopter.html' %}
+{% load static %}
+
+{% block page_title %}
+Adopter Dashboard
+{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card.adoption-list{
+        height: 100vh;
+    }
+
+    .card.calendar{
+        height: 100vh;
+    }
+
+    .card-header {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    
+    .status-card-content.adopted {
+        display: inline-flex;
+        align-items: center;
+        padding: 35px 25px 35px 25px;
+        gap: 70px; 
+    }
+
+    .status-card-content.available {
+        display: inline-flex;
+        align-items: center;
+        padding: 35px 25px 35px 25px;
+        gap: 90px; 
+    }
+
+    .status-card-content.requested {
+        display: inline-flex;
+        align-items: center;
+        padding: 35px 25px 35px 25px;
+        gap: 65px; 
+    }
+
+    .status-card-content i {
+        font-size: 4rem;
+        color: #4A4A4A; 
+        margin-left: 5%;
+    }
+
+    .status-card-text {
+        font-size: 36px;
+        font-weight: bold;
+        color: #4A4A4A;
+        margin: 0;
+        text-align: right;
+        justify-content: flex-end;
+    }
+
+    .status-card-text h5{
+        font-size: 20px;
+        font-weight: bold;
+        color: #4A4A4A;
+    }
+
+    .status-card-text h2{
+        font-size: 40px;
+        font-weight: bold;
+        color: #4A4A4A;
+    }
+
+    .status-card .card-body {
+        text-align: center;
+    }
+
+    .card {
+        border-radius: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .status-card.adopted {
+        background-color: #FECCA4;
+    }
+
+    .status-card.available {
+        background-color: #FFD8DE;
+    }
+
+    .status-card.requested {
+        background-color: #C1FFEE;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .btn-approve {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-reject {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .calendar {
+        padding: 20px;
+    }
+
+    .calendar .day {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 50%;
+        margin: 5px;
+        cursor: pointer;
+        background-color: #fff;
+        transition: background-color 0.3s;
+    }
+
+    .calendar .day:hover {
+        background-color: #e4e3e3;
+    }
+
+    .calendar .day.not-current {
+        color: #ccc;
+    }
+
+    .calendar .day.active {
+        background-color: #ffd7d0;
+    }
+
+    .calendar .day.today {
+        background-color: #cceddc;
+    }
+
+    .schedule {
+        padding: 20px;
+        height: 300px; 
+        overflow-y: auto; 
+    }
+    .adoption-list {
+        padding: 20px;
+        height: 705px;  
+        overflow-y: auto; 
+    }
+    .schedule .time {
+        color: #dc3545;
+    }
+
+    .nav-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .btn-view {
+        padding: 5px 15px 5px 15px;
+        font-size: 16px;
+        color: white;
+        background-color: #FF6F61;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .btn-view:hover {
+        background-color: rgb(235, 235, 237);
+    }
+
+    .view-pet {
+        text-decoration: none;
+        color: black;
+    }
+
+    .view-pet:hover {
+        text-decoration: none;
+        color: #FF6F61;
+    }
+</style>
+
+<div class="container mt-2">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card status-card available">
+                <div class="status-card-content available">
+                    <i class="fas fa-cat"></i>
+                    <div class="status-card-text">
+                        <h5>Available Pets</h5>
+                        <h2>{{ available_pets_count }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card status-card adopted">
+                <div class="status-card-content adopted">
+                    <i class="fas fa-paw"></i>
+                    <div class="status-card-text">
+                        <h5>My Adopted Pets</h5>
+                        <h2>{{ adopted_pets_count }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card status-card requested">
+                <div class="status-card-content requested">
+                    <i class="fas fa-handshake"></i>
+                    <div class="status-card-text">
+                        <h5>Requested Pets</h5>
+                        <h2>{{ requested_pets_count }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card adoption-list">
+                <div class="card-header">
+                    <i class="fas fa-bars"></i> Recently Listed Pets
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Pet Name</th>
+                                <th>Breed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for pet in recently_listed_pets %}
+                            <tr>
+                                <td>
+                                    <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" style="height: 30px; width: 30px; border-radius: 50%;">
+                                    <a href="{% url 'view_pet_detail' pet.id %}" class="view-pet">{{ pet.name }}</a>
+                                </td>
+                                <td>{{ pet.breed }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3">No recently listed pets.</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card calendar">
+              <div class="card-header">
+                <i class="fas fa-calendar-alt"></i> Calendar
+                <div class="nav-buttons">
+                  <button onclick="navigateMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                  <strong class="month-year">{{ selected_date|date:"F Y" }}</strong>
+        
+                  <button onclick="navigateMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+              </div>
+              <div class="card-body calendar">
+                <div class="d-flex justify-content-between">
+                  <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                {% for week in calendar_weeks %}
+                  <div class="d-flex justify-content-between">
+                    {% for day in week %}
+                      <div class="day {{ day.is_today|yesno:'today,' }} {{ day.has_pickup|yesno:'active,' }} {{ day.not_current_month|yesno:'not-current,' }}" data-date="{{ day.date|date:'Y-m-d' }}" onclick="selectDay(this)">
+                        {{ day.date.day }}
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="card-body schedule">
+                <h5><i class="fas fa-clock"></i> Pick Up List for {{ selected_date|date:"M d, Y" }}</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Pet</th>
+                            <th>Pickup Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for pickup in pickups %}
+                        <tr>
+                            <td >
+                                <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" style="height: 30px; width: 30px; border-radius: 50%;">
+                                {{ pickup.pet.name }}
+                            </td>
+                            <td class="time" >{{ pickup.time }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2">No pickups scheduled for today.</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+  
+
+<script>
+    function updateCalendarAndSchedule(selectedDate) {
+      // Fetch data for the selected date
+      fetch(`?date=${selectedDate}`)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+    
+          const newCalendar = doc.querySelector('.calendar .card-body')?.innerHTML;
+          if (newCalendar) {
+            document.querySelector('.calendar .card-body').innerHTML = newCalendar;
+          }
+    
+          const newSchedule = doc.querySelector('.schedule')?.innerHTML;
+          if (newSchedule) {
+            document.querySelector('.schedule').innerHTML = newSchedule;
+          }
+    
+          const newMonthYear = doc.querySelector('.month-year')?.innerHTML;
+          if (newMonthYear) {
+            document.querySelector('.month-year').innerHTML = newMonthYear;
+          }
+    
+          reinitializeDayEvents();
+        })
+        .catch(err => console.error('Error fetching calendar and schedule:', err));
+    }
+    
+    function reinitializeDayEvents() {
+      document.querySelectorAll('.day').forEach(day => {
+        day.addEventListener('click', function () {
+          const selectedDate = this.getAttribute('data-date');
+   
+          const url = new URL(window.location.href);
+          url.searchParams.set('date', selectedDate);
+          history.pushState({}, '', url);
+    
+          updateCalendarAndSchedule(selectedDate);
+        });
+      });
+    }
+    
+    document.querySelectorAll('.day').forEach(day => {
+      day.addEventListener('click', function () {
+        const selectedDate = this.getAttribute('data-date');
+    
+        const url = new URL(window.location.href);
+        url.searchParams.set('date', selectedDate);
+        history.pushState({}, '', url);
+    
+        updateCalendarAndSchedule(selectedDate);
+      });
+    });
+    
+    // Handle month navigation
+    function navigateMonth(delta) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentDate = new Date(urlParams.get('date') || new Date().toISOString().slice(0, 10));
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      const newDate = currentDate.toISOString().slice(0, 10);
+      urlParams.set('date', newDate);
+    
+      history.pushState({}, '', `?${urlParams.toString()}`);
+    
+      updateCalendarAndSchedule(newDate);
+    }
+    
+    // Handle browser navigation (forward/back)
+    window.addEventListener('popstate', function () {
+      const url = new URL(window.location.href);
+      const selectedDate = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
+      updateCalendarAndSchedule(selectedDate);
+    });
+</script>
+
+{% endblock %}
