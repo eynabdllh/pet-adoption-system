@@ -414,7 +414,7 @@
                                 <td>{{ adoption.date }}</td>
                             {% endfor %}
                             <td><span class="badge badge-success">Pending</span></td>
-                            <td><a href="{% url 'review_form' pet.id %}">Review Application >>></a></td>
+                            <td><a href="{% url 'review_form' pet.id %}?source=adoption_management">Review Application >>></a></td>
                         </tr>
                         {% endif %}
                         {% endfor %}
