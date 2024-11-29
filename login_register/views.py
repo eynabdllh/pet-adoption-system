@@ -29,7 +29,7 @@ def Login(request):
                 profile = Profile.objects.filter(user=user).first()
                 request.session['profile_image_url'] = profile.profile_image.url if profile and profile.profile_image else None
 
-                next_url = request.GET.get('next', 'admin_dashboard' if user.isAdmin else 'adopter_pet_list')
+                next_url = request.GET.get('next', 'admin_dashboard' if user.isAdmin else 'adopter_dashboard')
                 #messages.success(request,f"{"Admin" if user.isAdmin else "Adopter"} logged in successfully")
                 return redirect(next_url)
                
