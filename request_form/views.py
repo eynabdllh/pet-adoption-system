@@ -172,17 +172,12 @@ def review_form(request, pet_id):
     profile = adoption.adopter
 
     if request.method == 'POST':
+        status = request.POST.get('status')
+        reason = request.POST.get('reason')
+
+        pet = adoption.pet
+
         try:
-            data = json.loads(request.body)
-            status = data.get('status')
-            reason = data.get('reason')
-
-            if status not in ['approved', 'rejected']:
-                messages.error(request, 'Invalid status provided.')
-                return JsonResponse({'success': False, 'message': 'Invalid status provided.'})
-
-            pet = adoption.pet
-
             if status == 'approved':
                 pet.is_requested = False
                 pet.is_approved = True
@@ -193,29 +188,22 @@ def review_form(request, pet_id):
                 adoption.save()
 
                 messages.success(request, f"Pet {pet.name} has been approved for adoption.")
-                return JsonResponse({'success': True, 'message': f"Pet {pet.name} has been approved for adoption."})
-
             elif status == 'rejected':
                 if not reason:
                     messages.error(request, "A reason is required for rejection.")
-                    return JsonResponse({'success': False, 'message': "A reason is required for rejection."})
+                else:
+                    pet.is_requested = False
+                    pet.is_rejected = True
+                    pet.is_adopted = False
+                    pet.save()
 
-                pet.is_requested = False
-                pet.is_rejected = True
-                pet.is_adopted = False
-                pet.save()
+                    adoption.status = 'rejected'
+                    adoption.reason_choices = reason
+                    adoption.save()
 
-                adoption.status = 'rejected'
-                adoption.reason_choices = reason
-                adoption.save()
-
-                messages.success(request, "The pet adoption request has been rejected.")
-                return JsonResponse({'success': True, 'message': "The pet adoption request has been rejected."})
-
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
+                    messages.success(request, "The pet adoption request has been rejected.")
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f"An error occurred: {str(e)}"})
+            messages.error(request, f"An error occurred: {e}")
 
     return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
 
@@ -314,8 +302,12 @@ def admin_pickup(request):
     if status == 'cancelled':
         for pet in pets:
             schedules = pet.schedule_set.filter(cancelled=True)
-            for schedule in schedules:
-                pet.cancellation_reason = schedule.get_reason_choices_display()
+            if schedules.exists():
+                # If there is a reason in schedules, fetch it
+                pet.cancellation_reason = schedules.first().get_reason_choices_display()
+            else:
+                # Default to "Pet was not Picked-Up" if no reason is found
+                pet.cancellation_reason = "Pet was not Picked-Up"
 
     return render(request, 'admin_pickup.html', {
         'pets': pets,
@@ -428,7 +420,7 @@ def export_pickup_to_excel(request):
         ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Adoption Date', 'Status'])
 
     for pet in pets:
-        adoption_data = pet.adoption_set.first()  
+        adoption_data = pet.adoption_set.first() 
         if adoption_data:
             adopter_name = f"{adoption_data.first_name} {adoption_data.last_name}"
             adoption_date = adoption_data.date
@@ -445,6 +437,13 @@ def export_pickup_to_excel(request):
         else:
             status = 'Unknown'
 
+        cancellation_reason = 'Pet was not Picked-Up'
+        if pet.is_cancelled:
+            schedules = pet.schedule_set.filter(cancelled=True)
+            if schedules.exists():
+                cancellation_reason = schedules.first().get_reason_choices_display()
+
+        # Append the appropriate row to the sheet
         if status_filter == 'cancelled':
             ws.append([
                 pet.id,
@@ -453,7 +452,7 @@ def export_pickup_to_excel(request):
                 adopter_name,
                 adoption_date,
                 status,
-                pet.cancellation_reason or 'N/A'
+                cancellation_reason
             ])
         else:
             ws.append([
@@ -465,6 +464,10 @@ def export_pickup_to_excel(request):
                 status
             ])
 
+    for cell in ws[1]:
+        cell.font = openpyxl.styles.Font(bold=True)
+        cell.fill = openpyxl.styles.PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
+        
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
