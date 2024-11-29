@@ -177,4 +177,4 @@ def review_form_detail(request, pet_id):
         except Exception as e:
             return JsonResponse({'success': False, 'message': f"An error occurred: {str(e)}"})
 
-    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
+    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile}) 
