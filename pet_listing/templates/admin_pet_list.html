@@ -450,21 +450,14 @@
                     <i class="fas fa-filter"></i> Filter
                 </a>
                 <div class="dropdown-menu p-3">
-                    <!-- Filter Header -->
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-filter me-3"></i>
-                        <h5 class="mb-0">Filter</h5>
-                    </div>
-                    
-                    <div class="divider"></div>
                     <form method="GET" action="{% url 'admin_pet_list' %}">
-                        <!-- Hidden inputs to preserve existing filter values -->
-                        <input type="hidden" name="sort_by_id" value="{{ sort_by_id }}">
-                        <input type="hidden" name="sort_by_name" value="{{ sort_by_name }}">
-                        <input type="hidden" name="sort_by_age" value="{{ sort_by_age }}">
-                        <input type="hidden" name="sort_by_time_in_shelter" value="{{ sort_by_time_in_shelter }}">
-                        <input type="hidden" name="sort_by_adoption_fee" value="{{ sort_by_adoption_fee }}">
-
+                        <input type="hidden" name="active_tab" value="{{ active_tab }}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-filter me-3"></i>
+                            <h5 class="mb-0">Filter</h5>
+                        </div>
+                        
+                        <div class="divider"></div>
                         <!-- Species Filter -->
                         <div class="form-group">
                             <label class="form-group-label" for="pet_type">Species</label>
@@ -532,7 +525,7 @@
                         </div>
                         <div class="divider"></div>                   
                         <button type="submit" class="apply-btn">Apply</button>
-                        <a href="?reset_filter=true&sort_by_id={{ sort_by_id }}&sort_by_name={{ sort_by_name }}&sort_by_age={{ sort_by_age }}&sort_by_time_in_shelter={{ sort_by_time_in_shelter }}&sort_by_adoption_fee={{ sort_by_adoption_fee }}" class="reset-button">Reset</a>
+                        <a href="?reset_filter=true&sort_by_id={{ sort_by_id }}&sort_by_name={{ sort_by_name }}&sort_by_age={{ sort_by_age }}&sort_by_time_in_shelter={{ sort_by_time_in_shelter }}&sort_by_adoption_fee={{ sort_by_adoption_fee }}&active_tab={{ active_tab }}" class="reset-button">Reset</a>
                     </form>
                 </div>
             </div>
@@ -544,17 +537,7 @@
                 </a>
                 <div class="dropdown-menu p-3">
                     <form method="GET" action="{% url 'admin_pet_list' %}">
-                        <!-- Hidden inputs to preserve existing filter values -->
-                        <input type="hidden" name="query" value="{{ query }}">
-                        <input type="hidden" name="pet_type" value="{{ pet_type }}">
-                        <input type="hidden" name="gender" value="{{ gender }}">
-                        <input type="hidden" name="age" value="{{ age }}">
-                        <input type="hidden" name="adoption_fee_min" value="{{ adoption_fee_min }}">
-                        <input type="hidden" name="adoption_fee_max" value="{{ adoption_fee_max }}">
-                        <input type="hidden" name="time_in_shelter_min" value="{{ time_in_shelter_min }}">
-                        <input type="hidden" name="time_in_shelter_max" value="{{ time_in_shelter_max }}">
-
-                         <!-- Sort Header -->
+                        <input type="hidden" name="active_tab" value="{{ active_tab }}">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-sort me-3"></i>
                             <h5 class="mb-0">Sort</h5>
@@ -633,7 +616,7 @@
 
                         <!-- Apply Button and Reset Button -->
                         <button type="submit" class="apply-btn">Apply</button>
-                        <a href="?reset_sort=true&q={{ query }}&pet_type={{ pet_type }}&gender={{ gender }}&age={{ age }}&adoption_fee_min={{ adoption_fee_min }}&adoption_fee_max={{ adoption_fee_max }}&time_in_shelter_min={{ time_in_shelter_min }}&time_in_shelter_max={{ time_in_shelter_max }}" class="reset-button">Reset</a>
+                        <a href="?reset_sort=true&q={{ query }}&pet_type={{ pet_type }}&gender={{ gender }}&age={{ age }}&adoption_fee_min={{ adoption_fee_min }}&adoption_fee_max={{ adoption_fee_max }}&time_in_shelter_min={{ time_in_shelter_min }}&time_in_shelter_max={{ time_in_shelter_max }}&active_tab={{ active_tab }}" class="reset-button">Reset</a>
                     </form>
                 </div>
             </div>
@@ -648,17 +631,17 @@
     <!-- Tabs -->
     <ul class="nav nav-tabs navtab">
         <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#available">Available</a>
+            <a class="nav-link {% if active_tab == 'available' %}active{% endif %}" data-toggle="tab" href="#available">Available</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#adopted">Adopted</a>
+            <a class="nav-link {% if active_tab == 'adopted' %}active{% endif %}" data-toggle="tab" href="#adopted">Adopted</a>
         </li>
     </ul>
 
     <div class="card table-card shadow-lg p-4">
     <div class="tab-content mt-3">
         <!-- Available Pets -->
-        <div id="available" class="tab-pane fade show active">
+        <div id="available" class="tab-pane fade {% if active_tab == 'available' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -712,7 +695,7 @@
         </div>
 
         <!-- Adopted Pets -->
-        <div id="adopted" class="tab-pane fade">
+        <div id="adopted" class="tab-pane fade {% if active_tab == 'adopted' %}show active{% endif %}">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -851,6 +834,26 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = value;
         return input;
     }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.nav-link').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabId = this.getAttribute('href').replace('#', '');
+            document.querySelectorAll('form').forEach(form => {
+                let activeTabInput = form.querySelector('input[name="active_tab"]');
+                if (!activeTabInput) {
+                    activeTabInput = document.createElement('input');
+                    activeTabInput.type = 'hidden';
+                    activeTabInput.name = 'active_tab';
+                    form.appendChild(activeTabInput);
+                }
+                activeTabInput.value = tabId;
+            });
+        });
+    });
 });
 </script>
 
