@@ -81,3 +81,6 @@ def logout(request):
         del request.session['user_type']
 
     return redirect('login')
+
+def landing_page(request):
+    return render(request, 'landing_page.html')
