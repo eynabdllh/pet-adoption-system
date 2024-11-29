@@ -229,6 +229,10 @@
        font-weight: 500;
        margin-bottom: 1px;
     }
+    .btn-check{
+        font-size: 20px;
+        display: flex;
+    }
 </style>
 
 <div class="container-fluid">
@@ -418,15 +422,23 @@
                             {% endfor %}
                             <td><span class="badge badge-success">Upcoming</span></td>
                             <td>
-                                <form method="post" style="display:inline;">
+                                <form method="post" style="display: flex; align-items: center; gap: 5px;">
                                     {% csrf_token %}
                                     <input type="hidden" name="pet_id" value="{{ pet.id }}">
-                                    <input type="hidden" name="action" value="mark_completed">
-                                    <button type="submit" class="btn btn-success btn-sm">
-                                        Pick-Up Complete
+                            
+                                    <!-- Checkmark Button -->
+                                    <button type="submit" name="action" value="mark_completed" class="btn btn-success" 
+                                        style="font-weight: bolder; font-size: 17px; height: 35px; display: flex; align-items: center; justify-content: center; width: 35px;">
+                                        &#10003;
+                                    </button>
+                            
+                                    <!-- X Button -->
+                                    <button type="submit" name="action" value="mark_failed" class="btn btn-danger" 
+                                        style="font-weight: bold; font-size: 17px; height: 35px; display: flex; align-items: center; justify-content: center; width: 35px;">
+                                        &#10008;
                                     </button>
                                 </form>
-                            </td>
+                            </td>                            
                         </tr>
                         {% endfor %}
                         {% endfor %}
@@ -532,7 +544,7 @@
                                 {% if pet.cancellation_reason %}
                                     {{ pet.cancellation_reason }}
                                 {% else %}
-                                    N/A
+                                    Pet was not picked-up
                                 {% endif %}
                             </td>
                             <td>

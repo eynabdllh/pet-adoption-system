@@ -246,6 +246,18 @@ def admin_pickup(request):
                 except Exception as e:
                     messages.error(request, f"An error occurred while marking as completed: {e}")
 
+            if pet and action == 'mark_failed': 
+                try:
+                    pet.is_approved = False
+                    pet.is_upcoming = False
+                    pet.is_adopted = False
+                    pet.is_cancelled = True
+                    pet.save()
+
+                    messages.success(request, f"Pet {pet.name} was not picked up on time.")
+                except Exception as e:
+                    messages.error(request, f"An error occurred while marking as failed: {e}")
+
             if pet and action == 'add_to_list':  
                 try:
                     pet.adoption_set.all().delete()  
