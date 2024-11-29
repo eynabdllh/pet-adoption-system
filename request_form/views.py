@@ -96,13 +96,19 @@ def adopt_form(request, pet_id):
 @admin_required
 def adoption_management(request):
     status = request.GET.get('status', 'requested')
-    sort_by_id = request.GET.get('sort_by_id', '')
     pet_type = request.GET.get('pet_type', '')
     query = request.GET.get('q', '')
+    sort_by_name = request.GET.get('sort_by_name', '')
+    sort_by_id = request.GET.get('sort_by_id', '') 
 
     reset_filter = request.GET.get('reset_filter', False)
+    reset_sort = request.GET.get('reset_sort', False)
+
     if reset_filter:
         pet_type = ''
+    if reset_sort:
+        sort_by_id = ''
+        sort_by_name = ''
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -131,21 +137,30 @@ def adoption_management(request):
     else:
         pets = Pet.objects.filter(is_requested=True).prefetch_related('schedule_set')
 
+    # filter 
     if pet_type:
         pets = pets.filter(pet_type=pet_type)
 
     if query:
         pets = pets.filter(name__icontains=query)
 
+    #sort
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
     elif sort_by_id == 'desc':
         pets = pets.order_by('-id')
 
+    if sort_by_name:
+        if sort_by_name == 'asc':
+            pets = pets.order_by('name')
+        elif sort_by_name == 'desc':
+            pets = pets.order_by('-name')
+
     return render(request, 'adoption_management.html', {
         'pets': pets,
         'status': status,
         'sort_by_id': sort_by_id,
+        'sort_by_name': sort_by_name,
         'pet_type': pet_type,
         'query': query
     })
@@ -249,13 +264,18 @@ def admin_pickup(request):
 
     # Filters and sorting logic
     status = request.GET.get('status', 'upcoming')
-    sort_by_id = request.GET.get('sort_by_id', '') 
     pet_type = request.GET.get('pet_type', '')
     query = request.GET.get('q', '')
+    sort_by_name = request.GET.get('sort_by_name', '')
+    sort_by_id = request.GET.get('sort_by_id', '') 
 
     reset_filter = request.GET.get('reset_filter', False)
+    reset_sort = request.GET.get('reset_sort', False)
     if reset_filter:
         pet_type = ''
+    if reset_sort:
+        sort_by_id = ''
+        sort_by_name = ''
 
     # Fetch pets based on status
     if status == 'completed':
@@ -278,6 +298,12 @@ def admin_pickup(request):
     elif sort_by_id == 'desc':
         pets = pets.order_by('-id')
 
+    if sort_by_name:
+        if sort_by_name == 'asc':
+            pets = pets.order_by('name')
+        elif sort_by_name == 'desc':
+            pets = pets.order_by('-name')
+
     # Add cancellation reason if status is 'cancelled'
     if status == 'cancelled':
         for pet in pets:
@@ -289,6 +315,7 @@ def admin_pickup(request):
         'pets': pets,
         'status': status,
         'sort_by_id': sort_by_id,  
+        'sort_by_name': sort_by_name, 
         'pet_type': pet_type,
         'query': query
     })

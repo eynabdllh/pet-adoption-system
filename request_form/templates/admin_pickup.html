@@ -94,17 +94,32 @@
         cursor: pointer;
     }
 
-    .filter-sort-dropdown {
+    .filter-dropdown {
         position: relative;
     }
 
-    .filter-sort-dropdown .dropdown-menu {
+    .sort-dropdown {
+        position: relative;
+    }
+
+    .filter-dropdown .dropdown-menu {
         position: absolute;
         top: 100%;
         left: 0;
         width: 350px;
         z-index: 1050;
-        height: 250px;
+        height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .sort-dropdown .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 350px;
+        z-index: 1050;
+        height: 380px;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -229,7 +244,7 @@
     </form>
 
        <!-- Filter Dropdown -->
-<div class="filter-sort-dropdown mr-1 radio-group">
+<div class="filter-dropdown mr-1 radio-group">
     <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
         <i class="fas fa-filter"></i> Filter
     </a>
@@ -244,6 +259,7 @@
         <form method="GET" action="{% url 'admin_pickup' %}">
             <!-- Hidden inputs to preserve existing filter values -->
             <input type="hidden" name="sort_by_id" value="{{ sort_by_id }}">
+            <input type="hidden" name="sort_by_name" value="{{ sort_by_name }}">
             <input type="hidden" name="status" value="{{ status }}">
 
             <!-- Species Filter -->
@@ -273,19 +289,20 @@
 
             <div class="divider"></div>                   
             <button type="submit" class="apply-btn">Apply</button>
-            <a href="?reset_filter=true&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}" class="reset-button">Reset</a>
+            <a href="?reset_filter=true&sort_by_id={{ sort_by_id }}&sort_by_name={{ sort_by_name }}&sort_by_date={{ sort_by_date }}" class="reset-button">Reset</a>
         </form>
     </div>
 </div>
 
 
     <!-- Sort Filter -->
-    <div class="filter-sort-dropdown mr-1 radio-group">
+    <div class="sort-dropdown mr-1 radio-group">
         <a class="btn btn-light dropdown-toggle" id="dropdownMenuClickableInside" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
             <i class="fas fa-sort"></i> Sort
         </a>
         <div class="dropdown-menu p-3">
             <form method="GET" action="{% url 'admin_pickup' %}">
+                <input type="hidden" name="pet_type" value="{{ pet_type }}">
                 <input type="hidden" name="status" value="{{ status }}">
                 <input type="hidden" name="q" value="{{ query }}">
                 <!-- Sort Header -->
@@ -307,9 +324,23 @@
                     </div>
                 </div>
                 <div class="divider"></div>
+
+                <!-- Name Sort -->
+                <div class="form-group">
+                    <label class="form-group-label" for="sort_by_name">Sort by Pet Name</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="sort_by_name_asc" name="sort_by_name" value="asc" {% if sort_by_name == 'asc' %}checked{% endif %}>
+                        <label class="form-check-label" for="sort_by_name_asc">A-Z</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="sort_by_name_desc" name="sort_by_name" value="desc" {% if sort_by_name == 'desc' %}checked{% endif %}>
+                        <label class="form-check-label" for="sort_by_name_desc">Z-A</label>
+                    </div>
+                </div>
+                <div class="divider"></div>
                 <!-- Apply and Reset Buttons -->
                 <button type="submit" class="apply-btn">Apply</button>
-                <a href="{% url 'admin_pickup' %}?status={{ status }}&reset_sort=true&q={{ query }}" class="reset-button">Reset</a>
+                <a href="?reset_sort=true&q={{ query }}&pet_type={{ pet_type }}" class="reset-button">Reset</a>
             </form>
         </div>
     </div>    
