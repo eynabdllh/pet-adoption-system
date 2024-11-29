@@ -355,17 +355,17 @@
     <!-- Tabs -->
 <ul class="nav nav-tabs">
     <li class="nav-item">
-        <a class="nav-link {% if status == 'upcoming' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=upcoming&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+        <a class="nav-link {% if status == 'upcoming' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=upcoming&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}&sort_by_name={{ sort_by_name }}">
             Upcoming
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {% if status == 'completed' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=completed&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+        <a class="nav-link {% if status == 'completed' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=completed&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}&sort_by_name={{ sort_by_name }}">
             Completed
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=cancelled&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}">
+        <a class="nav-link {% if status == 'cancelled' %}active{% endif %}" href="{% url 'admin_pickup' %}?status=cancelled&q={{ query }}&sort_by_id={{ sort_by_id }}&pet_type={{ pet_type }}&sort_by_name={{ sort_by_name }}">
             Cancelled
         </a>
     </li>
