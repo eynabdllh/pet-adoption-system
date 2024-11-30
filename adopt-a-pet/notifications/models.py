@@ -42,3 +42,16 @@ class Notification(models.Model):
     
     def get_number_of_notifs_filter(user,has_read):
         return Notification.objects.filter(user = user, isRead = has_read).count
+    
+    def add_notif_to_user(user, title, message):
+        try:
+            Notification.objects.create(user = user, title = title, message = message)
+            return True
+        except:
+            return False
+
+    def add_notif_to_users_filter(title, message, isAdmin):
+        users = User.objects.filter(isAdmin=isAdmin)
+        
+        for user in users:
+            Notification.add_notif_to_user(user = user, title = title, message = message)

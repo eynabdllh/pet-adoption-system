@@ -35,6 +35,9 @@ def adopter_profile_view(request):
                 request.session['user_last_name'] = user_form.cleaned_data['last_name']
                 request.session['profile_image_url'] = profile.profile_image.url if profile.profile_image else None
 
+                if 'saved_user_password' in request.session:
+                    request.session['saved_user_password'] = new_password
+
                 messages.success(request, 'Your profile has been updated!')
 
                 return redirect('adopter_profile_view')
@@ -83,6 +86,9 @@ def admin_profile_view(request):
                 request.session['user_first_name'] = user_form.cleaned_data['first_name']
                 request.session['user_last_name'] = user_form.cleaned_data['last_name']
                 request.session['profile_image_url'] = profile.profile_image.url if profile.profile_image else None
+
+                if 'saved_user_password' in request.session:
+                    request.session['saved_user_password'] = new_password
 
                 messages.success(request, 'Your profile has been updated!')
 

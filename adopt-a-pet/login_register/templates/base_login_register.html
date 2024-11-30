@@ -2,9 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    {% load static %}
     <title>{% block page_title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'login.css' %}">
     <link rel="icon" type="image/png" href="{% static 'favicon/Logo_2.png' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -280,7 +278,7 @@
         {% block content %}
         {% endblock %}
     </div>
-
+    
      <!-- Toast Container -->
      <div class="toast-container p-3">
         {% if messages %}
