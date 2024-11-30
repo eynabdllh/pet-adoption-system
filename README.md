@@ -1,7 +1,7 @@
 <a id="readme-top"></a>
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="static/images/logo.png" alt="Logo" width="350" height="80">
+    <img src="adopt-a-pet/static/images/logo.png" alt="Logo" width="350" height="80">
   </a>
   <p align="center"><i>This project, adopt-a-pet, is a Django-based web application that simplifies the process of adopting pets from shelters. It is developed as     part of our Information Management 2 capstone.</i></p>
   <a href="https://github.com/eynabdllh/pet-adoption-system/stargazers"><img src="https://img.shields.io/github/stars/eynabdllh/pet-adoption-system" alt="Stars Badge"/></a>
@@ -33,7 +33,7 @@
 
 ## Introduction
 
-[![Admin-Dashboard](https://github.com/eynabdllh/pet-adoption-system/raw/main/static/images/screenshot.png)](https://github.com/eynabdllh/pet-adoption-system)
+[![Landing-Page](https://github.com/eynabdllh/pet-adoption-system/raw/main/adopt-a-pet/static/images/adopt-a-pet.png)](https://github.com/eynabdllh/pet-adoption-system)
 
 adopt-a-pet is a web application designed to make the pet adoption process easier for both animal shelters and adopters. It helps users browse pets, submit adoption requests, schedule pick-ups, and receive notifications, while shelter admins can manage pet listings and oversee the adoption process. This project aims to develop a streamlined and efficient pet adoption system to improve the adoption experience for both shelters and potential adopters.
 
@@ -88,7 +88,12 @@ This is an example of how to list things you need to use the software and how to
 Install ```python-3.12.5```. Follow the steps from the below reference document based on your Operating System.
 Reference: [https://docs.python-guide.org/starting/installation/](https://docs.python-guide.org/starting/installation/) 
 
-#### 2. Setup virtual environment
+#### 2. Clone the repo
+   ```sh
+   git clone https://github.com/eynabdllh/pet-adoption-system.git
+   ```
+
+#### 3. Setup virtual environment
 ```bash
 # Create a virtual environment
 python -m venv venv
@@ -100,11 +105,12 @@ venv/scripts/Activate
 pip install openpyxl
 ```
 
-#### 3. Installation
+#### 4. Installation
 
-1. Clone the repo
+1. Install dependencies
    ```sh
-   git clone https://github.com/eynabdllh/pet-adoption-system.git
+   pip install openpyxl
+   pip install pillow
    ```
 2. Install Requirements
    ```sh
