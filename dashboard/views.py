@@ -33,7 +33,15 @@ def adopter_dashboard(request):
     selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
 
     calendar_weeks = get_calendar_data(selected_date)
-    pickups = Schedule.objects.filter(day=selected_date.day, month=selected_date.strftime('%B'), year=selected_date.year, completed=False, pet__is_adopted=True, adopter=user)
+    pickups = Schedule.objects.filter(
+        day=selected_date.day, 
+        month=selected_date.strftime('%B'), 
+        year=selected_date.year,  
+        pet__is_upcoming=True,  
+        pet__is_approved = True, 
+        pet__is_adopted=False, 
+        adopter=user
+    )
 
     context = {
         'adopted_pets_count': adopted_pets_count,
@@ -67,9 +75,10 @@ def admin_dashboard(request):
         day=selected_date.day,
         month=selected_date.strftime('%B'),
         year=selected_date.year,
-        completed=False,
-        pet__is_adopted=True  
-    ).select_related('pet', 'adopter') 
+        pet__is_upcoming=True,  
+        pet__is_approved = True,
+        pet__is_adopted=False 
+    ).select_related('pet', 'adopter')
 
     context = {
         'adopted_pets_count': adopted_count,
@@ -97,7 +106,7 @@ def get_calendar_data(date):
     while current_date <= end_of_month + timedelta(days=6 - end_of_month.weekday()):
         week = []
         for _ in range(7):
-            has_pickup = Schedule.objects.filter(day=current_date.day, month=current_date.strftime('%B'), year=current_date.year, completed=False).exists()
+            has_pickup = Schedule.objects.filter(day=current_date.day, month=current_date.strftime('%B'), year=current_date.year, pet__is_upcoming=True, pet__is_approved = True).exists()
             week.append({
                 'date': current_date,
                 'is_today': current_date == timezone.now().date(),
@@ -168,4 +177,4 @@ def review_form_detail(request, pet_id):
         except Exception as e:
             return JsonResponse({'success': False, 'message': f"An error occurred: {str(e)}"})
 
-    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
+    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile}) 

@@ -96,13 +96,19 @@ def adopt_form(request, pet_id):
 @admin_required
 def adoption_management(request):
     status = request.GET.get('status', 'requested')
-    sort_by_id = request.GET.get('sort_by_id', '')
     pet_type = request.GET.get('pet_type', '')
     query = request.GET.get('q', '')
+    sort_by_name = request.GET.get('sort_by_name', '')
+    sort_by_id = request.GET.get('sort_by_id', '') 
 
     reset_filter = request.GET.get('reset_filter', False)
+    reset_sort = request.GET.get('reset_sort', False)
+
     if reset_filter:
         pet_type = ''
+    if reset_sort:
+        sort_by_id = ''
+        sort_by_name = ''
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -131,21 +137,30 @@ def adoption_management(request):
     else:
         pets = Pet.objects.filter(is_requested=True).prefetch_related('schedule_set')
 
+    # filter 
     if pet_type:
         pets = pets.filter(pet_type=pet_type)
 
     if query:
         pets = pets.filter(name__icontains=query)
 
+    #sort
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
     elif sort_by_id == 'desc':
         pets = pets.order_by('-id')
 
+    if sort_by_name:
+        if sort_by_name == 'asc':
+            pets = pets.order_by('name')
+        elif sort_by_name == 'desc':
+            pets = pets.order_by('-name')
+
     return render(request, 'adoption_management.html', {
         'pets': pets,
         'status': status,
         'sort_by_id': sort_by_id,
+        'sort_by_name': sort_by_name,
         'pet_type': pet_type,
         'query': query
     })
@@ -157,17 +172,12 @@ def review_form(request, pet_id):
     profile = adoption.adopter
 
     if request.method == 'POST':
+        status = request.POST.get('status')
+        reason = request.POST.get('reason')
+
+        pet = adoption.pet
+
         try:
-            data = json.loads(request.body)
-            status = data.get('status')
-            reason = data.get('reason')
-
-            if status not in ['approved', 'rejected']:
-                messages.error(request, 'Invalid status provided.')
-                return JsonResponse({'success': False, 'message': 'Invalid status provided.'})
-
-            pet = adoption.pet
-
             if status == 'approved':
                 pet.is_requested = False
                 pet.is_approved = True
@@ -178,29 +188,22 @@ def review_form(request, pet_id):
                 adoption.save()
 
                 messages.success(request, f"Pet {pet.name} has been approved for adoption.")
-                return JsonResponse({'success': True, 'message': f"Pet {pet.name} has been approved for adoption."})
-
             elif status == 'rejected':
                 if not reason:
                     messages.error(request, "A reason is required for rejection.")
-                    return JsonResponse({'success': False, 'message': "A reason is required for rejection."})
+                else:
+                    pet.is_requested = False
+                    pet.is_rejected = True
+                    pet.is_adopted = False
+                    pet.save()
 
-                pet.is_requested = False
-                pet.is_rejected = True
-                pet.is_adopted = False
-                pet.save()
+                    adoption.status = 'rejected'
+                    adoption.reason_choices = reason
+                    adoption.save()
 
-                adoption.status = 'rejected'
-                adoption.reason_choices = reason
-                adoption.save()
-
-                messages.success(request, "The pet adoption request has been rejected.")
-                return JsonResponse({'success': True, 'message': "The pet adoption request has been rejected."})
-
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
+                    messages.success(request, "The pet adoption request has been rejected.")
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f"An error occurred: {str(e)}"})
+            messages.error(request, f"An error occurred: {e}")
 
     return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
 
@@ -212,17 +215,16 @@ def admin_pickup(request):
         pet_id = request.POST.get('pet_id')
         action = request.POST.get('action')
 
-        # Check if pet_id is provided
         if not pet_id:
             messages.error(request, "Pet ID is required.")
         else:
             try:
-                pet = Pet.objects.get(id=pet_id)  # Fetch the pet once for any action
+                pet = Pet.objects.get(id=pet_id) 
             except Pet.DoesNotExist:
                 messages.error(request, "Pet not found.")
-                pet = None  # Explicitly set pet to None to avoid further issues
+                pet = None  
 
-            if pet and action == 'mark_completed':  # Mark as completed
+            if pet and action == 'mark_completed': 
                 try:
                     pet.is_approved = False
                     pet.is_upcoming = False
@@ -232,10 +234,22 @@ def admin_pickup(request):
                 except Exception as e:
                     messages.error(request, f"An error occurred while marking as completed: {e}")
 
-            if pet and action == 'add_to_list':  # Add to adoption list
+            if pet and action == 'mark_failed': 
                 try:
-                    pet.adoption_set.all().delete()  # Clear existing adoptions
-                    Schedule.objects.filter(pet=pet).delete()  # Clear schedules
+                    pet.is_approved = False
+                    pet.is_upcoming = False
+                    pet.is_adopted = False
+                    pet.is_cancelled = True
+                    pet.save()
+
+                    messages.success(request, f"Pet {pet.name} was not picked up on time.")
+                except Exception as e:
+                    messages.error(request, f"An error occurred while marking as failed: {e}")
+
+            if pet and action == 'add_to_list':  
+                try:
+                    pet.adoption_set.all().delete()  
+                    Schedule.objects.filter(pet=pet).delete()  
                     pet.is_rejected = False
                     pet.is_adopted = False
                     pet.is_requested = False
@@ -247,17 +261,20 @@ def admin_pickup(request):
                 except Exception as e:
                     messages.error(request, f"An error occurred while adding to the list: {e}")
 
-    # Filters and sorting logic
     status = request.GET.get('status', 'upcoming')
-    sort_by_id = request.GET.get('sort_by_id', '') 
     pet_type = request.GET.get('pet_type', '')
     query = request.GET.get('q', '')
+    sort_by_name = request.GET.get('sort_by_name', '')
+    sort_by_id = request.GET.get('sort_by_id', '') 
 
     reset_filter = request.GET.get('reset_filter', False)
+    reset_sort = request.GET.get('reset_sort', False)
     if reset_filter:
         pet_type = ''
+    if reset_sort:
+        sort_by_id = ''
+        sort_by_name = ''
 
-    # Fetch pets based on status
     if status == 'completed':
         pets = Pet.objects.filter(is_adopted=True, is_upcoming=False, is_approved=False).prefetch_related('schedule_set')
     elif status == 'cancelled':
@@ -265,30 +282,38 @@ def admin_pickup(request):
     else:
         pets = Pet.objects.filter(is_upcoming=True, is_approved=True).prefetch_related('schedule_set')
 
-    # Additional filters
     if pet_type:
         pets = pets.filter(pet_type=pet_type)
 
     if query:
         pets = pets.filter(name__icontains=query)
 
-    # Sorting logic
     if sort_by_id == 'asc':
         pets = pets.order_by('id')
     elif sort_by_id == 'desc':
         pets = pets.order_by('-id')
 
-    # Add cancellation reason if status is 'cancelled'
+    if sort_by_name:
+        if sort_by_name == 'asc':
+            pets = pets.order_by('name')
+        elif sort_by_name == 'desc':
+            pets = pets.order_by('-name')
+
     if status == 'cancelled':
         for pet in pets:
             schedules = pet.schedule_set.filter(cancelled=True)
-            for schedule in schedules:
-                pet.cancellation_reason = schedule.get_reason_choices_display()
+            if schedules.exists():
+                # If there is a reason in schedules, fetch it
+                pet.cancellation_reason = schedules.first().get_reason_choices_display()
+            else:
+                # Default to "Pet was not Picked-Up" if no reason is found
+                pet.cancellation_reason = "Pet was not Picked-Up"
 
     return render(request, 'admin_pickup.html', {
         'pets': pets,
         'status': status,
         'sort_by_id': sort_by_id,  
+        'sort_by_name': sort_by_name, 
         'pet_type': pet_type,
         'query': query
     })
@@ -395,7 +420,7 @@ def export_pickup_to_excel(request):
         ws.append(['ID', 'Pet Name', 'Species', 'Adopter', 'Adoption Date', 'Status'])
 
     for pet in pets:
-        adoption_data = pet.adoption_set.first()  
+        adoption_data = pet.adoption_set.first() 
         if adoption_data:
             adopter_name = f"{adoption_data.first_name} {adoption_data.last_name}"
             adoption_date = adoption_data.date
@@ -412,6 +437,13 @@ def export_pickup_to_excel(request):
         else:
             status = 'Unknown'
 
+        cancellation_reason = 'Pet was not Picked-Up'
+        if pet.is_cancelled:
+            schedules = pet.schedule_set.filter(cancelled=True)
+            if schedules.exists():
+                cancellation_reason = schedules.first().get_reason_choices_display()
+
+        # Append the appropriate row to the sheet
         if status_filter == 'cancelled':
             ws.append([
                 pet.id,
@@ -420,7 +452,7 @@ def export_pickup_to_excel(request):
                 adopter_name,
                 adoption_date,
                 status,
-                pet.cancellation_reason or 'N/A'
+                cancellation_reason
             ])
         else:
             ws.append([
@@ -432,6 +464,10 @@ def export_pickup_to_excel(request):
                 status
             ])
 
+    for cell in ws[1]:
+        cell.font = openpyxl.styles.Font(bold=True)
+        cell.fill = openpyxl.styles.PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
+        
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )

@@ -247,7 +247,7 @@ Dashboard
                 {{ request.pet.name }}
               </td>
               <td>
-                <a href="{% url 'review_form_detail' pet_id=request.pet.id %}" class="btn btn-view">View</a>
+                <a href="{% url 'review_form_detail' pet_id=request.pet.id %}?source=admin_dashboard" class="btn btn-view">View</a>
               </td>
             </tr>
           {% empty %}

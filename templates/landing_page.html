@@ -1,0 +1,540 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Adopt A Pet</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <style>
+        @font-face {
+            font-family: 'ChunkFive';
+            src: url('{% static "fonts/ChunkFive-Regular.otf" %}') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        .navbar {
+            background-color: transparent;
+            padding: 20px 0;
+            position: absolute;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            font-size: 2rem;
+            color: #FF6F61 !important;
+            font-weight: bold;
+        }
+
+        .nav-link {
+            font-size: 1.1rem;
+            margin: 0 15px;
+            color: #4a4a4a !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #FF6F61 !important;
+        }
+
+        .hero-section {
+            background-image: url('{% static "images/bg-lpage.png" %}');
+            background-color: #FFF5F3;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding-left: 10%;
+        }
+
+        .hero-section h1 {
+            font-family: 'ChunkFive', serif;
+            font-size: 5.5rem;
+            margin-bottom: 20px;
+            text-shadow: none;
+            line-height: 1.2;
+            letter-spacing: 0.04em;
+        }
+
+        .hero-section h1 .text-1 {
+            color: #FF6F61;
+            display: block;
+        }
+
+        .hero-section h1 .text-2 {
+            color: #3D2727;
+            display: block;
+        }
+
+        .hero-section p {
+            font-size: 1.5rem;
+            color: #4a4a4a;
+            margin-bottom: 2rem;
+            text-shadow: none;
+        }
+
+        .hero-pets {
+            position: absolute;
+            right: 5%;
+            bottom: 10%;
+            max-width: 700px;
+        }
+
+        .btn-adopt-now {
+            background: linear-gradient(to right, #D9B700, #FF6F61);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-adopt-now:hover {
+            transform: translateY(-3px);
+            color: white;
+        }
+
+        
+        .contact-us {
+            position: relative;
+            padding: 80px 0;
+            color: #3D2727;
+            overflow: hidden;
+            background: url('{% static "images/bg-paw2.png" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #FF6F61;
+        }
+
+        .contact-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .contact-us .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-us .section-title {
+            font-family: 'ChunkFive', serif;
+            font-size: 3rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .contact-info {
+            padding: 30px;
+        }
+
+        .contact-text .lead {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            color: #f9f5f5
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.1rem;
+        }
+
+        .contact-item i {
+            width: 35px;
+            height: 35px;
+            background: #d6b3b3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-section {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .social-section h4 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-link {
+            width: 60px;
+            height: 60px;
+            background: #d6b3b3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: #D9B700;
+            transform: translateY(-5px);
+            color: white;
+        }
+
+        .social-link i {
+            font-size: 1.5rem;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1.1rem;
+            margin: 0 15px;
+            color: #4a4a4a !important;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link:focus {
+            color: #FF6F61 !important;
+        }
+
+        .auth-nav .nav-link:hover,
+        .auth-nav .nav-link:focus {
+            color: inherit !important;
+        }
+
+        .nav-highlight {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #FF6F61;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-highlight.active {
+            transform: scaleX(1);
+        }
+
+        .auth-nav .nav-item {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-sign-up, .btn-sign-in {
+            padding: 8px 25px;
+            color: #4a4a4a !important;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .nav-highlight {
+            position: absolute;
+            height: 40px;
+            background-color: #D9B700;
+            border-radius: 25px;
+            z-index: 0;
+            transition: transform 0.3s ease;
+            width: 100px;
+            left: 0;
+        }
+
+        /* Default state - yellow background on Sign-Up */
+        .btn-sign-up.active ~ .nav-highlight {
+            transform: translateX(105%);
+        }
+
+        /* Hover states */
+        .btn-sign-up:hover ~ .nav-highlight {
+            transform: translateX(100%);
+        }
+
+        .btn-sign-in:hover ~ .nav-highlight {
+            transform: translateX(0);
+        }   
+
+        /* Text color change on hover */
+        .btn-sign-up:hover,
+        .btn-sign-in:hover,
+        .btn-sign-up.active {
+            color: white !important;
+        }
+
+        .btn-sign-in:hover ~ .btn-sign-up {
+            color: #4a4a4a !important;
+        }
+
+        .who-we-are {
+            position: relative;
+            padding: 60px 0;
+            overflow: hidden;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #4a4a4a;
+            background-image: url('{% static "images/bg-heart.png" %}');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .who-we-are h2 {
+            font-family: 'ChunkFive', serif;
+            font-size: 3rem;
+            color: #3D2727;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .who-we-are .subtitle {
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+            color: #4a4a4a;
+        }
+
+        .vision-mission-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 30px;
+        }
+
+        .vision-mission-box {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .vision-mission-box:hover {
+            transform: translateY(-30px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            background-color: #FF6F61;
+            color: #FFF;
+        }
+
+        .vision-mission-box p {
+            color: #4a4a4a;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .vision-mission-box:hover p {
+            color: #fff;
+        }
+
+        .vision-mission-box:hover h3 {
+            color: #FFF;
+        }
+
+        .vision-mission-box h3 {
+            color: #FF6F61;
+        }
+
+        @media (max-width: 768px) {
+            .who-we-are {
+                padding: 40px 0;
+            }
+
+            .vision-mission-box {
+                min-width: 100%;
+            }
+
+            .who-we-are h2 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Updated Navigation Bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="{% static 'images/logo.png' %}" alt="adopt-a-pet logo" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#who-we-are">Who We Are</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact-us">Contact Us</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav auth-nav">
+                    <li class="nav-item d-flex">
+                        <a class="nav-link btn-sign-in" href="{% url 'login' %}">Sign-In</a>
+                        <a class="nav-link btn-sign-up active" href="{% url 'register' %}">Sign-Up</a>
+                        <div class="nav-highlight"></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="hero-content">
+            <h1><span class="text-1">Happiness</span><span class="text-2">Starts Here</span></h1>
+            <p>Give a loving home to our adorable pets <br>waiting for adoption</p>
+            <a href="{% url 'login' %}" class="btn-adopt-now">Meet Our Pets</a>
+        </div>
+        <img src="{% static 'images/pets.png' %}" alt="Pets Group" class="hero-pets">
+    </section>
+
+    <!-- Who We Are -->
+    <section class="who-we-are" id="who-we-are">
+        <div class="content-wrapper">
+            <h2>Who We Are</h2>
+            <p class="subtitle">We are a community-driven platform dedicated to helping animals find loving homes. Join us in our mission to give pets a chance at a better life.</p>
+            <div class="vision-mission-container">
+                <div class="vision-mission-box">
+                    <h3>Our Vision</h3>
+                    <p>We envision a world where every pet has a loving home. We believe in giving every pet a second chance at happiness, while also providing families with the opportunity to find their perfect companion.</p>
+                </div>
+                <div class="vision-mission-box">
+                    <h3>Our Mission</h3>
+                    <p>At Adopt-a-pet, our mission is to connect loving families with pets in need of a forever home. We are committed to ensuring that every animal is given the best care and attention before they find their new home.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-us" id="contact-us">
+        <div class="container">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6 contact-info">
+                    <div class="contact-text">
+                        <p class="lead">If you have any questions or need help finding the right pet, please don't hesitate to reach out to us. We're here to assist you!</p>
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span><strong>Email:</strong> support@petadopt.com</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <span><strong>Phone:</strong> (123) 456-7890</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span><strong>Address:</strong> 123 Pet Street, Animal City</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 social-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; 2024 Adopt-a-pet. All rights reserved.</p>
+            <p>Made with ❤️ by Adopt-a-pet Team</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
