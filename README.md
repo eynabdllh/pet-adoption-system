@@ -101,8 +101,6 @@ python -m venv venv
 # Activate the virtual environment
 venv/scripts/Activate
 
-# Install dependencies
-pip install openpyxl
 ```
 
 #### 4. Installation
