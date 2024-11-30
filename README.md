@@ -78,12 +78,11 @@ adopt-a-pet is a web application designed to make the pet adoption process easie
 
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Follow these steps to set up the project locally and start using it efficiently.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+Below are the required tools and steps to install them for running the software.
 #### 1. Install Python
 Install ```python-3.12.5```. Follow the steps from the below reference document based on your Operating System.
 Reference: [https://docs.python-guide.org/starting/installation/](https://docs.python-guide.org/starting/installation/) 
@@ -93,17 +92,22 @@ Reference: [https://docs.python-guide.org/starting/installation/](https://docs.p
    git clone https://github.com/eynabdllh/pet-adoption-system.git
    ```
 
-#### 3. Setup virtual environment
+#### 3. Navigate to the project directory
+ ```sh
+   cd adopt-a-pet
+   ```
+
+#### 4. Setup virtual environment
 ```bash
 # Create a virtual environment
 python -m venv venv
 
 # Activate the virtual environment
-venv/scripts/Activate
+venv/scripts/Activate #For macOS/Linux 'source venv/bin/activate'
 
 ```
 
-#### 4. Installation
+#### 5. Installation
 
 1. Install dependencies
    ```sh
