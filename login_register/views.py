@@ -24,7 +24,13 @@ def Login(request):
                 request.session['user_type'] = 'Admin' if user.isAdmin else 'Adopter'
                 request.session['user_first_name'] = user.first_name
                 request.session['user_last_name'] = user.last_name
-                request.session['remember_me'] =  True if remember_me else False
+                
+                if remember_me:
+                    request.session['remember_me'] =  True
+                    request.session['saved_user_email'] = email
+                    request.session['saved_user_password'] = password   #this one is a potential vulnerability issue as user password is hash stored but this is the only way to store it
+                else:
+                    request.session['remember_me'] = False
 
                 profile = Profile.objects.filter(user=user).first()
                 request.session['profile_image_url'] = profile.profile_image.url if profile and profile.profile_image else None
@@ -39,10 +45,7 @@ def Login(request):
     else:
         #messages.default_app_config
         if request.session.get('remember_me',None) == True:
-            id = request.session['user_id']
-            user = User.objects.get(id=id)
-            form = LoginForm(initial={'remember_me': True, 'email': user.email, 'password': "tf man"})
-
+            form = LoginForm(initial={'remember_me': True, 'email': request.session.get('saved_user_email',None), 'password': request.session.get('saved_user_password',None)})
         else:
             form = LoginForm()
 
@@ -73,11 +76,13 @@ def Register(request):
 
 
 def logout(request):
-    remember_me = request.session['remember_me']
-
-    if 'user_id' in request.session and not remember_me:
+    if 'user_id' in request.session:
         del request.session['user_id']
     if 'user_type' in request.session:
         del request.session['user_type']
+
+    if request.session.get('remember_me',None) == False and 'saved_user_email' in request.session and 'saved_user_password' in request.session:
+        del request.session['saved_user_email']
+        del request.session['saved_user_password']
 
     return redirect('login')

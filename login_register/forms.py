@@ -4,7 +4,7 @@ from .models import User
 
 class LoginForm(forms.Form):
     email = forms.EmailField(label="Email Address", widget=forms.TextInput(attrs={'class': 'form-text'}))
-    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'form-text'}))
+    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={'class': 'form-text'}, render_value=True))
     remember_me = forms.BooleanField(label="Remember Me", initial=False ,required=False, label_suffix="", widget=forms.CheckboxInput(attrs={'class': 'form-checkbox'}))
 
 class RegisterForm(forms.ModelForm):
