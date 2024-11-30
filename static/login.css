@@ -94,15 +94,14 @@ form label {
 }
 
 form .form-text{
-    margin: 0 auto;
-    border: 2px #9F9F9F solid;
-    border-radius: 5px;
-    font-size: 1em;
-    margin-top: 5px;
     padding: 10px;
-    height: 20px;
+    font-size: 1em;
+    border: 2px #9F9F9F solid;
+    border-radius: 7px;
+    box-shadow: none;
+    color: #191818; 
+    height: 52px;
     width: 100%;
-    max-width: 95%;
 }
 
 form .remember_me{
@@ -162,6 +161,14 @@ form .submit:hover {
     z-index: 1050;
 }
 
+/* Toast styles */
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
 .toast {
     padding: 5px 15px;
     min-width: 300px;
@@ -192,24 +199,36 @@ form .submit:hover {
     font-size: 1.5rem;
 }
 
-.bg-success {
+.toast.bg-success {
     background-color: #FF6F61 !important;
+    color: white;
+    font-size: 1rem;
+    padding: 5px 15px;
 }
 
-.bg-danger {
+.toast.bg-danger {
     background-color: #DC3545 !important;
+    color: white;
+    font-size: 1rem;
+    padding: 5px 15px;
 }
 
-.bg-info {
+.toast.bg-info {
     background-color: #17A2B8 !important;
+    color: white;
+    font-size: 1rem;
+    padding: 5px 15px;
 }
 
-.bg-warning {
+.toast.bg-warning {
     background-color: #FFC107 !important;
+    color: white;
+    font-size: 1rem;
+    padding: 5px 15px;
 }
 
 .toast-success .toast-icon {
-    content: "\f00c";
+    content: "\f00c"; 
 }
 
 .toast-error .toast-icon {
@@ -217,7 +236,7 @@ form .submit:hover {
 }
 
 .toast-warning .toast-icon {
-    content: "\f071";
+    content: "\f071"; 
 }
 
 .toast-info .toast-icon {
