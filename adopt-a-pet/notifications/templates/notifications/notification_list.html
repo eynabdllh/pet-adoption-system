@@ -1,0 +1,207 @@
+{% extends base_template %}
+{% load static %}
+
+{% block page_title %}
+Notifications
+{% endblock %}
+
+{% block content %}
+<style>
+    .notification-container {
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        width: calc(100% - 360px);
+        height: calc(100vh - 130px);
+        margin: 0 auto;
+        position: fixed;
+    }
+
+    .notification-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        position: sticky;
+        top: 0;
+        background-color: white;
+        padding: 10px 0;
+        z-index: 1;
+    }
+
+    .notifications-list {
+        height: calc(100% - 70px);
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    .notifications-list::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .notifications-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .notifications-list::-webkit-scrollbar-thumb {
+        background: #FF6F61;
+        border-radius: 4px;
+    }
+
+    .btn-mark-all {
+        background-color: #f1f2f3;
+        color: #495057;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-delete-read {
+        background-color: #FF6F61;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .notification-item {
+        background-color: #f8f9fa;
+        position: relative;
+    }
+
+    .notification-item.unread {
+        background-color: #fff5f5;
+        border-left: 4px solid #FF6F61;
+    }
+
+    .notification-title {
+        color: #FF6F61;
+        font-weight: 600;
+        margin-bottom: 8px;
+        padding-right: 140px;
+    }
+
+    .notification-message {
+        white-space: pre-line;
+        color: #666;
+        margin-bottom: 8px;
+        word-wrap: break-word;
+        padding-right: 140px;
+    }
+
+    .notification-time {
+        color: #999;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .notification-actions-group {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-mark-read {
+        background-color: #E6E5E2;
+        color: #495057;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+
+    .btn-remove {
+        background-color: #FF6F61;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+
+    .no-notifications {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .btn-mark-all:hover, .btn-mark-read:hover {
+        background-color: #d4d4d4;
+    }
+
+    .btn-delete-read:hover, .btn-remove:hover {
+        background-color: #ff5a4b;
+    }
+</style>
+
+<div class="notification-container">
+    <div class="notification-actions">
+        <form method="post" class="d-flex gap-2">
+            {% csrf_token %}
+            <button type="submit" name="mark_all_as_read" class="btn-mark-all">
+                <i class="fas fa-check-double"></i> Mark All as Read
+            </button>
+            <button type="submit" name="remove_all_read" class="btn-delete-read">
+                <i class="fas fa-trash"></i> Delete Read Notifications
+            </button>
+        </form>
+    </div>
+
+    <div class="notifications-list">
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification-item {% if not notification.isRead %}unread{% endif %}">
+                    <h4 class="notification-title">{{ notification.title }}</h4>
+                    <div class="notification-message">
+                        {{ notification.message|linebreaksbr }}
+                    </div>
+                    <div class="notification-time">
+                        <i class="far fa-clock"></i> {{ notification.created_at|timesince }} ago
+                    </div>
+                    {% if notification.pet %}
+                        <p class="notification-message">
+                            <i class="fas fa-paw"></i> {{ notification.pet.name }}
+                        </p>
+                    {% endif %}
+                    
+                    <div class="notification-actions-group">
+                        {% if not notification.isRead %}
+                        <form method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="notif_id" value="{{ notification.id }}">
+                            <button type="submit" name="mark_as_read" class="btn-mark-read">
+                                <i class="fas fa-check"></i> Mark as Read
+                            </button>
+                        </form>
+                        {% endif %}
+                        <form method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="notif_id" value="{{ notification.id }}">
+                            <button type="submit" name="remove_notif" class="btn-remove">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-notifications">
+                <i class="far fa-bell-slash fa-2x mb-3"></i>
+                <p>No notifications to display</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

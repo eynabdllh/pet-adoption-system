@@ -172,7 +172,8 @@ Dashboard
   }
 
   .btn-view:hover {
-    background-color: rgb(235, 235, 237);
+    background-color: #e65c51;
+    color: #fff;
   }
 </style>
 
@@ -286,7 +287,7 @@ Dashboard
         {% endfor %}
       </div>
       <div class="card-body schedule">
-        <h5><i class="fas fa-clock"></i> Pickup Schedule for {{ selected_date|date:"M d, Y" }}</h5>
+        <h5 class="mt-2"><i class="fas fa-clock"></i> Pickup Schedule for {{ selected_date|date:"M d, Y" }}</h5>
         <table class="table">
           <thead>
             <tr>

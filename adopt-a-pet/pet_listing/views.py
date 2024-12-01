@@ -10,6 +10,8 @@ from django.db.models import Q
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from notifications.models import Notification
+from login_register.models import User
 
 @login_required
 @adopter_required
@@ -110,6 +112,16 @@ def adopter_pet_list(request):
 @adopter_required
 def view_pet_detail(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
+    user_id = request.session.get('user_id')
+    
+    if user_id:
+        user = User.objects.get(id=user_id)
+        Notification.objects.filter(
+            user=user,
+            pet=pet,
+            isRead=False
+        ).update(isRead=True)
+    
     return render(request, 'view_pet.html', {'pet': pet})
 
 @login_required
@@ -269,6 +281,7 @@ def admin_add_pet(request):
                 if i == 0:
                     pet.main_image = pet_image.image
                     pet.save()
+            
             messages.success(request, 'Pet successfully added!')
             return redirect('admin_pet_list')
         else:
@@ -297,28 +310,6 @@ def admin_edit_pet(request, pet_id):
 
         if pet_form.is_valid():
             pet = pet_form.save()
-
-            if not pet.is_available:
-                pet.is_adopted = True
-            else:
-                pet.is_adopted = False
-
-            for i, image in enumerate(images):
-                if i >= 5: 
-                    raise ValidationError(_('You can upload a maximum of 5 images.'))
-                pet_image = PetImage.objects.create(pet=pet, image=image)
-
-                if i == 0 and not pet.main_image:
-                    pet.main_image = pet_image.image
-
-            # set the first new one as main_image
-            remaining_images = pet.images.all()
-            if remaining_images.exists():
-                pet.main_image = remaining_images.first().image
-            else:
-                pet.main_image = None
-
-            pet.save()
 
             messages.success(request, 'Pet updated successfully.')
             return redirect('admin_pet_list')

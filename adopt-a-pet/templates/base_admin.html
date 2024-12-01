@@ -98,31 +98,6 @@
             align-items: center;
         }
 
-        .top-bar .notification-icon {
-            border: white 2px solid;
-            margin-right: 20px;
-            font-size: 20px;
-            padding: 5px;
-            color: #FF4A4A; 
-        }
-
-        .top-bar .notification-icon.active {
-            border: #FF6F61 2px solid;
-            border-radius: 25px;
-            background-color: rgba(250, 200, 30, 0.4);
-        }
-
-        .top-bar .notification-icon:hover {
-            border: #FF6F61 2px solid;
-            border-radius: 25px;
-            background-color: rgba(250, 200, 30, 0.4);
-        }
-
-        .notification {
-            width: 22px;
-            height: 26px;
-        }
-        
         .top-bar .profile {
             display: flex;
             align-items: center;
@@ -294,6 +269,143 @@
         .toast-info .toast-icon {
             content: "\f05a";
         }
+
+         /* Notification*/
+         .top-bar .notification-icon {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+            margin-right: 8px; 
+            top: 2px;
+        }
+
+        .top-bar .notification-icon i {
+            font-size: 28px;
+            color: #FF4A4A;
+        }
+
+        .top-bar .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #FF4A4A;
+            color: white;
+            border-radius: 50%;
+            padding: 0.15rem 0.4rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .notification-dropdown {
+            position: relative;
+            margin-right: 10px;
+        }
+
+        .notification-header {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-content p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .notification-content small {
+            color: #6c757d;
+        }
+
+        .notification-icon:hover {
+            background-color: rgba(255, 111, 97, 0.1) !important;
+            border-radius: 50%;
+        }
+
+        /* Dropdown styles */
+        .notification-menu {
+            width: 400px;
+            padding: 0;
+            max-height: 500px;
+            overflow-y: auto;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+
+        .btn-link {
+            color: #FF4A4A;
+            text-decoration: none;
+            padding: 5px 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-link:hover {
+            color: #FF6F61;
+            background-color: rgba(255, 111, 97, 0.1);
+            border-radius: 5px;
+        }
+
+        .notification-footer {
+            padding: 10px;
+            border-top: 1px solid #eee;
+            background-color: #fff;
+        }
+
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0dcdc;
+            transition: background-color 0.3s;
+        }
+
+        .notification-item.unread {
+            background-color: rgba(149, 148, 148, 0.163);
+        }
+
+        .notification-item:hover {
+            background-color: rgba(51, 51, 51, 0.059);
+        }
+
+        .notification-header .btn-link,
+        .notification-footer .btn-link,
+        .notification-menu .btn-link {
+            color: #FF4A4A !important;
+            text-decoration: none !important;
+            padding: 5px 10px !important;
+            transition: all 0.3s ease !important;
+            background: transparent !important;
+            border: none !important;
+            font-weight: normal !important;
+        }
+
+        .notification-header .btn-link:hover,
+        .notification-footer .btn-link:hover,
+        .notification-menu .btn-link:hover {
+            color: #FF6F61 !important;
+            background-color: rgba(255, 111, 97, 0.1) !important;
+            border-radius: 5px !important;
+            text-decoration: none !important;
+        }
+
+        .notification-footer a,
+        .notification-menu a {
+            color: #FF4A4A !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .notification-footer a:hover,
+        .notification-menu a:hover {
+            color: #FF6F61 !important;
+            text-decoration: none !important;
+        }
     </style>
 </head>
 <body>
@@ -317,7 +429,7 @@
             </a>
             <a href="{% url 'admin_pickup' %}" class="{% if request.resolver_match.url_name == 'admin_pickup' %} active {% endif %}">
                 <img src="{% static 'images/pickup.png' %}" alt="Pick Up Schedule" class="icon-img">
-                Pick Up Schedule
+                Schedule Management
             </a>
             <div class="logout">
                 <form action="{% url 'logout' %}" method="post">
@@ -338,10 +450,42 @@
                     <div class="page-title">{% block page_title %}{% endblock %}</div>
                 </div>
                 <div class="right-items">
-                    <div class="notification-icon {% if request.resolver_match.url_name == 'notification_list' %} active {% endif %}">
-                        <a href="{% url 'notification_list' %}">
-                            <img src="{% static 'images/notification.png' %}" alt="Notification Icon" class="notification">
-                        </a>
+                    <div class="notification-dropdown">
+                        <div class="dropdown">
+                            <a class="notification-icon" href="#" role="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                {% if unread_notifications_count > 0 %}
+                                    <span class="badge bg-danger notification-badge">{{ unread_notifications_count }}</span>
+                                {% endif %}
+                            </a>
+                            <div class="dropdown-menu notification-menu" aria-labelledby="notificationDropdown">
+                                <div class="notification-header">
+                                    <span>Notifications ({{ unread_notifications_count }})</span>
+                                    <form method="post" action="{% url 'mark_all_as_read' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-link">Mark all as read</button>
+                                    </form>
+                                </div>
+                                <div class="notification-list">
+                                    {% for notification in recent_notifications %}
+                                        <div class="notification-item {% if not notification.isRead %}unread{% endif %}">
+                                            <div class="notification-content">
+                                                <strong>{{ notification.title }}</strong>
+                                                <p>{{ notification.message|truncatechars:100 }}</p>
+                                                <small>{{ notification.created_at|timesince }} ago</small>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <div class="notification-item">
+                                            <p class="text-muted">No notifications</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="notification-footer">
+                                    <a href="{% url 'notifications' %}" class="btn btn-link w-100">See all notifications</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <a href="{% url 'admin_profile_view' %}" class="profile">
                         <img src="{% if request.session.profile_image_url %}{{ request.session.profile_image_url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Profile picture" class="rounded-circle">
