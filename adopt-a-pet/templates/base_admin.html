@@ -461,10 +461,7 @@
                             <div class="dropdown-menu notification-menu" aria-labelledby="notificationDropdown">
                                 <div class="notification-header">
                                     <span>Notifications ({{ unread_notifications_count }})</span>
-                                    <form method="post" action="{% url 'mark_all_as_read' %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-link">Mark all as read</button>
-                                    </form>
+                                    <button type="button" class="btn btn-link" onclick="markAllAsRead(event, false)">Mark all as read</button>
                                 </div>
                                 <div class="notification-list">
                                     {% for notification in recent_notifications %}
@@ -548,6 +545,64 @@
             toastElements.forEach(function (toastEl) {
                 var toast = new bootstrap.Toast(toastEl);
                 toast.show();
+            });
+        });
+    </script>
+
+    <script>
+        function markAllAsRead(event, shouldCloseDropdown = true) {
+            if (event) event.preventDefault();
+            
+            // Stop event from bubbling up to dropdown
+            event.stopPropagation();
+
+            fetch('{% url "mark_all_as_read" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update UI
+                    document.querySelectorAll('.notification-item.unread').forEach(item => {
+                        item.classList.remove('unread');
+                    });
+                    
+                    // Update badge
+                    const badge = document.querySelector('.notification-badge');
+                    if (badge) badge.remove();
+                    
+                    // Update count in header
+                    document.querySelector('.notification-header span').textContent = 'Notifications (0)';
+
+                    // If we're on the notifications page, update the page count too
+                    const pageCount = document.querySelector('.notifications-count');
+                    if (pageCount) pageCount.textContent = '0';
+
+                    // Only reload if on notifications page
+                    if (window.location.pathname === '{% url "notifications" %}') {
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+
+        // Prevent dropdown from closing when clicking inside
+        document.querySelector('.notification-menu').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Add CSRF token to all AJAX requests
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            document.querySelectorAll('form[action="{% url "mark_all_as_read" %}"]').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    markAllAsRead(e, false);
+                });
             });
         });
     </script>

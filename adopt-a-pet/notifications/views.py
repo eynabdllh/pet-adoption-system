@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse
 from .models import Notification
 from login_register.models import User
 
@@ -54,13 +55,13 @@ def mark_as_read(request, notification_id):
 
 @login_required
 def mark_all_as_read(request):
-    user_id = request.session.get('user_id')
-    if not user_id:
-        return redirect('login')
-
-    Notification.objects.filter(user_id=user_id).update(isRead=True)
-    messages.success(request, 'All notifications marked as read.')
-    return redirect('notifications')
+    if request.method == 'POST':
+        user_id = request.session.get('user_id')
+        if user_id:
+            user = User.objects.get(id=user_id)
+            Notification.objects.filter(user=user).update(isRead=True)
+            return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 @login_required
 def remove_notification(request, notification_id):

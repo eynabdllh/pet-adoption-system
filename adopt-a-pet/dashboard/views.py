@@ -178,28 +178,44 @@ def review_form_detail(request, pet_id):
 
         try:
             if status == 'approved':
-                pet.is_requested = False
-                pet.is_approved = True
-                pet.is_upcoming = True
-                pet.save()
+                if not pet.is_approved:
+                    pet.is_requested = False
+                    pet.is_approved = True
+                    pet.is_upcoming = True
+                    pet.save()
 
-                adoption.status = 'approved'
-                adoption.save()
+                    adoption.status = 'approved'
+                    adoption.save()
 
-                messages.success(request, f"Pet {pet.name} has been approved for adoption.")
+                    messages.success(request, f"Pet {pet.name} has been approved for adoption.")
+
+                    Notification.objects.create_for_adopter(
+                        adopter=profile.user,
+                        title="Adoption Request Approved",
+                        message=f"Your adoption request for {pet.name} has been approved! Please check your schedule for pickup details.",
+                        pet=pet
+                    )
 
             elif status == 'rejected':
                 if reason:
-                    pet.is_requested = False
-                    pet.is_rejected = True
-                    pet.is_adopted = False
-                    pet.save()
+                    if not pet.is_rejected:
+                        pet.is_requested = False
+                        pet.is_rejected = True
+                        pet.is_adopted = False
+                        pet.save()
 
-                    adoption.status = 'rejected'
-                    adoption.reason_choices = reason
-                    adoption.save()
+                        adoption.status = 'rejected'
+                        adoption.reason_choices = reason
+                        adoption.save()
 
-                    messages.success(request, "The pet adoption request has been rejected.")
+                        messages.success(request, "The pet adoption request has been rejected.")
+
+                        Notification.objects.create_for_adopter(
+                            adopter=profile.user,
+                            title="Adoption Request Rejected",
+                            message=f"Your adoption request for {pet.name} has been rejected. Reason: {reason}",
+                            pet=pet
+                        )
 
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
