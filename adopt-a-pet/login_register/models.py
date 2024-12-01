@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
+from django.utils import timezone
 
 class User(models.Model):
     first_name = models.CharField(max_length=50)
@@ -7,7 +8,8 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     isAdmin = models.BooleanField(default=False)
-    created_at = models.DateField(auto_now_add=True) 
+    created_at = models.DateField(auto_now_add=True)
+    date_joined = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.email

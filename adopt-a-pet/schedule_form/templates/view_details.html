@@ -7,6 +7,15 @@ My Adoption
 
 {% block content %}
 <style>
+    .pet-card {
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        height: 650px;
+    }
     .tab-bar {
         display: flex;
         gap: 40px;
@@ -50,8 +59,8 @@ My Adoption
         margin-right: 20px;
     }
     .profile-img, .pet-image {
-        width: 200px;
-        height: 200px;
+        width: 350px;
+        height: 250px;
         object-fit: cover;
         margin: 10px 0px 0px 40px;
         border-radius: 8px;
@@ -61,6 +70,7 @@ My Adoption
     .details-container {
         flex: 1;
         margin-left: 40px;
+        margin-right: 50px;
     }
     h4{
         margin-left: 50px;
@@ -70,8 +80,8 @@ My Adoption
     p strong{ color:#4A4A4A; }
     p{
         color:#757575;
-        font-weight: bold;
-        font-size: 18px;
+        font-weight: 600;
+        font-size: 22px;
     }
     .heart{
         width: 80px; 
@@ -90,7 +100,16 @@ My Adoption
         border-radius: 8px;
         width: 130px;
     }
-    .btn-back:hover { background-color: #e65c51; }
+
+    .btn-back:hover {
+        background-color: #e65c51;
+        color: #fff;
+    }
+
+    .pet-details, .adopter-details{
+        margin-top: 30px;
+    }
+
 </style>
 <div class="mb-3">
     <a href="{% url 'my_adoption' %}" class="btn btn-back">Back</a>
@@ -144,26 +163,28 @@ My Adoption
 
             <!-- {{ pet.payment_mode }}-->
             <div id="adopter-info" class="content-section">
-                <p>
-                    <img src="{% static 'images/name.png' %}" alt="Name Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Name:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.first_name }} {{ profile.user.last_name }}
-                </p>
-                <p>
-                    <img src="{% static 'images/age _2.png' %}" alt="Age Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Age:</strong> &nbsp; &nbsp; &nbsp;{{ profile.age }}
-                </p>
-                <p>
-                    <img src="{% static 'images/phone.png' %}" alt="Phone Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Contact No.:</strong> &nbsp; &nbsp; &nbsp;{{ profile.phone_number }}
-                </p>
-                <p>
-                    <img src="{% static 'images/address.png' %}" alt="Address Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Address:</strong> &nbsp; &nbsp; &nbsp;{{ profile.address }}
-                </p>
-                <p>
-                    <img src="{% static 'images/email.png' %}" alt="Email Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Email:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.email }}
-                </p>
+                <div class="adopter-details">
+                    <p>
+                        <img src="{% static 'images/name.png' %}" alt="Name Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Name:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.first_name }} {{ profile.user.last_name }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/age _2.png' %}" alt="Age Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Age:</strong> &nbsp; &nbsp; &nbsp;{{ profile.age }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/phone.png' %}" alt="Phone Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Contact No.:</strong> &nbsp; &nbsp; &nbsp;{{ profile.phone_number }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/address.png' %}" alt="Address Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Address:</strong> &nbsp; &nbsp; &nbsp;{{ profile.address }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/email.png' %}" alt="Email Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Email:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.email }}
+                    </p>
+                </div>
             </div>
         </div>
     </div>

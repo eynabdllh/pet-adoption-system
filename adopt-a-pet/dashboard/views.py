@@ -44,7 +44,14 @@ def adopter_dashboard(request):
         adopter=user
     )
 
+
     has_notification = Notification.user_has_unread_notifs(user=user)
+
+    Notification.objects.filter(
+        user=user,
+        title__in=['New Pet Available', 'Pet Status Update'],
+        isRead=False
+    ).update(isRead=True)
 
     context = {
         'adopted_pets_count': adopted_pets_count,
@@ -62,42 +69,64 @@ def adopter_dashboard(request):
 @login_required
 @admin_required
 def admin_dashboard(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
 
-    adopted_count = Pet.objects.filter(is_adopted=True).count()
-    available_count = Pet.objects.filter(is_available=True).count()
-    total_pet_count = Pet.objects.count()
+    try:
+        user = User.objects.get(id=user_id)
 
-    profile_prefetch = Prefetch('adopter', queryset=Profile.objects.select_related('user'))
-    pending_requests = Adoption.objects.filter(status="pending").select_related('pet').prefetch_related(profile_prefetch)
+        Notification.objects.filter(
+            user=user,
+            title__in=['New Adoption Request', 'Pickup Schedule Update'],
+            isRead=False
+        ).update(isRead=True)
 
-    selected_date_str = request.GET.get('date', timezone.now().strftime('%Y-%m-%d'))
-    selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+        adopted_count = Pet.objects.filter(is_adopted=True).count()
+        available_count = Pet.objects.filter(is_available=True).count()
+        total_pet_count = Pet.objects.count()
 
-    calendar_weeks = get_calendar_data(selected_date)
+        profile_prefetch = Prefetch('adopter', queryset=Profile.objects.select_related('user'))
+        pending_requests = Adoption.objects.filter(
+            status="pending",
+            pet__is_requested=True
+        ).exclude(
+            status="cancelled"
+        ).select_related('pet').prefetch_related(profile_prefetch)
 
-    scheduled_pickups = Schedule.objects.filter(
-        day=selected_date.day,
-        month=selected_date.strftime('%B'),
-        year=selected_date.year,
-        pet__is_upcoming=True,  
-        pet__is_approved = True,
-        pet__is_adopted=False 
-    ).select_related('pet', 'adopter')
+        selected_date_str = request.GET.get('date', timezone.now().strftime('%Y-%m-%d'))
+        selected_date = datetime.strptime(selected_date_str, '%Y-%m-%d').date()
 
-    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+        calendar_weeks = get_calendar_data(selected_date)
 
-    context = {
-        'adopted_pets_count': adopted_count,
-        'available_pets_count': available_count,
-        'total_pets_count': total_pet_count,
-        'pending_requests': pending_requests,
-        'calendar_weeks': calendar_weeks,
-        'pickups': scheduled_pickups,
-        'selected_date': selected_date,
-        'has_notification': has_notification,
-    }
+        scheduled_pickups = Schedule.objects.filter(
+            day=selected_date.day,
+            month=selected_date.strftime('%B'),
+            year=selected_date.year,
+            pet__is_upcoming=True,  
+            pet__is_approved = True,
+            pet__is_adopted=False 
+        ).select_related('pet', 'adopter')
 
-    return render(request, 'admin_dashboard.html', context)
+        has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
+        context = {
+            'adopted_pets_count': adopted_count,
+            'available_pets_count': available_count,
+            'total_pets_count': total_pet_count,
+            'pending_requests': pending_requests,
+            'calendar_weeks': calendar_weeks,
+            'pickups': scheduled_pickups,
+            'selected_date': selected_date,
+            'has_notification': has_notification,
+        }
+
+        
+
+        return render(request, 'admin_dashboard.html', context)
+    except User.DoesNotExist:
+        messages.error(request, "User not found")
+        return redirect('login')
 
 def get_calendar_data(date):
     start_of_month = date.replace(day=1) 
@@ -126,64 +155,80 @@ def get_calendar_data(date):
 @login_required
 @adopter_required
 def view_pet_detail(request, pet_id):
-    pet = get_object_or_404(Pet, id=pet_id)
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
 
-    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+    try:
+        user = User.objects.get(id=user_id)
+        pet = get_object_or_404(Pet, id=pet_id)
+        
+        Notification.objects.filter(
+            user=user,
+            pet=pet,
+            isRead=False
+        ).update(isRead=True)
 
-    request.session['prev_url'] = request.META.get('HTTP_REFERER', '/')
-    return render(request, 'view_pet.html', {'pet': pet,'has_notification':has_notification})
+        has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
+        request.session['prev_url'] = request.META.get('HTTP_REFERER', '/')
+        return render(request, 'view_pet.html', {'pet': pet,'has_notification': has_notification})
+    except User.DoesNotExist:
+        return redirect('login')
 
 @login_required
 @admin_required
 def review_form_detail(request, pet_id):
     adoption = get_object_or_404(Adoption.objects.select_related('adopter__user'), pet__id=pet_id)
     profile = adoption.adopter
+    pet = adoption.pet
 
     if request.method == 'POST':
+        status = request.POST.get('status')
+        reason = request.POST.get('reason')
+
         try:
-            data = json.loads(request.body)
-            status = data.get('status')
-            reason = data.get('reason')
-
-            if status not in ['approved', 'rejected']:
-                messages.error(request, 'Invalid status provided.')
-                return JsonResponse({'success': False, 'message': 'Invalid status provided.'})
-
-            pet = adoption.pet
-
             if status == 'approved':
-                pet.is_requested = False
-                pet.is_approved = True
-                pet.is_upcoming = True
-                pet.save()
+                if not pet.is_approved:
+                    pet.is_requested = False
+                    pet.is_approved = True
+                    pet.is_upcoming = True
+                    pet.save()
 
-                adoption.status = 'approved'
-                adoption.save()
+                    adoption.status = 'approved'
+                    adoption.save()
 
-                messages.success(request, f"Pet {pet.name} has been approved for adoption.")
-                return JsonResponse({'success': True, 'message': f"Pet {pet.name} has been approved for adoption."})
+                    messages.success(request, f"Pet {pet.name} has been approved for adoption.")
+
+                    Notification.objects.create_for_adopter(
+                        adopter=profile.user,
+                        title="Adoption Request Approved",
+                        message=f"Your adoption request for {pet.name} has been approved! Please check your schedule for pickup details.",
+                        pet=pet
+                    )
 
             elif status == 'rejected':
-    
-                if not reason:
-                    messages.error(request, "A reason is required for rejection.")
-                    return JsonResponse({'success': False, 'message': "A reason is required for rejection."})
+                if reason:
+                    if not pet.is_rejected:
+                        pet.is_requested = False
+                        pet.is_rejected = True
+                        pet.is_adopted = False
+                        pet.save()
 
-                pet.is_requested = False
-                pet.is_rejected = True
-                pet.is_adopted = False
-                pet.save()
+                        adoption.status = 'rejected'
+                        adoption.reason_choices = reason
+                        adoption.save()
 
-                adoption.status = 'rejected'
-                adoption.reason_choices = reason
-                adoption.save()
+                        messages.success(request, "The pet adoption request has been rejected.")
 
-                messages.success(request, "The pet adoption request has been rejected.")
-                return JsonResponse({'success': True, 'message': "The pet adoption request has been rejected."})
+                        Notification.objects.create_for_adopter(
+                            adopter=profile.user,
+                            title="Adoption Request Rejected",
+                            message=f"Your adoption request for {pet.name} has been rejected. Reason: {reason}",
+                            pet=pet
+                        )
 
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
         except Exception as e:
-            return JsonResponse({'success': False, 'message': f"An error occurred: {str(e)}"})
+            messages.error(request, f"An error occurred: {e}")
 
-    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile}) 
+    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})

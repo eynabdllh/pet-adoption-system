@@ -6,8 +6,8 @@ def mark_as_unread(modelAdmin, request, queryset):
     queryset.update(isRead = False)
 
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ["title", "user", "isRead"]
-    ordering = ["-date_sent"]
+    list_display = ['user', 'title', 'created_at', 'isRead']
+    ordering = ['-created_at']
     actions = [mark_as_unread]
 
 # Register your models here.

@@ -5,6 +5,7 @@ from .models import User
 from profile_management.models import Profile
 from django.contrib import messages
 from notifications.models import Notification
+from django.utils import timezone
 
 def Login(request):
     validation_error = None
@@ -39,13 +40,17 @@ def Login(request):
                 profile = Profile.objects.filter(user=user).first()
                 request.session['profile_image_url'] = profile.profile_image.url if profile and profile.profile_image else None
 
+                Notification.objects.filter(
+                    user=user,
+                    created_at__lte=timezone.now() - timezone.timedelta(days=30),
+                    isRead=False
+                ).update(isRead=True)
+
                 next_url = request.GET.get('next', 'admin_dashboard' if user.isAdmin else 'adopter_dashboard')
-                #messages.success(request,f"{"Admin" if user.isAdmin else "Adopter"} logged in successfully")
                 return redirect(next_url)
-               
+                
             else:
-                validation_error = 'Invalid email or password.'
-                messages.error(request,validation_error)
+                messages.error(request, 'Invalid email or password.')
     else:
         #messages.default_app_config
         if request.session.get('remember_me',None) == True:
@@ -69,11 +74,33 @@ def Register(request):
         form = RegisterForm(request.POST)
         
         if form.is_valid():
-            form.save()
-            Notification.objects.create(user=User.objects.get(email=form.cleaned_data['email']),title="Welcome to Adopt-a-Pet",message="Welcome to our website! You can search for pets you want to adopt.")
+            user = form.save()
+
+            if user.isAdmin:
+                Notification.objects.create_for_adopter(
+                    adopter=user,
+                    title="Welcome to Admin Panel",
+                    message="Welcome to Adopt-a-Pet! You've been registered as an admin. You can now manage pets, adoptions, and more."
+                )
+            else:
+                Notification.objects.create_for_adopter(
+                    adopter=user,
+                    title="Welcome to Adopt-a-Pet",
+                    message=(
+                        "Welcome to Adopt-a-Pet! 🐾\n\n"
+                        "Here's what you can do: \n"
+                        "• Browse available pets\n"
+                        "• Submit adoption requests\n"
+                        "• Schedule pet pickups\n"
+                        "• Track your adoption status\n\n"
+                        "Start your journey by exploring our available pets!"
+                    )
+                )
+
+            messages.success(request, "Registration successful!")
             return redirect('login') 
         else:
-            validation_error = "Please correct the errors above."
+            messages.error(request, 'Please correct the errors above.')
     else:
         form = RegisterForm()
 
@@ -82,9 +109,10 @@ def Register(request):
         'validation': validation_error,
     })
 
-
 def logout(request):
     if 'user_id' in request.session:
+        user = User.objects.get(id=request.session['user_id'])
+        
         del request.session['user_id']
     if 'user_type' in request.session:
         del request.session['user_type']

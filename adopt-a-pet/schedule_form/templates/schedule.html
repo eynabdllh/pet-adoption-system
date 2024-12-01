@@ -7,6 +7,43 @@ Adopt a Pet
 
 {% block content %}
 <style>
+    .container-fluid {
+        padding: 10px;
+    }
+
+    .btn-back {
+        background-color: #FF6F61;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        width: 130px;
+    }
+
+    .btn-back:hover {
+        background-color: #e65c51;
+        color: #fff;
+    }
+
+    .pet-card {
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        align-items: center;
+        height: 600px;
+    }
+
+    .p-font {
+        color: #FF6F61;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
     .content { padding: 20px; }
     .containForm {
         background-color: #f9f9f9;
@@ -16,14 +53,6 @@ Adopt a Pet
         max-width: 1000px;
         margin: auto;
         margin-top: 50px;
-    }
-    .pet-card {
-        border-radius: 12px;
-        background-color: #ffffff;
-        padding: 20px;
-        border: 1px solid #e0e0e0;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        align-items: center;
     }
     .form-row {
         display: flex;
@@ -63,8 +92,7 @@ Adopt a Pet
     }
     .btn:hover { opacity: 0.9}
     .btnSched{ display:flex; justify-content: center; }
-    .d-flex { justify-content: space-between; }
-    .p-font{
+    .d-flex { justify-content: space-between; 
         font-size: 25px;
         font-weight: 700;
         margin-bottom: 30px;
@@ -125,15 +153,6 @@ Adopt a Pet
         color: white;
         border-color: #FF6F61;
     }
-    .btn-back {
-        background-color: #FF6F61;
-        border: none;
-        color: #fff;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 8px;
-        width: 130px;
-    }
     .modal {
         display: flex;
         justify-content: center;
@@ -157,59 +176,67 @@ Adopt a Pet
     }
     .btn-cancel, .btn-finish { cursor: pointer; }
     .btn-sched-final { background-color: #FF6F61; color: white; padding: 10px 20px; border-radius: 8px; width: 130px; }
+    .date { 
+        padding: 20px 0; 
+        align-items: center;
+    }
 </style>
 
-<div class="mb-3">
-    <a href="{% url 'adopt_form' pet.id %}" class="btn btn-back">Back</a>
-</div>
-<div class="card pet-card shadow-lg p-4">
-    <p class="p-font">Pick-Up Schedule</p>
-    <form action="{% url 'schedule' pet.id %}" method="post" id="scheduleForm">
-        {% csrf_token %}
-        
-        <label for="year">Year:</label>
-        <select id="year" name="year" onchange="updateMonthOptions()">
-            <option value="" disabled selected>Select Year</option>
-            {% for year in years %}
-            <option value="{{ year }}" {% if year == current_year %} selected {% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
-        
-        <label for="month">Month:</label>
-        <select id="month" name="month" onchange="updateDayOptions()">
-            <option value="" disabled selected>Select Month</option>
-        </select>
+<div class="container-fluid mt-3">
+    <div>
+        <a href="{% url 'adopt_form' pet.id %}" class="btn btn-back">Back</a>
+    </div>
 
-        <label for="day">Day:</label>
-        <select id="day" name="day">
-            <option value="" disabled selected>Select Day</option>
-        </select>
-
-        <fieldset class="pickup-time-fieldset">
-            <div class="time-slot">
-                <p class="time-slot-title">Morning</p>
-                <div class="time-options">
-                    {% for time in morning_hours %}
-                    <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
-                    <label for="time_{{ time }}">{{ time }}</label>
+    <div class="card pet-card shadow-lg p-4">
+        <p class="p-font">Pick-Up Schedule</p>
+        <form action="{% url 'schedule' pet.id %}" method="post" id="scheduleForm" class="date">
+            {% csrf_token %}
+            <div class="mb-5">
+                <label for="year" class="ms-5">Year:</label>
+                <select id="year" name="year" onchange="updateMonthOptions()">
+                    <option value="" disabled selected>Select Year</option>
+                    {% for year in years %}
+                    <option value="{{ year }}" {% if year == current_year %} selected {% endif %}>{{ year }}</option>
                     {% endfor %}
-                </div>
-            </div>
-            <div class="time-slot">
-                <p class="time-slot-title">Afternoon</p>
-                <div class="time-options">
-                    {% for time in afternoon_hours %}
-                    <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
-                    <label for="time_{{ time }}">{{ time }}</label>
-                    {% endfor %}
-                </div>
-            </div>
-        </fieldset>
+                </select>
+                
+                <label for="month">Month:</label>
+                <select id="month" name="month" onchange="updateDayOptions()">
+                    <option value="" disabled selected>Select Month</option>
+                </select>
 
-        <div class="form-row">
-            <button type="submit" class="btn btn-sched">Submit</button>
-        </div>
-    </form>
+                <label for="day">Day:</label>
+                <select id="day" name="day">
+                    <option value="" disabled selected>Select Day</option>
+                </select>
+            </div>
+
+            <fieldset class="pickup-time-fieldset">
+                <div class="time-slot">
+                    <p class="time-slot-title">Morning</p>
+                    <div class="time-options">
+                        {% for time in morning_hours %}
+                        <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                        <label for="time_{{ time }}">{{ time }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="time-slot">
+                    <p class="time-slot-title">Afternoon</p>
+                    <div class="time-options">
+                        {% for time in afternoon_hours %}
+                        <input type="radio" id="time_{{ time }}" name="time" value="{{ time }}">
+                        <label for="time_{{ time }}">{{ time }}</label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-row">
+                <button type="submit" class="btn btn-sched">Submit</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Success Modal -->
