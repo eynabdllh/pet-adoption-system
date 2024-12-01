@@ -14,6 +14,7 @@ from django.utils import timezone
 from .models import Adoption
 from django.core.paginator import Paginator
 from django.db.models import Q
+from notifications.models import Notification
 
 @login_required
 @adopter_required
@@ -85,11 +86,15 @@ def adopt_form(request, pet_id):
         form = AdoptionForm(initial=initial_data, user=user)
 
     today = timezone.localdate()
+
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     return render(request, 'adopt_form.html', {
         'form': form,
         'pet': pet,
         'today': today.isoformat(),
         'user': user,
+        'has_notification': has_notification,
     })
 
 @login_required
@@ -156,13 +161,16 @@ def adoption_management(request):
         elif sort_by_name == 'desc':
             pets = pets.order_by('-name')
 
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     return render(request, 'adoption_management.html', {
         'pets': pets,
         'status': status,
         'sort_by_id': sort_by_id,
         'sort_by_name': sort_by_name,
         'pet_type': pet_type,
-        'query': query
+        'query': query,
+        'has_notification': has_notification
     })
 
 @login_required
@@ -205,7 +213,9 @@ def review_form(request, pet_id):
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
 
-    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
+    return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile, 'has_notification':has_notification})
 
 
 @login_required
@@ -309,13 +319,16 @@ def admin_pickup(request):
                 # Default to "Pet was not Picked-Up" if no reason is found
                 pet.cancellation_reason = "Pet was not Picked-Up"
 
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     return render(request, 'admin_pickup.html', {
         'pets': pets,
         'status': status,
         'sort_by_id': sort_by_id,  
         'sort_by_name': sort_by_name, 
         'pet_type': pet_type,
-        'query': query
+        'query': query,
+        'has_notification': has_notification,
     })
 
 

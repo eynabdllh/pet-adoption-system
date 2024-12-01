@@ -9,10 +9,11 @@ from login_register.models import User
 @login_required
 def notification_list(request):
     user_id = request.session.get('user_id')
-    user = get_object_or_404(User,id=user_id)
 
     if not user_id:
         return redirect('login')
+    
+    user = get_object_or_404(User,id=user_id)
     
     if(request.method == 'POST'):
         if 'mark_all_as_read' in request.POST:
@@ -33,11 +34,16 @@ def notification_list(request):
     
     notifications = Notification.get_notifs(user)
     notif_count = Notification.get_number_of_notifs(user)
-    unread_count = Notification.get_number_of_notifs_filter(user,False)
-    
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     if(user.isAdmin):
         base_template = "base_admin.html"
     else:
         base_template = "base_adopter.html"
 
-    return render(request,'notification_list.html',{'notifications': notifications, 'notif_count': notif_count, 'unread_count': unread_count, 'base_template': base_template})
+    return render(request,'notification_list.html',{
+        'notifications': notifications,
+        'notif_count': notif_count,
+        'base_template': base_template,
+        'has_notification': has_notification
+    })

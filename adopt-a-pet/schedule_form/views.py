@@ -12,6 +12,7 @@ from datetime import datetime
 from django.contrib import messages
 from request_form.models import Adoption  
 from django.views.decorators.csrf import csrf_exempt
+from notifications.models import Notification
 
 @login_required
 @adopter_required
@@ -68,7 +69,9 @@ def schedule(request, pet_id):
             messages.error(request, "Please fill in all required fields: month, day, time, and year.")
             
     current_year = datetime.now().year
-    years = range(current_year, current_year + 5)  
+    years = range(current_year, current_year + 5) 
+
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
 
     return render(request, 'schedule.html', {
         'pet': pet,
@@ -76,7 +79,8 @@ def schedule(request, pet_id):
         'days': range(1, 32), 
         'morning_hours': [f"{hour}:{minute:02d} AM" for hour in range(9, 12) for minute in (0, 30)],
         'afternoon_hours': [f"{hour}:{minute:02d} PM" for hour in range(1, 6) for minute in (0, 30)],
-        'years': years,  
+        'years': years,
+        'has_notification': has_notification,
     })
 
 @login_required
@@ -86,7 +90,9 @@ def pickup_list(request):
     user = get_object_or_404(User, id=user_id) 
     pickups = Schedule.objects.filter(adopter=user)
 
-    return render(request, 'pickup_list.html', {'pickups': pickups})
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
+    return render(request, 'pickup_list.html', {'pickups': pickups, 'has_notification': has_notification})
 
 
 @csrf_exempt  
@@ -146,10 +152,13 @@ def my_adoption(request):
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
             return redirect('my_adoption')
+    
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
 
     return render(request, 'my_adoption.html', {
         'pickups': pickups,
         'certificate_data': certificate_data,
+        'has_notification': has_notification,
     })
 
 

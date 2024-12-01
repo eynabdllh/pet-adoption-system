@@ -38,10 +38,10 @@ class Notification(models.Model):
         return Notification.objects.filter(user = user, isRead = has_read).order_by('-date_sent')
     
     def get_number_of_notifs(user):
-        return Notification.objects.filter(user = user).count
+        return Notification.objects.filter(user = user).count()
     
     def get_number_of_notifs_filter(user,has_read):
-        return Notification.objects.filter(user = user, isRead = has_read).count
+        return Notification.objects.filter(user = user, isRead = has_read).count()
     
     def add_notif_to_user(user, title, message):
         try:
@@ -53,5 +53,16 @@ class Notification(models.Model):
     def add_notif_to_users_filter(title, message, isAdmin):
         users = User.objects.filter(isAdmin=isAdmin)
         
-        for user in users:
-            Notification.add_notif_to_user(user = user, title = title, message = message)
+        try:
+            for user in users:
+                Notification.add_notif_to_user(user = user, title = title, message = message)
+            return True
+        except:
+            return False
+        
+    def user_has_unread_notifs(user):
+        number_of_notifs = Notification.get_number_of_notifs_filter(user = user,has_read=False)
+        if number_of_notifs > 0:
+            return True
+        else:
+            return False

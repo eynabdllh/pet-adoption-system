@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserUpdateForm, ProfileUpdateForm
 from login_register.models import User  
+from notifications.models import Notification
 
 @login_required
 def adopter_profile_view(request):
@@ -48,10 +49,13 @@ def adopter_profile_view(request):
         user_form = UserUpdateForm(instance=current_user)
         profile_form = ProfileUpdateForm(instance=profile)
 
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     context = {
         'user_form': user_form,
         'profile': profile,
         'profile_form': profile_form,
+        'has_notification': has_notification,
     }
     return render(request, 'adopter_profile.html', context)
 
@@ -99,10 +103,13 @@ def admin_profile_view(request):
         user_form = UserUpdateForm(instance=current_user)
         profile_form = ProfileUpdateForm(instance=profile)
 
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     context = {
         'user_form': user_form,
         'profile': profile,
         'profile_form': profile_form,
+        'has_notification': has_notification
     }
     return render(request, 'admin_profile.html', context)
 

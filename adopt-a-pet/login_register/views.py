@@ -9,6 +9,10 @@ from notifications.models import Notification
 def Login(request):
     validation_error = None
 
+    if 'user_id' in request.session:
+        user = User.objects.get(id = request.session.get('user_id'))
+        return redirect('admin_dashboard' if user.isAdmin else 'adopter_dashboard')
+
     if request.method == "POST":
         form = LoginForm(request.POST)
         
@@ -51,11 +55,15 @@ def Login(request):
 
     return render(request, 'login.html', {
         'form': form,
-        'validation': validation_error,
+        # 'validation': validation_error,
     })
 
 def Register(request): 
     validation_error = None
+
+    if 'user_id' in request.session:
+        user = User.objects.get(id = request.session.get('user_id'))
+        return redirect('admin_dashboard' if user.isAdmin else 'adopter_dashboard')
 
     if request.method == "POST":
         form = RegisterForm(request.POST)

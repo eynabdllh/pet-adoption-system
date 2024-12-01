@@ -12,6 +12,7 @@ from schedule_form.models import Schedule
 from profile_management.models import Profile
 from login_register.models import User
 from django.db.models import Prefetch
+from notifications.models import Notification
 
 @login_required
 @adopter_required
@@ -43,6 +44,8 @@ def adopter_dashboard(request):
         adopter=user
     )
 
+    has_notification = Notification.user_has_unread_notifs(user=user)
+
     context = {
         'adopted_pets_count': adopted_pets_count,
         'available_pets_count': available_pets_count,
@@ -51,6 +54,7 @@ def adopter_dashboard(request):
         'calendar_weeks': calendar_weeks,
         'pickups': pickups,
         'selected_date': selected_date,
+        'has_notification': has_notification,
     }
 
     return render(request, 'adopter_dashboard.html', context)
@@ -80,6 +84,8 @@ def admin_dashboard(request):
         pet__is_adopted=False 
     ).select_related('pet', 'adopter')
 
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     context = {
         'adopted_pets_count': adopted_count,
         'available_pets_count': available_count,
@@ -88,6 +94,7 @@ def admin_dashboard(request):
         'calendar_weeks': calendar_weeks,
         'pickups': scheduled_pickups,
         'selected_date': selected_date,
+        'has_notification': has_notification,
     }
 
     return render(request, 'admin_dashboard.html', context)
@@ -121,8 +128,10 @@ def get_calendar_data(date):
 def view_pet_detail(request, pet_id):
     pet = get_object_or_404(Pet, id=pet_id)
 
+    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
+
     request.session['prev_url'] = request.META.get('HTTP_REFERER', '/')
-    return render(request, 'view_pet.html', {'pet': pet})
+    return render(request, 'view_pet.html', {'pet': pet,'has_notification':has_notification})
 
 @login_required
 @admin_required

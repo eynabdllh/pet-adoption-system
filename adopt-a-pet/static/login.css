@@ -1,5 +1,5 @@
 :root {
-    --pink: #FF6F61;
+    --pinktheme: #FF6F61;
     --darkpink: #FFDDD2;
     --beige: #FFF1EE;
 }
@@ -67,9 +67,11 @@ body {
     text-align: left;
 }
 
-h1 {
+.slogan{
+    font-family: 'ChunkFive', serif;
+    font-weight: bold;
     color: #3E2828;
-    font-size: 8.5vmin;
+    font-size: 11.5vmin;
 }
 
 h2 {
@@ -78,8 +80,8 @@ h2 {
     font-style: bold;
 }
 
-a {
-    color: var(--pink);
+.login_link, .login_link:hover {
+    color: var(--pinktheme);
     text-decoration: none;
 }
 
@@ -118,7 +120,7 @@ form .remember_me input{
 }
 
 form .submit{
-    background-color: var(--pink);
+    background-color: var(--pinktheme);
     border: none;
     border-radius: 100px;
     color: white;

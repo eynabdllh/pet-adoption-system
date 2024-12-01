@@ -242,7 +242,14 @@ Adopter Dashboard
                         {% for pet in recently_listed_pets %}
                             <tr>
                                 <td>
-                                    <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" style="height: 30px; width: 30px; border-radius: 50%;">
+                                    <img src=
+                                    "
+                                    {% if pet.main_image %}
+                                        {{ pet.main_image.url }}
+                                    {% else %}
+                                        {% static 'images/default_profile.jpg' %}
+                                    {% endif %}
+                                    " alt="{{ pet.name }}" style="height: 30px; width: 30px; border-radius: 50%;">
                                     <a href="{% url 'view_pet_detail' pet.id %}" class="view-pet">{{ pet.name }}</a>
                                 </td>
                                 <td>{{ pet.breed }}</td>
