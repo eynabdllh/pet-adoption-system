@@ -1,6 +1,4 @@
 import calendar
-import json
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from pet_listing.models import Pet
 from .models import Schedule  
@@ -10,8 +8,10 @@ from login_register.models import User
 from profile_management.models import Profile
 from datetime import datetime
 from django.contrib import messages
-from request_form.models import Adoption  
 from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
+from request_form.models import Adoption
+from notifications.models import Notification
 
 @login_required
 @adopter_required
@@ -47,6 +47,18 @@ def schedule(request, pet_id):
                 messages.error(request, "Invalid month or year. Please try again.")
                 return redirect('schedule', pet_id=pet.id)
 
+            adoption = Adoption.objects.create(
+                adopter=profile,
+                pet=pet,
+                first_name=adoption_form_data['first_name'],
+                last_name=adoption_form_data['last_name'],
+                age=adoption_form_data['age'],
+                address=adoption_form_data['address'],
+                contact_number=adoption_form_data['contact_number'],
+                email=adoption_form_data['email'],
+                date=datetime.fromisoformat(adoption_form_data['date']),
+            )
+
             Schedule.objects.create(
                 pet=pet,
                 adopter=user,
@@ -56,14 +68,30 @@ def schedule(request, pet_id):
                 time=time
             )
 
+            # update pet status
             pet.is_requested = True
             pet.is_available = False
             pet.save()
 
+            Notification.objects.create_for_all_admins(
+                title="New Adoption Request",
+                message=f"New adoption request for {pet.name} from {user.first_name} {user.last_name}",
+                pet=pet
+            )
+
+            Notification.objects.create_for_adopter(
+                adopter=user,
+                title="Adoption Request Submitted",
+                message=f"Your adoption request for {pet.name} has been submitted successfully.",
+                pet=pet
+            )
+
             del request.session['adoption_form_data']
 
-            messages.success(request, "Pick-up scheduled successfully!")
-            return redirect('my_adoption')
+            messages.success(request, "Pet requested successfully!")
+            base_url = reverse('my_adoption')
+            return redirect(f'{base_url}?tab=requested')
+            
         else:
             messages.error(request, "Please fill in all required fields: month, day, time, and year.")
             
@@ -84,24 +112,24 @@ def schedule(request, pet_id):
 def pickup_list(request):
     user_id = request.session.get('user_id')
     user = get_object_or_404(User, id=user_id) 
-    pickups = Schedule.objects.filter(adopter=user)
+    pickups = Schedule.objects.filter(adopter=user, pet__is_approved=True)
 
     return render(request, 'pickup_list.html', {'pickups': pickups})
 
 
-@csrf_exempt  
+@csrf_exempt
 @login_required
 def my_adoption(request):
     user_id = request.session.get('user_id')
     if not user_id:
         messages.error(request, "User not logged in.")
-        return redirect('my_adoption')  # Redirect to the same page or another page
+        return redirect('login')  
 
     try:
         user = get_object_or_404(User, id=user_id)
     except Exception as e:
         messages.error(request, f"Invalid user: {e}")
-        return redirect('my_adoption')
+        return redirect('login')
 
     try:
         pickups = Schedule.objects.filter(adopter=user).select_related('pet')
@@ -119,7 +147,7 @@ def my_adoption(request):
             })
 
     if request.method == 'POST':
-        pet_id = request.POST.get('pet_id')  # Get form data
+        pet_id = request.POST.get('pet_id') 
         reason = request.POST.get('reason')
 
         if not pet_id:
@@ -141,7 +169,20 @@ def my_adoption(request):
             schedule.reason_choices = reason
             schedule.save()
 
-            messages.success(request, f"Pet {pet.name} is now cancelled.")
+            Notification.objects.create_for_all_admins(
+                title="Adoption Cancelled by Adopter",
+                message=f"Adoption for {pet.name} was cancelled by {user.first_name} {user.last_name}. Reason: {reason}",
+                pet=pet
+            )
+
+            Notification.objects.create_for_adopter(
+                adopter=user,
+                title="Adoption Cancellation Confirmed",
+                message=f"Your adoption request for {pet.name} has been cancelled. Reason: {reason}",
+                pet=pet
+            )
+
+            messages.success(request, f"Pet {pet.name} has been successfully cancelled.")
             return redirect('my_adoption')
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
@@ -156,11 +197,17 @@ def my_adoption(request):
 @login_required
 @adopter_required
 def view_details(request, user_id, pet_id):
-    user_id = request.session.get('user_id')
     try:
         user = get_object_or_404(User, id=user_id)
         pet = get_object_or_404(Pet, id=pet_id)
         profile = Profile.objects.get(user=user)
+
+        Notification.objects.filter(
+            user=user,
+            pet=pet,
+            isRead=False
+        ).update(isRead=True)
+
         context = {
             'user': user,
             'pet': pet,

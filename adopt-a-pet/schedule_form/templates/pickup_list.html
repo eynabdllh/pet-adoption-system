@@ -53,7 +53,14 @@ Pick Up List
     }
     .date-time p:first-child {
     margin-right: 80px; 
-}
+    }
+    p{
+        font-size: 40px; 
+        color: #333; 
+        font-style: italic; 
+        font-weight: bolder; 
+        text-align: center;
+    }
 </style>
 
 <div class="pickup-list">
@@ -77,6 +84,9 @@ Pick Up List
         {% endif %}
     {% empty %}
         <p>No scheduled pick-ups at this time.</p>
+        <div style="display: flex; justify-content: center;">
+        <img src="{% static 'images/gif.gif' %}" alt="No Pickups Available" style="max-width: 40%; height: auto; margin-top: -70px;">
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

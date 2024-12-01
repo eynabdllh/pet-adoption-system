@@ -14,21 +14,22 @@ My Adoption
         color: white; 
         outline: none; 
         font-weight: 700;
+        font-size: 18px;
     }
     .tab-button { 
-        border-radius: 0px; 
         padding: 8px 20px; 
         margin-bottom: 30px; 
         cursor: pointer;
         border: 0px solid #5e5e5e; 
-        background-color: rgb(177, 177, 177); 
+        background-color: rgb(242, 240, 240); 
         color: #000; 
         width: 180px;
+        font-size: 16px;
     }
     .pickup-list, .adopted-list { 
         display: flex; 
         flex-direction: column; 
-        gap: 20px;
+        gap: 5px;
     }
     .pickup-card, .adopted-card { 
         display: flex; 
@@ -73,8 +74,11 @@ My Adoption
         border-radius: 5px; 
         text-decoration: none; 
         color: white; 
-        font-weight: bold; 
+        font-weight: 500; 
         display: inline-block;
+    }
+    .btn:hover { 
+        color: #4a4a4a; 
     }
     .btn-view-details { 
         background-color: #20c997; 
@@ -346,6 +350,9 @@ My Adoption
     {% endif %}
     {% empty %}
         <p class="no_adoptions">You currently have no requests.</p>
+        <div style="display: flex; justify-content: center;">
+            <img src="{% static 'images/gif.gif' %}" alt="No Pickups Available" style="max-width: 40%; height: auto; margin-top: -70px;">
+        </div>
     {% endfor %}
 </div>
 
@@ -382,124 +389,131 @@ My Adoption
     </div>
 </div>
 
-
 <script>
- function showTab(tabName) {
-        document.getElementById('adopted').style.display = tabName === 'adopted' ? 'block' : 'none';
-        document.getElementById('requested').style.display = tabName === 'requested' ? 'block' : 'none';
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab === 'requested') {
+            showTab('requested');
+        }
+    });
 
-        document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-        document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
+    function showTab(tabName) {
+            document.getElementById('adopted').style.display = tabName === 'adopted' ? 'block' : 'none';
+            document.getElementById('requested').style.display = tabName === 'requested' ? 'block' : 'none';
+
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.querySelector(`.tab-button[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+
+    function openCertificateModal(element) {
+        var adopterName = element.getAttribute('data-adopter-name');
+        var adopterName2 = element.getAttribute('data-adopter-name2');
+        var petName = element.getAttribute('data-pet-name');
+        var petName2 = element.getAttribute('data-pet-name2');
+        var adoptionDate = element.getAttribute('data-adoption-date');
+
+        document.getElementById('adopter-name').innerText = adopterName;
+        document.getElementById('adopter-name2').innerText = adopterName2;
+        document.getElementById('pet-name').innerText = petName;
+        document.getElementById('pet-name2').innerText = petName2;
+        document.getElementById('adoption_date').innerText = adoptionDate;
+
+        var modal = document.getElementById('certificateModal').classList.add('show');
+        modal.style.display = 'block';
     }
 
-function openCertificateModal(element) {
-    var adopterName = element.getAttribute('data-adopter-name');
-    var adopterName2 = element.getAttribute('data-adopter-name2');
-    var petName = element.getAttribute('data-pet-name');
-    var petName2 = element.getAttribute('data-pet-name2');
-    var adoptionDate = element.getAttribute('data-adoption-date');
+    function closeModal() {
+        var modal = document.getElementById('certificateModal').classList.remove('show');
+        modal.style.display = 'none';
+    }
 
-    document.getElementById('adopter-name').innerText = adopterName;
-    document.getElementById('adopter-name2').innerText = adopterName2;
-    document.getElementById('pet-name').innerText = petName;
-    document.getElementById('pet-name2').innerText = petName2;
-    document.getElementById('adoption_date').innerText = adoptionDate;
+    function downloadCertificate() {
+            var modalContent = document.querySelector('.certificate-container');
 
-    var modal = document.getElementById('certificateModal').classList.add('show');
-    modal.style.display = 'block';
-}
+            var originalDisplay = modalContent.style.display;
+            modalContent.style.display = 'block';
 
-function closeModal() {
-    var modal = document.getElementById('certificateModal').classList.remove('show');
-    modal.style.display = 'none';
-}
+            var opt = {
+                margin: 1,
+                filename: 'Adoption_Certificate.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+            };
 
-function downloadCertificate() {
-        var modalContent = document.querySelector('.certificate-container');
+            html2pdf()
+                .from(modalContent)
+                .set(opt)
+                .save()
+                .then(() => {
+                    modalContent.style.display = originalDisplay;
+                })
+                .catch((error) => {
+                    console.error('Error generating PDF:', error);
+                    alert('An error occurred while generating the PDF.');
+                });
+        }
 
-        var originalDisplay = modalContent.style.display;
-        modalContent.style.display = 'block';
 
-        var opt = {
-            margin: 1,
-            filename: 'Adoption_Certificate.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-        };
+        function cancelRequest(petId) {
+        if (!petId) {
+            alert("Pet ID is missing!");
+            return;
+        }
 
-        html2pdf()
-            .from(modalContent)
-            .set(opt)
-            .save()
-            .then(() => {
-                modalContent.style.display = originalDisplay;
-            })
-            .catch((error) => {
-                console.error('Error generating PDF:', error);
-                alert('An error occurred while generating the PDF.');
-            });
+        window.currentPetId = petId;
+        document.getElementById('cancelModal').style.display = 'flex';
     }
 
 
-    function cancelRequest(petId) {
-    if (!petId) {
-        alert("Pet ID is missing!");
-        return;
+    function closeCancelModal() {
+        document.getElementById('cancelModal').style.display = 'none';  
     }
 
-    window.currentPetId = petId;
-    document.getElementById('cancelModal').style.display = 'flex';
-}
+    function confirmCancellation() {
+        if (!window.currentPetId) {
+            alert("Pet ID is missing!");
+            return;
+        }
 
+        const reason = document.getElementById('cancelReason').value;
+        if (!reason) {
+            alert("Please select a reason for cancellation.");
+            return;
+        }
 
-function closeCancelModal() {
-    document.getElementById('cancelModal').style.display = 'none';  
-}
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = ''; 
 
-function confirmCancellation() {
-    if (!window.currentPetId) {
-        alert("Pet ID is missing!");
-        return;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = getCSRFToken();  
+        form.appendChild(csrfInput);
+
+        const petInput = document.createElement('input');
+        petInput.type = 'hidden';
+        petInput.name = 'pet_id';
+        petInput.value = window.currentPetId;
+        form.appendChild(petInput);
+
+        const reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.name = 'reason';
+        reasonInput.value = reason;
+        form.appendChild(reasonInput);
+
+        document.body.appendChild(form);
+        form.submit();
+
+        closeCancelModal(); 
     }
 
-    const reason = document.getElementById('cancelReason').value;
-    if (!reason) {
-        alert("Please select a reason for cancellation.");
-        return;
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;  
     }
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = ''; 
-
-    const csrfInput = document.createElement('input');
-    csrfInput.type = 'hidden';
-    csrfInput.name = 'csrfmiddlewaretoken';
-    csrfInput.value = getCSRFToken();  
-    form.appendChild(csrfInput);
-
-    const petInput = document.createElement('input');
-    petInput.type = 'hidden';
-    petInput.name = 'pet_id';
-    petInput.value = window.currentPetId;
-    form.appendChild(petInput);
-
-    const reasonInput = document.createElement('input');
-    reasonInput.type = 'hidden';
-    reasonInput.name = 'reason';
-    reasonInput.value = reason;
-    form.appendChild(reasonInput);
-
-    document.body.appendChild(form);
-    form.submit();
-
-    closeCancelModal(); 
-}
-
-function getCSRFToken() {
-    return document.querySelector('[name=csrfmiddlewaretoken]').value;  
-}
 
 </script>
 {% endblock %}
