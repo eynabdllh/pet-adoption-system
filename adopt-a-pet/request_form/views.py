@@ -149,65 +149,63 @@ def review_form(request, pet_id):
     adoption = get_object_or_404(Adoption.objects.select_related('adopter__user'), pet__id=pet_id)
     profile = adoption.adopter
     source = request.GET.get('source')
-
+ 
     if request.method == 'POST':
         status = request.POST.get('status')
         reason = request.POST.get('reason')
         pet = adoption.pet
         adopter = adoption.adopter.user
-
+ 
         try:
             if status == 'approved':
-                pet.is_requested = False
-                pet.is_approved = True
-                pet.is_upcoming = True
-                pet.save()
-
-                adoption.status = 'approved'
-                adoption.save()
-
-                messages.success(request, f"Pet {pet.name} has been approved for adoption.")
-                
-                Notification.objects.create_for_adopter(
-                    adopter=adopter,
-                    title="Adoption Request Approved",
-                    message=f"Your adoption request for {pet.name} has been approved! Please check your schedule for pickup details.",
-                    pet=pet
-                )
-
-                if source == 'admin_dashboard':
-                    return redirect('admin_dashboard')
-                return redirect('adoption_management')
-
+                if not pet.is_approved:
+                    pet.is_requested = False
+                    pet.is_approved = True
+                    pet.is_upcoming = True
+                    pet.save()
+ 
+                    adoption.status = 'approved'
+                    adoption.save()
+ 
+                    messages.success(request, f"Pet {pet.name} has been approved for adoption.")
+ 
+                    Notification.objects.create_for_adopter(
+                        adopter=adopter,
+                        title="Adoption Request Approved",
+                        message=f"Your adoption request for {pet.name} has been approved! Please check your schedule for pickup details.",
+                        pet=pet
+                    )
+ 
             elif status == 'rejected':
                 if not reason:
                     messages.error(request, "A reason is required for rejection.")
                 else:
-                    pet.is_requested = False
-                    pet.is_rejected = True
-                    pet.is_adopted = False
-                    pet.save()
-
-                    adoption.status = 'rejected'
-                    adoption.reason_choices = reason
-                    adoption.save()
-
-                    messages.success(request, "The pet adoption request has been rejected.")
-
-                    Notification.objects.create_for_adopter(
-                        adopter=adopter,
-                        title="Adoption Request Rejected",
-                        message=f"Your adoption request for {pet.name} has been rejected. Reason: {reason}",
-                        pet=pet
-                    )
-
-                    if source == 'admin_dashboard':
-                        return redirect('admin_dashboard')
-                    return redirect('adoption_management')
-            
+                    if not pet.is_rejected:
+                        pet.is_requested = False
+                        pet.is_rejected = True
+                        pet.is_adopted = False
+                        pet.save()
+ 
+                        adoption.status = 'rejected'
+                        adoption.reason_choices = reason
+                        adoption.save()
+ 
+                        messages.success(request, "The pet adoption request has been rejected.")
+ 
+                        Notification.objects.create_for_adopter(
+                            adopter=adopter,    
+                            title="Adoption Request Rejected",
+                            message=f"Your adoption request for {pet.name} has been rejected. Reason: {reason}",
+                            pet=pet
+                        )
+ 
+            if source == 'admin_dashboard':
+                return redirect('admin_dashboard')
+            return redirect('adoption_management')
+           
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
-
+ 
     return render(request, 'review_form.html', {'adoption': adoption, 'profile': profile})
 
 
