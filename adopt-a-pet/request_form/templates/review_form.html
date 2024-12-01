@@ -4,143 +4,188 @@
 {% block content %}
 {% load static %}
 <style>
-    .tab-bar { 
-        display: flex; 
-        gap: 40px; 
-        margin-bottom: 20px; 
-        position: relative;
-        border-bottom: 2px solid #e0e0e0; 
-        justify-content: center ;
+    .pet-card {
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 10px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        height: 650px;
     }
-    .tab-button { 
-        position: relative; 
-        font-size: 25px; 
+
+    .tab-bar {
+        display: flex;
+        gap: 40px;
+        margin-bottom: 20px;
+        position: relative;
+        border-bottom: 2px solid #e0e0e0;
+        justify-content: center;
+    }
+
+    .tab-button {
+        position: relative;
+        font-size: 25px;
         color: #555;
-        cursor: pointer; 
+        cursor: pointer;
         padding-bottom: 8px;
     }
-    .tab-button.active { 
-        color: #FF6F61; 
-        font-weight: bold; 
+
+    .tab-button.active {
+        color: #FF6F61;
+        font-weight: bold;
     }
-    .tab-button.active::after { 
-        content: ''; 
-        position: absolute; 
+
+    .tab-button.active::after {
+        content: '';
+        position: absolute;
         bottom: -2px;
-        left: 0; 
-        width: 100%; 
-        height: 4px; 
+        left: 0;
+        width: 100%;
+        height: 4px;
         background-color: #FF6F61;
         border-radius: 2px;
     }
-    .content-section { 
-        display: none; 
-    }
-    .content-section.active { 
-        display: block; 
-    }
-    .container { 
-        display: flex; 
-        gap: 20px; 
-        align-items: 
-        flex-start; 
-    }
-    .image-container { 
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        margin-right: 20px; 
-    }
-    .profile-img, .pet-image { 
-        width: 200px; 
-        height: 200px; 
-        object-fit: cover; 
-        margin: 10px 0px 0px 40px; 
-        border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .details-container { 
-        flex: 1; 
-        margin-left: 40px; 
-    }
-    h4 { 
-        margin-left: 50px; 
-        color: #4A4A4A; 
-        font-size: 30px;
-    }
-    p strong{ 
-        color:#4A4A4A; 
-    }
-    p{ 
-        color:#757575; 
-        font-weight: bold; 
-        font-size: 18px; 
-    }
-    .heart{ 
-        width: 80px;  
-        height: 80px; 
-        z-index: 10; 
-        margin-top: -30px; 
-        margin-bottom: -40px; 
-        margin-left: 40px; 
-    }
-    .btn-back { 
-        background-color: #FF6F61; 
-        border: none; color: #fff;
-        padding: 10px 20px; 
-        font-size: 16px;
-        border-radius: 8px; 
-        width: 130px;
-    }
-    .btn-approve { 
-        background-color: #1EBE91; 
-        border: none; color: #fff;
-        padding: 10px 20px; 
-        font-size: 16px; 
-        border-radius: 8px; 
-        width: 180px; 
-        font-weight: 700;
-    }
-    .btn-reject { 
-        background-color: #B3261E; 
-        border: none; color: #fff;
-        padding: 10px 20px; 
-        font-size: 16px; 
-        border-radius: 8px; 
-        width: 180px;
-        font-weight: 700;
-    }
-    .btn-back:hover { 
-        background-color: #e65c51; 
-    }
-    .btn-approve:hover {
-         background-color: #e65c51; 
-         font-weight: 600;
-     }
-    .btn-reject:hover { 
-        background-color: #e65c51; 
-        font-weight: 600;
-    }
-    .btnContainer{ 
-        justify-content: center; 
-        display: flex; gap: 30px; 
-        margin-top:auto 
-    }
-    .modal {
-        position: fixed;
-        top: 0; 
-        left: 0; 
-        z-index: 1000; 
-        display: none; 
-        background-color: rgba(0, 0, 0, 0.5); 
-        width: 100%; 
-        height: 100%; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
+
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+
+    .container {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
     }
 
-    .modal-content {
-        max-width: 1000px; 
+    .image-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 20px;
+    }
+
+    .profile-img, .pet-image {
+        width: 350px;
+        height: 250px;
+        object-fit: cover;
+        margin: 10px 0px 0px 40px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .details-container {
+        flex: 1;
+        margin-left: 40px;
+        margin-right: 50px;
+    }
+
+    h4 {
+        margin-left: 50px;
+        color: #4A4A4A;
+        font-size: 30px;
+    }
+
+    p strong { color: #4A4A4A; }
+    
+    p {
+        color: #757575;
+        font-weight: 600;
+        font-size: 22px;
+    }
+
+    .heart {
+        width: 80px;
+        height: 80px;
+        z-index: 10;
+        margin-top: -30px;
+        margin-bottom: -40px;
+        margin-left: 40px;
+    }
+
+    .btn-back {
+        background-color: #FF6F61;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        width: 130px;
+    }
+
+    .btn-back:hover {
+        background-color: #e65c51;
+        color: #fff;
+    }
+
+    .pet-details, .adopter-details {
+        margin-top: 30px;
+    }
+
+    .btnContainer {
+        justify-content: center;
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .btn-approve {
+        background-color: #1EBE91;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 10px;
+        width: 180px;
+        height: 50px;
+        font-weight: 700;
+        margin-top: 20px;
+    }
+
+    .btn-reject {
+        background-color: #B3261E;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 10px;
+        width: 180px;
+        height: 50px;
+        font-weight: 700;
+        margin-top: 20px;
+    }
+
+    .btn-approve:hover, .btn-reject:hover {
+        background-color: #a09d9d;
+        font-weight: 600;
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        display: none;
+        background-color: rgba(0, 0, 0, 0.5);
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content.approve {
+        max-width: 800px;
+        background-color: #f0f0f0;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        margin: auto;
+        margin-top: 150px;
+        margin-bottom: 90px;
+    }
+
+    .modal-content.reject {
+        max-width: 800px;
         background-color: #f0f0f0;
         padding: 40px;
         border-radius: 20px;
@@ -148,27 +193,37 @@
         margin: auto;
         margin-top: 100px;
         margin-bottom: 90px;
-        max-height: 500px;
     }
 
-    .modal::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5); 
-        z-index: -1; 
+    .modal-content h2 {
+        font-family: 'Fredoka', sans-serif;
+        color: #FF6F61;
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #E0E0E0;
     }
 </style>
 <div class="mb-3">
     {% if request.GET.source == 'adoption_management' %}
         <a href="{% url 'adoption_management' %}" class="btn btn-back">Back</a>
-    {% elif request.GET.source == 'dashboard' %}
-        <a href="{% url 'dashboard' %}" class="btn btn-back">Back</a>
+    {% elif request.GET.source == 'admin_dashboard' %}
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-back">Back</a>
     {% else %}
-        <a href="{{ request.META.HTTP_REFERER|default:'#' }}" class="btn btn-back">Back</a>
+        <a href="javascript:void(0)" onclick="handleBack()" class="btn btn-back">Back</a>
     {% endif %}
 </div>
 
@@ -218,26 +273,28 @@
             </div>
 
             <div id="adopter-info" class="content-section" style="margin-bottom: 94px;">
-                <p>
-                    <img src="{% static 'images/name.png' %}" alt="Name Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Name:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.first_name }} {{ profile.user.last_name }}
-                </p>
-                <p>
-                    <img src="{% static 'images/age _2.png' %}" alt="Age Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Age:</strong> &nbsp; &nbsp; &nbsp;{{ profile.age }}
-                </p>
-                <p>
-                    <img src="{% static 'images/phone.png' %}" alt="Phone Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Contact No.:</strong> &nbsp; &nbsp; &nbsp;{{ profile.phone_number }}
-                </p>
-                <p>
-                    <img src="{% static 'images/address.png' %}" alt="Address Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Address:</strong> &nbsp; &nbsp; &nbsp;{{ profile.address }}
-                </p>
-                <p>
-                    <img src="{% static 'images/email.png' %}" alt="Email Icon" style="width: 25px; height: 25px; margin-right: 30px;">
-                    <strong>Email:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.email }}
-                </p>
+                <div class="adopter-details">
+                    <p>
+                        <img src="{% static 'images/name.png' %}" alt="Name Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Name:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.first_name }} {{ profile.user.last_name }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/age _2.png' %}" alt="Age Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Age:</strong> &nbsp; &nbsp; &nbsp;{{ profile.age }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/phone.png' %}" alt="Phone Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Contact No.:</strong> &nbsp; &nbsp; &nbsp;{{ profile.phone_number }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/address.png' %}" alt="Address Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Address:</strong> &nbsp; &nbsp; &nbsp;{{ profile.address }}
+                    </p>
+                    <p>
+                        <img src="{% static 'images/email.png' %}" alt="Email Icon" style="width: 25px; height: 25px; margin-right: 30px;">
+                        <strong>Email:</strong> &nbsp; &nbsp; &nbsp;{{ profile.user.email }}
+                    </p>
+                </div>
             </div>
 
             <!-- Action Buttons -->
@@ -251,21 +308,22 @@
 
 <!-- Approve Modal -->
 <div id="approveModal" class="modal" style="display: none;">
-    <form method="post" action="">
+    <form method="post" action="" id="approveForm">
         {% csrf_token %}
         <input type="hidden" name="status" value="approved">
-    <div class="modal-content" style="width: 800px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center; height: 400px;">
-        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-            <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 155px; height: 140px; margin-left: 40px;">
-        </div>
-        <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 30px;">
-            Are you sure you want to approve this request?
-        </h2>
-        <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+        <input type="hidden" name="source" value="{{ request.GET.source }}">
+        <div class="modal-content approve" style="width: 800px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center; height: 400px;">
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 155px; height: 140px; margin-left: 40px;">
+            </div>
+            <h2 style="font-family: 'Fredoka', sans-serif; color: #FF6F61; font-size: 30px; margin-bottom: 30px;">
+                Are you sure you want to approve this request?
+            </h2>
+            <div style="display: flex; justify-content: space-around; margin-top: 20px;">
                 <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                     <strong> Back </strong>
                 </button>
-                <button type="submit" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
+                <button type="submit" onclick="submitForm('approve')" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;">
                     <strong>Confirm</strong>
                 </button>
             </div>
@@ -275,10 +333,11 @@
 
 <!-- Reject Modal -->
 <div id="cancelModal" class="modal" style="display: none;">
-    <form method="post" action="">
+    <form method="post" action="" id="rejectForm">
         {% csrf_token %}
         <input type="hidden" name="status" value="rejected">
-        <div class="modal-content" style="width: 800px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
+        <input type="hidden" name="source" value="{{ request.GET.source }}">
+        <div class="modal-content reject" style="width: 800px; background-color: #f0f0f0; padding: 40px; border-radius: 20px; text-align: center;">
             <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                 <img src="{% static 'images/caution.png' %}" alt="Caution" style="width: 155px; height: 140px; margin-left: 40px;">
             </div>
@@ -301,7 +360,7 @@
                 <button type="button" onclick="closeModal()" class="btn btn-cancel" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;"> 
                     <strong> Back </strong>
                 </button>
-                <button type="submit" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;"> 
+                <button type="submit" onclick="submitForm('reject')" class="btn btn-sched-final" style="background-color: #FF6F61; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 10px; width: 130px;"> 
                     <strong> Confirm </strong>
                 </button>
             </div>
@@ -328,6 +387,48 @@
         document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
         button.classList.add('active');
+    }
+
+    function handleBack() {
+        if (document.referrer) {
+            window.location.href = document.referrer;
+        } else {
+            window.location.href = "{% url 'admin_dashboard' %}"; 
+        }
+    }
+
+    function submitForm(type) {
+        const form = type === 'approve' ? document.getElementById('approveForm') : document.getElementById('rejectForm');
+        
+        if (type === 'reject') {
+            const reason = document.getElementById('rejection-reason').value;
+            if (!reason) {
+                return false;
+            }
+        }
+
+        fetch(window.location.href, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json()) 
+        .then(data => {
+            if (data.success) {
+                const source = '{{ request.GET.source }}';
+
+                sessionStorage.setItem('message', data.message);
+                sessionStorage.setItem('messageType', data.messageType);
+                
+                if (source === 'admin_dashboard') {
+                    window.location.href = "{% url 'admin_dashboard' %}";
+                } else {
+                    window.location.href = "{% url 'adoption_management' %}";
+                }
+            }
+        });
     }
 </script>
 {% endblock %}

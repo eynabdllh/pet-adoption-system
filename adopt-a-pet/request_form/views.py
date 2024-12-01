@@ -1,6 +1,5 @@
-import json
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 import openpyxl
 from .forms import AdoptionForm
@@ -12,8 +11,7 @@ from login_register.models import User
 from profile_management.models import Profile  
 from django.utils import timezone
 from .models import Adoption
-from django.core.paginator import Paginator
-from django.db.models import Q
+from notifications.models import Notification
 
 @login_required
 @adopter_required
@@ -30,45 +28,25 @@ def adopt_form(request, pet_id):
     if request.method == 'POST':
         form = AdoptionForm(request.POST, user=user)
         if form.is_valid():
-            age = form.cleaned_data['age']
-            address = form.cleaned_data['address']
-            contact_number = form.cleaned_data['contact_number']
-
-            if not profile.age:
-                profile.age = age
-            if not profile.address:
-                profile.address = address
-            if not profile.phone_number:
-                profile.phone_number = contact_number
-            profile.save()  
-
-            adoption = Adoption.objects.create(
-                adopter=profile,  
-                pet=pet,
-                first_name=form.cleaned_data.get('first_name', user.first_name),
-                last_name=form.cleaned_data.get('last_name', user.last_name),
-                age=age,
-                address=address,
-                contact_number=contact_number,
-                email=form.cleaned_data.get('email', user.email),
-                date=form.cleaned_data['date'],
-            )
-
-            pet.is_requested = True
-            pet.is_available = False
-            pet.save()
-
             request.session['adoption_form_data'] = {
                 'adopter_id': profile.id,
                 'pet_id': pet.id,
-                'first_name': adoption.first_name,
-                'last_name': adoption.last_name,
-                'age': adoption.age,
-                'address': adoption.address,
-                'contact_number': adoption.contact_number,
-                'email': adoption.email,
-                'date': adoption.date.isoformat(),
+                'first_name': form.cleaned_data.get('first_name', user.first_name),
+                'last_name': form.cleaned_data.get('last_name', user.last_name),
+                'age': form.cleaned_data['age'],
+                'address': form.cleaned_data['address'],
+                'contact_number': form.cleaned_data['contact_number'],
+                'email': form.cleaned_data.get('email', user.email),
+                'date': form.cleaned_data['date'].isoformat(),
             }
+
+            if not profile.age:
+                profile.age = form.cleaned_data['age']
+            if not profile.address:
+                profile.address = form.cleaned_data['address']
+            if not profile.phone_number:
+                profile.phone_number = form.cleaned_data['contact_number']
+            profile.save()
 
             return redirect('schedule', pet_id=pet.id)
     else:
@@ -170,12 +148,13 @@ def adoption_management(request):
 def review_form(request, pet_id):
     adoption = get_object_or_404(Adoption.objects.select_related('adopter__user'), pet__id=pet_id)
     profile = adoption.adopter
+    source = request.GET.get('source')
 
     if request.method == 'POST':
         status = request.POST.get('status')
         reason = request.POST.get('reason')
-
         pet = adoption.pet
+        adopter = adoption.adopter.user
 
         try:
             if status == 'approved':
@@ -188,6 +167,18 @@ def review_form(request, pet_id):
                 adoption.save()
 
                 messages.success(request, f"Pet {pet.name} has been approved for adoption.")
+                
+                Notification.objects.create_for_adopter(
+                    adopter=adopter,
+                    title="Adoption Request Approved",
+                    message=f"Your adoption request for {pet.name} has been approved! Please check your schedule for pickup details.",
+                    pet=pet
+                )
+
+                if source == 'admin_dashboard':
+                    return redirect('admin_dashboard')
+                return redirect('adoption_management')
+
             elif status == 'rejected':
                 if not reason:
                     messages.error(request, "A reason is required for rejection.")
@@ -202,6 +193,18 @@ def review_form(request, pet_id):
                     adoption.save()
 
                     messages.success(request, "The pet adoption request has been rejected.")
+
+                    Notification.objects.create_for_adopter(
+                        adopter=adopter,
+                        title="Adoption Request Rejected",
+                        message=f"Your adoption request for {pet.name} has been rejected. Reason: {reason}",
+                        pet=pet
+                    )
+
+                    if source == 'admin_dashboard':
+                        return redirect('admin_dashboard')
+                    return redirect('adoption_management')
+            
         except Exception as e:
             messages.error(request, f"An error occurred: {e}")
 
@@ -226,16 +229,31 @@ def admin_pickup(request):
 
             if pet and action == 'mark_completed': 
                 try:
+                    adoption = pet.adoption_set.first()
+                    adopter = adoption.adopter.user if adoption else None
+                    
                     pet.is_approved = False
                     pet.is_upcoming = False
                     pet.is_adopted = True
                     pet.save()
                     messages.success(request, f"Pet {pet.name} marked as completed.")
+
+                    if adopter:
+                        Notification.objects.create_for_adopter(
+                            adopter=adopter,
+                            title="Adoption Completed",
+                            message=f"Congratulations! The adoption of {pet.name} has been completed successfully.",
+                            pet=pet
+                        )
+
                 except Exception as e:
                     messages.error(request, f"An error occurred while marking as completed: {e}")
 
             if pet and action == 'mark_failed': 
                 try:
+                    adoption = pet.adoption_set.first()
+                    adopter = adoption.adopter.user if adoption else None
+                    
                     pet.is_approved = False
                     pet.is_upcoming = False
                     pet.is_adopted = False
@@ -243,6 +261,14 @@ def admin_pickup(request):
                     pet.save()
 
                     messages.success(request, f"Pet {pet.name} was not picked up on time.")
+
+                    if adopter:
+                        Notification.objects.create_for_adopter(
+                            adopter=adopter,
+                            title="Adoption Cancelled - No Show",
+                            message=f"Your adoption of {pet.name} has been cancelled as you didn't show up for pickup.",
+                            pet=pet
+                        )
                 except Exception as e:
                     messages.error(request, f"An error occurred while marking as failed: {e}")
 
@@ -258,6 +284,7 @@ def admin_pickup(request):
                     pet.save()
 
                     messages.success(request, f"Pet {pet.name} is now available for adoption.")
+                    
                 except Exception as e:
                     messages.error(request, f"An error occurred while adding to the list: {e}")
 
@@ -303,10 +330,10 @@ def admin_pickup(request):
         for pet in pets:
             schedules = pet.schedule_set.filter(cancelled=True)
             if schedules.exists():
-                # If there is a reason in schedules, fetch it
+                # to fetch the reason
                 pet.cancellation_reason = schedules.first().get_reason_choices_display()
             else:
-                # Default to "Pet was not Picked-Up" if no reason is found
+                # default if no reason is found
                 pet.cancellation_reason = "Pet was not Picked-Up"
 
     return render(request, 'admin_pickup.html', {
@@ -443,7 +470,6 @@ def export_pickup_to_excel(request):
             if schedules.exists():
                 cancellation_reason = schedules.first().get_reason_choices_display()
 
-        # Append the appropriate row to the sheet
         if status_filter == 'cancelled':
             ws.append([
                 pet.id,
