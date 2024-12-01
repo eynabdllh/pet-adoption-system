@@ -285,6 +285,9 @@ My Adoption
         {% endif %}
     {% empty %}
         <p class="no_adoptions">You currently have no adoptions.</p>
+        <div style="display: flex; justify-content: center;">
+            <img src="{% static 'images/gif.gif' %}" alt="No Pickups Available" style="max-width: 40%; height: auto; margin-top: -70px;">
+        </div>
     {% endfor %}
 </div>
 
