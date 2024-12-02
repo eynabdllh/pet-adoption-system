@@ -14,7 +14,7 @@ def Login(request):
             first_name='Admin',
             last_name='User',
             email='admin@adoptapet.com',
-            isAdmin=True
+            isAdmin=True    
         )
         default_admin.set_password('admin123A') 
         default_admin.save()
