@@ -1,8 +1,10 @@
 from django.db import models
 from login_register.models import User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
@@ -31,3 +33,19 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
+
+@receiver(post_migrate)
+def create_default_admin(sender, **kwargs):
+    if sender.name == 'profile_management': 
+        try:
+            admin = User.objects.filter(email='admin@adoptapet.com').first()
+            if not admin:
+                admin = User.objects.create(
+                    email='admin@admin.com',
+                    password=make_password('admin123A'),  
+                    first_name='Admin',
+                    last_name='User',
+                    isAdmin=True
+                )
+        except Exception as e:
+            print(f"Error creating default admin: {e}")
