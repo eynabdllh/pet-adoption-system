@@ -67,15 +67,7 @@ Pick Up List
     {% for pickup in pickups %}
         {% if pickup.pet.is_approved %}
         <div class="pickup-card" style="margin-bottom: 10px;">
-            <img src=
-                "
-                {% if pickup.pet.main_image %}
-                    {{ pickup.pet.main_image.url }}
-                {% else %}
-                    {% static 'images/default_profile.jpg' %}
-                {% endif %}
-                "
-                alt="{{ pickup.pet.name }}" class="pet-image">
+            <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             
             <div class="pickup-details">
                 <h2>{{ pickup.pet.name }}</h2>

@@ -263,15 +263,7 @@ My Adoption
     {% for pickup in pickups %}
     {% if pickup.pet.is_adopted %}
         <div class="adopted-card" style="margin-bottom: 10px;">
-            <img src=
-                "
-                    {% if pickup.pet.main_image %}
-                        {{ pickup.pet.main_image.url }}
-                    {% else %}
-                        {% static 'images/default_profile.jpg' %}
-                    {% endif %}
-                "
-                alt="{{ pickup.pet.name }}" class="pet-image">
+            <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details-container">
             <div class="adopted-details">
                 <h2>{{ pickup.pet.name }}</h2>
@@ -343,15 +335,7 @@ My Adoption
     {% for pickup in pickups %}
     {% if pickup.pet.is_requested %}
     <div class="pickup-card" id="pet-card-{{ pickup.pet.id }}" style="margin-bottom: 10px;">
-            <img src=
-                "
-                {% if pickup.pet.main_image %}
-                    {{ pickup.pet.main_image.url }}
-                {% else %}
-                    {% static 'images/default_profile.jpg' %}
-                {% endif %}
-                "
-            alt="{{ pickup.pet.name }}" class="pet-image">
+            <img src="{{ pickup.pet.main_image.url }}" alt="{{ pickup.pet.name }}" class="pet-image">
             <div class="pickup-details">
                 <h2>{{ pickup.pet.name }}</h2>
                 <p>{{ pickup.pet.pet_type|capfirst }} | {{ pickup.pet.breed }}</p>
