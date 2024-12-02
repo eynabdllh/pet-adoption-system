@@ -138,9 +138,9 @@ Adopt a Pet
 
 <div class="container-fluid mt-0">
     <div class="mb-3">
-        {% if request.path == '/pets/' %}
+        {% if '/pets' in request.path %}
             <a href="{% url 'adopter_pet_list' %}" class="btn btn-back">Back</a>
-        {% elif request.path == '/dashboard/' %}
+        {% elif '/dashboard' in request.path %}
             <a href="{% url 'adopter_dashboard' %}" class="btn btn-back">Back</a>
         {% elif request.session.prev_url %}
             <a href="{{ request.session.prev_url }}" class="btn btn-back">Back</a>

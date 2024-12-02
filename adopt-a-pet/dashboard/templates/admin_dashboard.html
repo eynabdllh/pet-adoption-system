@@ -244,14 +244,7 @@ Dashboard
                 {{ request.adopter.user.first_name }} {{ request.adopter.user.last_name }}
               </td>
               <td>
-                <img src=
-                "
-                  {% if request.pet.main_image %}
-                      {{ request.pet.main_image.url }}
-                  {% else %}
-                    {% static 'images/default_profile.jpg' %}
-                  {% endif %}
-                " alt="{{ request.pet.name }}" style="height: 30px; width: 30px; border-radius: 50%;">
+                <img src="{{ request.pet.main_image.url }}" alt="{{ request.pet.name }}" style="height: 30px; width: 30px; border-radius: 50%;">
                 {{ request.pet.name }}
               </td>
               <td>

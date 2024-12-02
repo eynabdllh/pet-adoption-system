@@ -44,9 +44,6 @@ def adopter_dashboard(request):
         adopter=user
     )
 
-
-    has_notification = Notification.user_has_unread_notifs(user=user)
-
     Notification.objects.filter(
         user=user,
         title__in=['New Pet Available', 'Pet Status Update'],
@@ -61,7 +58,6 @@ def adopter_dashboard(request):
         'calendar_weeks': calendar_weeks,
         'pickups': pickups,
         'selected_date': selected_date,
-        'has_notification': has_notification,
     }
 
     return render(request, 'adopter_dashboard.html', context)
@@ -108,8 +104,6 @@ def admin_dashboard(request):
             pet__is_adopted=False 
         ).select_related('pet', 'adopter')
 
-        has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
-
         context = {
             'adopted_pets_count': adopted_count,
             'available_pets_count': available_count,
@@ -118,10 +112,7 @@ def admin_dashboard(request):
             'calendar_weeks': calendar_weeks,
             'pickups': scheduled_pickups,
             'selected_date': selected_date,
-            'has_notification': has_notification,
         }
-
-        
 
         return render(request, 'admin_dashboard.html', context)
     except User.DoesNotExist:
@@ -169,10 +160,8 @@ def view_pet_detail(request, pet_id):
             isRead=False
         ).update(isRead=True)
 
-        has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
-
         request.session['prev_url'] = request.META.get('HTTP_REFERER', '/')
-        return render(request, 'view_pet.html', {'pet': pet,'has_notification': has_notification})
+        return render(request, 'view_pet.html', {'pet': pet})
     except User.DoesNotExist:
         return redirect('login')
 

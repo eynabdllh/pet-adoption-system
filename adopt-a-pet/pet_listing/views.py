@@ -13,7 +13,6 @@ from django.utils.translation import gettext_lazy as _
 from notifications.models import Notification
 from login_register.models import User
 
-
 @login_required
 @adopter_required
 def adopter_pet_list(request):
@@ -91,8 +90,6 @@ def adopter_pet_list(request):
     if sort_by_adoption_fee:
         pets = pets.order_by('adoption_fee' if sort_by_adoption_fee == 'asc' else '-adoption_fee')
 
-    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
-
     return render(request, 'adopter_pet_list.html', {
         'pets': pets,
         'query': query,
@@ -109,7 +106,6 @@ def adopter_pet_list(request):
         'sort_by_age': sort_by_age,
         'sort_by_time_in_shelter': sort_by_time_in_shelter,
         'sort_by_adoption_fee': sort_by_adoption_fee,
-        'has_notification': has_notification,
     })
 
 @login_required
@@ -257,7 +253,7 @@ def admin_pet_list(request):
         'sort_by_age': sort_by_age,
         'sort_by_time_in_shelter': sort_by_time_in_shelter,
         'sort_by_adoption_fee': sort_by_adoption_fee,
-        'active_tab': active_tab, 
+        'active_tab': active_tab,  
     })
 
 @login_required

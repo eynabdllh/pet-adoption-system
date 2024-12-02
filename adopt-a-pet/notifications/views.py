@@ -8,10 +8,9 @@ from login_register.models import User
 @login_required
 def notification_list(request):
     user_id = request.session.get('user_id')
-
     if not user_id:
         return redirect('login')
-    
+
     try:
         user = User.objects.get(id=user_id)
         base_template = 'base_admin.html' if user.isAdmin else 'base_adopter.html'
@@ -32,9 +31,7 @@ def notification_list(request):
             
             return redirect('notifications')
         
-            #return HttpResponseRedirect(reverse("notification_list"))
-        
-        notifications = Notification.get_notifs(user=user)
+        notifications = Notification.objects.filter(user=user).order_by('-created_at')
         
         return render(request, 'notifications/notification_list.html', {
             'notifications': notifications,
@@ -84,4 +81,4 @@ def remove_all_read(request):
 
     Notification.objects.filter(user_id=user_id, isRead=True).delete()
     messages.success(request, 'All read notifications have been removed.')
-    return redirect('notifications')
+    return redirect('notifications') 
