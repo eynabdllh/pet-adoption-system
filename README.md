@@ -111,6 +111,7 @@ venv/scripts/Activate #For macOS/Linux 'source venv/bin/activate'
 
 1. Install dependencies
    ```sh
+   pip install django
    pip install openpyxl
    pip install pillow
    ```
@@ -135,8 +136,7 @@ venv/scripts/Activate #For macOS/Linux 'source venv/bin/activate'
 
 The timeline for the development of this project is available in the Gantt Chart below:
 
-[Gantt Chart](https://docs.google.com/spreadsheets/d/1xkvWZaWizDLPvSHAJ-dwQYHgKrJD6Z7OzchyzyKRr8s/edit?usp=sharing)
-
+[Gantt Chart](documents/GanttChart/GanttChart_AdoptAPet.xlsx)
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
@@ -144,7 +144,7 @@ The timeline for the development of this project is available in the Gantt Chart
 
 The following ERD outlines the relationships between entities in the system, such as users, pets, and adoption requests:
 
-[ERD Diagram](https://drive.google.com/file/d/1hNGwf2DInYBS6GWfPdmwFCWZkkdSKpuF/view?usp=sharing)
+[ERD Diagram](documents/ERD/ERD_AdoptAPet.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -172,7 +172,7 @@ The design and layout of the user interface can be explored via the Figma link b
         <a href="https://github.com/eynabdllh"><img src="https://img.shields.io/badge/GitHub-Profile-blueviolet?style=for-the-badge&logo=github&logoColor=white" alt="Anamerah's GitHub"></a>
       </td>
       <td>
-        <p>Dashboard, Pet Listing/Management, Profile Management</p>
+        <p>Dashboard, Pet Listing/Management, Profile Management, Notification</p>
       </td>
     </tr>
     <tr>
