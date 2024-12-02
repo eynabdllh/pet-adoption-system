@@ -8,6 +8,17 @@ from notifications.models import Notification
 from django.utils import timezone
 
 def Login(request):
+    # default admin email and password
+    if not User.objects.filter(email='admin@adoptapet.com').exists():
+        default_admin = User.objects.create(
+            first_name='Admin',
+            last_name='User',
+            email='admin@adoptapet.com',
+            isAdmin=True
+        )
+        default_admin.set_password('admin123A') 
+        default_admin.save()
+
     validation_error = None
 
     if 'user_id' in request.session:
