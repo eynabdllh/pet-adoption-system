@@ -107,6 +107,11 @@ Adopt a Pet
         background-color: #ff5c4d;
     }
 
+    .btn-next:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+    }
+
     .d-flex {
         display: flex;
         justify-content: center;
@@ -220,7 +225,7 @@ Adopt a Pet
         </div>
         
         <div class="d-flex">
-            <button type="button" onclick="showModal()" class="btn btn-next">Next</button>
+            <button type="button" onclick="showModal()" class="btn btn-next" id="nextButton" disabled>Next</button>
         </div>
     </form>
 </div>
@@ -247,6 +252,29 @@ Adopt a Pet
 </div>
 
 <script>
+    // Add this function to check if all inputs are filled
+    function checkInputs() {
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], input[type="date"]');
+        const nextButton = document.getElementById('nextButton');
+        let allFilled = true;
+
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                allFilled = false;
+            }
+        });
+
+        nextButton.disabled = !allFilled;
+    }
+
+    // Add event listeners to all inputs
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', checkInputs);
+    });
+
+    // Call checkInputs initially to set the correct button state
+    document.addEventListener('DOMContentLoaded', checkInputs);
+
     function showModal() {
         document.getElementById('confirmationModal').style.display = 'flex';
     }
