@@ -234,7 +234,15 @@
         <div class="image-container">
             <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/default_profile.jpg' %}{% endif %}" alt="Adopter Profile Image" class="profile-img">
             <img src="{% static 'images/view_heart.png' %}" alt="Heart Icon" class="heart">
-            <img src="{{ adoption.pet.main_image.url }}" alt="{{ adoption.pet.name }}" class="pet-image">
+            <img src=
+                "
+                {% if adoption.pet.main_image %}
+                    {{ adoption.pet.main_image.url }}
+                {% else %}
+                    {% static 'images/default_profile.jpg' %}
+                {% endif %}
+                "
+                alt="{{ adoption.pet.name }}" class="pet-image">
         </div>
 
         <div class="details-container">

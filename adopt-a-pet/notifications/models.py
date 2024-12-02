@@ -90,7 +90,7 @@ class Notification(models.Model):
     
     #for marking all non read
     def mark_all_as_read(user):
-        return Notification.objects.filter(user = user, isRead = False).order_by('-date_sent').update(isRead = True)
+        return Notification.objects.filter(user = user, isRead = False).order_by('-created_at').update(isRead = True)
     
     #for deleting all read
     def delete_all_read(user):
@@ -106,10 +106,10 @@ class Notification(models.Model):
 
     #get user notifs by latest order
     def get_notifs(user):
-        return Notification.objects.filter(user = user).order_by('-date_sent')
+        return Notification.objects.filter(user = user).order_by('-created_at')
     
     def get_notifs_filter(user,has_read = True):
-        return Notification.objects.filter(user = user, isRead = has_read).order_by('-date_sent')
+        return Notification.objects.filter(user = user, isRead = has_read).order_by('-created_at')
     
     def get_number_of_notifs(user):
         return Notification.objects.filter(user = user).count()

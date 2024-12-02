@@ -238,8 +238,6 @@ def admin_pet_list(request):
             pets = pets.order_by('-adoption_fee')
 
     active_tab = request.GET.get('active_tab', 'available')
-
-    has_notification = Notification.user_has_unread_notifs(user=request.session.get('user_id'))
     
     return render(request, 'admin_pet_list.html', {
         'pets': pets,
@@ -260,7 +258,6 @@ def admin_pet_list(request):
         'sort_by_time_in_shelter': sort_by_time_in_shelter,
         'sort_by_adoption_fee': sort_by_adoption_fee,
         'active_tab': active_tab, 
-        'has_notification': has_notification,
     })
 
 @login_required
