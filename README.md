@@ -136,7 +136,7 @@ venv/scripts/Activate #For macOS/Linux 'source venv/bin/activate'
 
 The timeline for the development of this project is available in the Gantt Chart below:
 
-[Gantt Chart](documents/GanttChart/GanttChart_AdoptAPet.csv)
+[Gantt Chart](documents/GanttChart/GanttChart_AdoptAPet.pdf)
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
