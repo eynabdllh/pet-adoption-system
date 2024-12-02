@@ -665,9 +665,9 @@
                             <td>{{ pet.id }}</td>
                             <td>
                                 {% if pet.main_image %}
-                                    <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="card-img-top pet-image">
+                                    <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
                                 {% else %}
-                                    <img src="{% static 'images/default_profile.jpg' %}" alt="No Image Available" class="card-img-top pet-image">
+                                    <img src="{% static 'images/default_profile.jpg' %}" alt="No Image Available" class="img-pet">
                                 {% endif %}
                                 {{ pet.name }}
                             </td>
@@ -719,9 +719,9 @@
                             <td>{{ pet.id }}</td>
                             <td>
                                 {% if pet.main_image %}
-                                    <img src="{{ pet.main_image.url }}" alt="{{ pet.name }}" class="card-img-top pet-image">
+                                    <img src="{{ pet.main_image.url }}" alt="Pet Image" class="img-pet">
                                 {% else %}
-                                    <img src="{% static 'images/default_profile.jpg' %}" alt="No Image Available" class="card-img-top pet-image">
+                                    <img src="{% static 'images/default_profile.jpg' %}" alt="No Image Available" class="img-pet">
                                 {% endif %}
                                 {{ pet.name }}
                             </td>
