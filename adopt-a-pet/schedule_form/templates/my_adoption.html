@@ -271,7 +271,7 @@ My Adoption
                 <p style="color: #333;">{{ pickup.pet.description }}</p>
             </div>
             <div class="button-container">
-                <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
+                <a href="{% url 'view_details' user_id=pickup.adopter.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
                 <a href="javascript:void(0);" class="btn btn-view-certificate" 
                    data-adopter-name="{{ pickup.adopter.first_name|escapejs }} {{ pickup.adopter.last_name|escapejs }}"
                    data-adopter-name2="{{ pickup.adopter.first_name|escapejs }} {{ pickup.adopter.last_name|escapejs }}"
@@ -342,7 +342,7 @@ My Adoption
                 <p style="color:#333">{{ pickup.pet.description }}</p>
             </div>
             <div class="button-container">
-                <a href="{% url 'view_details' user_id=user.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
+                <a href="{% url 'view_details' user_id=pickup.adopter.id pet_id=pickup.pet.id %}" class="btn btn-view-details">View Details</a>
                 <a href="javascript:void(0);" 
                     class="btn btn-cancel-request" 
                     onclick="cancelRequest('{{ pickup.pet.id }}')">
