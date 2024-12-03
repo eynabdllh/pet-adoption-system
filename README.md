@@ -44,9 +44,9 @@ adopt-a-pet is a web application designed to make the pet adoption process easie
 ## Features
 1. **User Registration and Authentication:** Users can create accounts and log in securely.
 2. **Profile Management:** Users can update personal details and view their adoption history.
-3. **Pet Listing:** A detailed listing of all available pets, with information about breed, age, and status.
-4. **Adoption Request:** Users can submit requests to adopt pets of their choice.
-5. **Pick-Up Scheduling:** Users can schedule a pick-up date for adopted pets.
+3. **Pet Listing/Management:** A detailed listing of all available pets, with information about breed, age, and status.
+4. **Adoption Request/Management:** Users can submit requests to adopt pets of their choice.
+5. **Schedule List/Management:** Users can schedule a pick-up date for adopted pets.
 6. **Notifications:** Receive updates on adoption status, new pet listings, and scheduled visits.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -172,7 +172,7 @@ The design and layout of the user interface can be explored via the Figma link b
         <a href="https://github.com/eynabdllh"><img src="https://img.shields.io/badge/GitHub-Profile-blueviolet?style=for-the-badge&logo=github&logoColor=white" alt="Anamerah's GitHub"></a>
       </td>
       <td>
-        <p>Dashboard, Pet Listing/Management, Profile Management, Notification</p>
+        <p>Pet Listing/Management, Profile Management, Notification</p>
       </td>
     </tr>
     <tr>
